@@ -102,7 +102,7 @@
 					aria-label="Pretraži"
 				/>
 				<button class="search-btn" type="submit" aria-label="Pretraži">
-					<SearchIcon size={20} />
+					<SearchIcon size={28} />
 				</button>
 			</form>
 
@@ -221,16 +221,20 @@
 		background: #ffffff;
 	}
 
-	/* Search: input + button share ONE pill container; the button sits inside,
-	   right-aligned, and the whole thing keeps the rounded-pill look. */
+	/* Search: YouTube-style. Input + button share ONE pill; the button is a
+	   distinct block at the right end with a slightly DARKER fill than the input,
+	   the magnifier centred in it. The pill has no right padding so the button sits
+	   flush to the rounded edge. */
 	.search-pill {
 		display: flex;
-		align-items: center;
+		align-items: stretch; /* button stretches to full pill height */
 		flex: 1 1 auto;
 		max-width: 720px;
+		min-height: 2.9rem;
 		background: #e2e8f0;
 		border-radius: 999px;
-		padding: 0.35rem 0.6rem 0.35rem 1.2rem;
+		padding: 0 0 0 1.2rem;
+		overflow: hidden; /* clip the button's square inner corners to the pill radius */
 		box-shadow: 0 1px 2px rgba(16, 46, 102, 0.06);
 	}
 	.search-input {
@@ -242,30 +246,28 @@
 		font-family: inherit;
 		color: #102e66;
 		min-width: 0;
+		padding-right: 0.9rem;
 	}
 	.search-input::placeholder {
 		color: #9aa3b2;
 	}
-	/* No coloured fill — just a thin left border separating it from the input. */
+	/* Distinct button: a bit DARKER than the input bg, icon centred, slightly wider
+	   so it reads as a YT-style search button. */
 	.search-btn {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 2.4rem;
-		height: 2.4rem;
+		width: 3.6rem;
 		border: none;
-		border-left: 1px solid rgba(16, 46, 102, 0.18);
 		border-radius: 0;
-		padding-left: 0.6rem;
-		margin-left: 0.4rem;
-		background: transparent;
+		background: #cbd5e1; /* a step darker than the input's #e2e8f0 */
 		color: #102e66;
 		cursor: pointer;
 		flex: 0 0 auto;
-		transition: color 0.15s ease;
+		transition: background-color 0.15s ease;
 	}
 	.search-btn:hover {
-		color: #187ff5; /* blue-dress on hover */
+		background: #b8c2d1; /* darker still on hover */
 	}
 
 	.topbar-right {
