@@ -1,0 +1,70 @@
+// VSK archery DASHBOARD — global styles entry.
+//
+// Same pattern as the public site (axlothecook-sass-library README):
+//   1. Override library SCSS variables ABOVE the @import.
+//   2. @import the library so overrides apply + utilities generate.
+//   3. :root CSS-custom-property control panel (the live theme).
+//
+// The dashboard is a LIGHT admin UI (white-smoke page, blue-dress rail), distinct
+// from the public site's navy theme — but it shares the same library palette so
+// the brand colours match.
+
+// ---------------------------------------------------------------------------
+// 1. Library variable overrides (must come BEFORE the @import).
+// ---------------------------------------------------------------------------
+$light-bg-primary: #f3f4f6; // dashboard page background (white-smoke)
+$text: #102e66; // ink (deep-sapphire) on the light bg
+
+@import 'axlothecook-sass-library/sass-library/index.scss';
+
+// ---------------------------------------------------------------------------
+// 3. Theme control panel — CSS custom properties.
+// ---------------------------------------------------------------------------
+:root {
+	--color-bg: #f3f4f6; // dashboard page background (white-smoke)
+	--color-surface: #ffffff; // cards / panels / top bar
+	--color-rail: #187ff5; // blue-dress nav rail
+	--color-accent: #efb52f; // accent gold (shared brand)
+	--color-link: #187ff5; // interactive blue
+	--color-ink: #102e66; // body text (deep-sapphire) on light surfaces
+	--color-ink-muted: #5b6577; // secondary text
+
+	--font-primary: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+// Override the library base (its _base.scss sets :root bg to $primary = dark red).
+// :root has higher specificity than html, so override on :root itself.
+:root {
+	background-color: var(--color-bg);
+}
+html,
+body {
+	margin: 0;
+	background-color: var(--color-bg);
+	color: var(--color-ink);
+	font-family: var(--font-primary);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+a {
+	color: var(--color-link);
+	text-decoration: none;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+// Visually hidden but screen-reader-available (standard a11y pattern).
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
