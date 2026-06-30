@@ -9,6 +9,8 @@
 	// CSS below. Section icons are reusable icon components (currentColor + size).
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { scale } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
 	import { logout } from '$lib/auth';
 
 	import GridIcon from '$lib/components/icons/GridIcon.svelte';
@@ -34,12 +36,53 @@
 		searchInput?.focus();
 	}
 
+	// ── Notifications ("Novo") ──────────────────────────────────────────────────
+	// New things since the admin's last visit (new posts/events, work other admins
+	// did while away). Placeholder data for now — wire to a /notifications endpoint
+	// later. The bell shows a red dot when there are any; clicking it opens a
+	// dropdown panel (no page-dimming backdrop) with a sticky "Novo (N)" header and
+	// a scrollable list (gap between items; max ~6 visible, scroll on overflow).
+	// Each notice links to the section it relates to (e.g. a Raspored notice opens
+	// the Raspored page) — so items are clickable.
+	type Notice = { id: string; title: string; detail: string; when: string; href: string };
+	const notifications: Notice[] = [
+		{ id: 'n1', title: 'Nova vijest objavljena', detail: 'Admin Dva objavio je članak "Pobjeda na Varaždin Openu".', when: 'prije 2 h', href: '/nadzorna-ploca/vijesti' },
+		{ id: 'n2', title: 'Novi događaj u rasporedu', detail: 'Dodano natjecanje "CEC 2. kolo" (4. srpnja).', when: 'prije 5 h', href: '/nadzorna-ploca/raspored' },
+		{ id: 'n3', title: 'Uređen profil streličara', detail: 'Admin Tri ažurirao je biografiju za Amandu Mlinarić.', when: 'jučer', href: '/nadzorna-ploca/momcad' },
+		{ id: 'n4', title: 'Novi upit za sponzorstvo', detail: 'Pristigao je upit od tvrtke Lasercopy.', when: 'jučer', href: '/nadzorna-ploca/upiti' },
+		{ id: 'n5', title: 'Dodano postignuće', detail: 'Novi naslov dodan u kategoriju "Svjetski naslovi".', when: 'prije 2 dana', href: '/nadzorna-ploca/postignuca' },
+		{ id: 'n6', title: 'Novi sponzor dodan', detail: 'Admin Dva dodao je partnera "KODRA" na popis sponzora.', when: 'prije 3 dana', href: '/nadzorna-ploca/sponzori' }
+	];
+	let noticesOpen = $state(false);
+	const noticeCount = $derived(notifications.length);
+	const hasNew = $derived(noticeCount > 0);
+
+	function toggleNotices() {
+		noticesOpen = !noticesOpen;
+	}
+	// Respect the OS "reduce motion" setting — skip the open/close animation then.
+	const reduceMotion =
+		typeof window !== 'undefined' &&
+		window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+	const noticeAnim = reduceMotion
+		? { start: 1, duration: 0 }
+		: { start: 0.95, duration: 160, easing: cubicOut };
+	// Close the dropdown on an outside click or Escape.
+	function onWindowClick(e: MouseEvent) {
+		if (!noticesOpen) return;
+		const t = e.target as HTMLElement;
+		if (!t.closest('.notif')) noticesOpen = false;
+	}
+	function onWindowKey(e: KeyboardEvent) {
+		if (e.key === 'Escape') noticesOpen = false;
+	}
+
 	// Dashboard sections (built incrementally; hrefs may 404 until their editor
 	// exists). Each pairs a real admin area with a reusable icon component.
 	// Everything lives under /nadzorna-ploca: "Home" is the dashboard index, every
 	// other section is nested beneath it (/nadzorna-ploca/momcad, …).
 	const NAV = [
-		{ label: 'Home', href: '/nadzorna-ploca', icon: HomeIcon },
+		{ label: 'Početno', href: '/nadzorna-ploca', icon: HomeIcon },
 		{ label: 'Vijesti', href: '/nadzorna-ploca/vijesti', icon: NewsIcon },
 		{ label: 'Raspored', href: '/nadzorna-ploca/raspored', icon: CalendarIcon },
 		{ label: 'Momčad', href: '/nadzorna-ploca/momcad', icon: PersonIcon },
@@ -77,6 +120,8 @@
 			.join('')
 	);
 </script>
+
+<svelte:window onclick={onWindowClick} onkeydown={onWindowKey} />
 
 <svelte:head>
 	<title>Admin · VSK</title>
@@ -127,9 +172,44 @@
 			</form>
 
 			<div class="topbar-right">
-				<button class="topbar-bell" aria-label="Obavijesti">
-					<BellIcon size={28} />
-				</button>
+				<div class="notif">
+					<button
+						class="topbar-bell"
+						aria-label="Obavijesti"
+						aria-expanded={noticesOpen}
+						onclick={toggleNotices}
+					>
+						<BellIcon size={28} />
+						{#if hasNew}
+							<span class="notif-dot" aria-hidden="true"></span>
+						{/if}
+					</button>
+
+					{#if noticesOpen}
+						<div
+							class="notif-panel"
+							role="dialog"
+							aria-label="Obavijesti"
+							transition:scale={noticeAnim}
+						>
+							<div class="notif-head">
+								<span class="notif-title">Novo</span>
+								<span class="notif-count">({noticeCount})</span>
+							</div>
+							<div class="notif-list">
+								{#each notifications as n (n.id)}
+									<a class="notif-item" href={n.href} onclick={() => (noticesOpen = false)}>
+										<p class="notif-item-title">{n.title}</p>
+										<p class="notif-item-detail">{n.detail}</p>
+										<span class="notif-item-when">{n.when}</span>
+									</a>
+								{:else}
+									<p class="notif-empty">Nema novih obavijesti.</p>
+								{/each}
+							</div>
+						</div>
+					{/if}
+				</div>
 				<div class="topbar-user">
 					<span class="user-avatar bg-blue-dress-light-5">{initials || 'A'}</span>
 					<span class="user-name">{data.admin.workName}</span>
@@ -241,7 +321,7 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 1.5rem;
-		padding: 1.4rem 2rem;
+		padding: 0.7rem 2rem;
 		background: #ffffff;
 	}
 
@@ -254,7 +334,7 @@
 		align-items: stretch; /* button stretches to full pill height */
 		flex: 1 1 auto;
 		max-width: 720px;
-		min-height: 2.9rem;
+		min-height: 2.5rem;
 		background: #e2e8f0;
 		border-radius: 999px;
 		padding: 0 0 0 1.2rem;
@@ -327,7 +407,13 @@
 		gap: 1.4rem;
 		flex: 0 0 auto;
 	}
+	/* Notifications: bell trigger + dropdown panel (no page-dimming backdrop). */
+	.notif {
+		position: relative;
+		display: inline-flex;
+	}
 	.topbar-bell {
+		position: relative;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -337,6 +423,131 @@
 		cursor: pointer;
 		padding: 0.3rem;
 		border-radius: 50%;
+	}
+	.topbar-bell:hover {
+		background: rgba(16, 46, 102, 0.08);
+	}
+	/* Red dot (#19): shown when there are new notifications. */
+	.notif-dot {
+		position: absolute;
+		top: 0.25rem;
+		right: 0.25rem;
+		width: 0.6rem;
+		height: 0.6rem;
+		border-radius: 50%;
+		background: #e60023; /* state-red */
+		border: 2px solid #fff;
+	}
+	/* Dropdown panel anchored under the bell. No backdrop overlay. Enters/leaves
+	   with a fade + subtle scale from the trigger corner (the industry-standard
+	   menu/notification animation — Material/MUI), via transition:scale + this
+	   transform-origin. */
+	.notif-panel {
+		position: absolute;
+		top: calc(100% + 0.6rem);
+		right: 0;
+		transform-origin: top right;
+		width: 30rem;
+		max-width: calc(100vw - 2rem);
+		background: #fff;
+		border-radius: 8px;
+		box-shadow: 0 8px 30px rgba(16, 46, 102, 0.18);
+		z-index: 50;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+	}
+	/* Sticky header stays at the top while the list scrolls. */
+	.notif-head {
+		display: flex;
+		align-items: baseline;
+		gap: 0.35rem;
+		padding: 1.4rem 1.5rem 1.1rem;
+		border-bottom: 1px solid #eef1f3;
+		flex: 0 0 auto;
+	}
+	.notif-title {
+		font-size: 1.6rem;
+		font-weight: 700;
+		color: #102e66;
+	}
+	.notif-count {
+		font-size: 1.35rem;
+		font-weight: 600;
+		color: #e60023; /* same red as the bell notification dot */
+	}
+	/* Scrollable list: ~6 items tall, scroll on overflow; gap between items. */
+	.notif-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+		padding: 1rem;
+		max-height: 31.3rem; /* shows exactly 5 items; the 6th+ are fully clipped out of view (scroll to reach) */
+		overflow-y: auto;
+		/* NOTE: deliberately NOT setting `scrollbar-width`/`scrollbar-color` here.
+		   When the standard `scrollbar-width` is set, Chromium switches to the
+		   standard scrollbar and IGNORES the ::-webkit-scrollbar rules below — which
+		   left the native OS arrow buttons visible. Using only the webkit path lets
+		   the custom thumb + button-removal actually apply (the user is on Chromium).
+		   Firefox would show its default thin bar, which is acceptable. */
+	}
+	/* Fully define EVERY scrollbar part (incl. width+height) so Chromium uses the
+	   custom scrollbar and does NOT fall back to the OS scrollbar (whose stepper
+	   arrows can't be removed) — the same approach the public archer page uses. */
+	.notif-list::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+	.notif-list::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.notif-list::-webkit-scrollbar-thumb {
+		background: #102e66; /* same as the bell SVG colour */
+		border-radius: 4px;
+	}
+	.notif-list::-webkit-scrollbar-corner {
+		background: transparent;
+	}
+	/* No stepper arrows at the ends of the scrollbar (all directions/positions). */
+	.notif-list::-webkit-scrollbar-button {
+		display: none;
+		width: 0;
+		height: 0;
+	}
+	/* Each item links to its section page — clickable, pointer cursor, darker on hover. */
+	.notif-item {
+		display: block;
+		padding: 0.9rem 1rem;
+		border-radius: 10px;
+		background: #f6f8fa;
+		text-decoration: none;
+		cursor: pointer;
+		transition: background-color 0.15s ease;
+	}
+	.notif-item:hover {
+		background: #e8edf2; /* slightly darker than #f6f8fa */
+	}
+	.notif-item-title {
+		margin: 0 0 0.2rem;
+		font-size: 0.92rem;
+		font-weight: 700;
+		color: #102e66;
+	}
+	.notif-item-detail {
+		margin: 0 0 0.3rem;
+		font-size: 0.82rem;
+		line-height: 1.45;
+		color: #5b6577;
+	}
+	.notif-item-when {
+		font-size: 0.74rem;
+		color: #9aa3b2;
+	}
+	.notif-empty {
+		margin: 0;
+		padding: 1rem 1.1rem 1.25rem;
+		font-size: 0.88rem;
+		color: #5b6577;
 	}
 	.topbar-bell:hover {
 		background: rgba(16, 46, 102, 0.06);
