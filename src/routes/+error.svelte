@@ -3,7 +3,7 @@
 	// a load throws or a route is not found, INSTEAD of crashing the whole app — so
 	// a single failure degrades to a friendly page, never a blank/white screen.
 	// Covers 404 (unknown URL) and unexpected errors anywhere not caught by a more
-	// specific boundary (e.g. /admin/+error.svelte).
+	// specific boundary (e.g. /nadzorna-ploca/+error.svelte).
 	import { page } from '$app/state';
 
 	const status = $derived(page.status);
@@ -27,7 +27,7 @@
 				: 'Dogodila se neočekivana pogreška. Pokušajte ponovno ili se vratite na nadzornu ploču.'}
 		</p>
 		<div class="err-actions">
-			<a class="err-btn" href="/admin/nadzorna-ploca">Natrag na nadzornu ploču</a>
+			<a class="err-btn" href="/nadzorna-ploca">Natrag na nadzornu ploču</a>
 		</div>
 	</div>
 </div>

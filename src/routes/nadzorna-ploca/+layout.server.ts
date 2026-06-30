@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import { me } from '$lib/auth';
 import type { LayoutServerLoad } from './$types';
 
-// Guard for the whole /admin/* area. Runs server-side on every admin navigation:
+// Guard for the whole /nadzorna-ploca/* area. Runs server-side on every admin navigation:
 // asks the backend "who am I" (/auth/me) with the browser's session cookie
 // forwarded, and redirects to /prijava if unauthenticated (401 → me() returns
 // null). Returns the admin so child pages/components can show who's logged in.

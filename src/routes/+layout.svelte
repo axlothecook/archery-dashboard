@@ -1,7 +1,7 @@
 <script lang="ts">
 	// Dashboard root layout: loads the Inter font + global styles once, then renders
 	// the page. Unlike the public site there is NO shared NavBar / Footer here — the
-	// admin chrome (blue rail + top bar) lives in /admin/+layout.svelte, and /prijava
+	// admin chrome (blue rail + top bar) lives in /nadzorna-ploca/+layout.svelte, and /prijava
 	// is a standalone full-screen page. So this root layout is intentionally bare.
 	const favicon = '/favicon.png';
 

@@ -5,7 +5,7 @@ public site ([Archery-club-front-end](https://github.com/axlothecook/Archery-clu
 but deployed **behind the same origin** as the public site so the session cookie
 stays first-party.
 
-It contains the staff-only area: `/prijava` (login) and `/admin/*` (the dashboard
+It contains the staff-only area: `/prijava` (login) and `/nadzorna-ploca/*` (the dashboard
 + per-entity editors). It talks to the same Express/Prisma backend
 ([Archery-club-backend](https://github.com/axlothecook/Archery-club-backend)) as
 the public site, under `/api`.
@@ -25,7 +25,7 @@ reverse proxy (nginx/Cloudflare) serves everything under one hostname —
 ```
 archery.axlothecook.com/           → public site  (Archery-club-front-end, :3000)
 archery.axlothecook.com/prijava    → THIS app      (archery-dashboard, :3001)
-archery.axlothecook.com/admin/*    → THIS app      (archery-dashboard, :3001)
+archery.axlothecook.com/nadzorna-ploca/*    → THIS app      (archery-dashboard, :3001)
 archery.axlothecook.com/api/*      → backend        (Archery-club-backend, :3100, /api stripped)
 ```
 
@@ -38,7 +38,7 @@ browser or device. (Verified research; see the project memory note
 ```nginx
 location /api/   { proxy_pass http://backend:3100/; }          # trailing slash strips /api
 location /prijava { proxy_pass http://dashboard:3001; }
-location /admin/  { proxy_pass http://dashboard:3001; }
+location /nadzorna-ploca/ { proxy_pass http://dashboard:3001; }
 location /        { proxy_pass http://frontend:3000; }          # public site
 ```
 

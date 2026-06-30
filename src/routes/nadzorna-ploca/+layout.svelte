@@ -12,6 +12,7 @@
 	import { logout } from '$lib/auth';
 
 	import GridIcon from '$lib/components/icons/GridIcon.svelte';
+	import HomeIcon from '$lib/components/icons/HomeIcon.svelte';
 	import NewsIcon from '$lib/components/icons/NewsIcon.svelte';
 	import CalendarIcon from '$lib/components/icons/CalendarIcon.svelte';
 	import PersonIcon from '$lib/components/icons/PersonIcon.svelte';
@@ -34,19 +35,24 @@
 
 	// Dashboard sections (built incrementally; hrefs may 404 until their editor
 	// exists). Each pairs a real admin area with a reusable icon component.
+	// Everything lives under /nadzorna-ploca: "Home" is the dashboard index, every
+	// other section is nested beneath it (/nadzorna-ploca/momcad, …).
 	const NAV = [
-		{ label: 'Nadzorna ploča', href: '/admin/nadzorna-ploca', icon: GridIcon },
-		{ label: 'Vijesti', href: '/admin/vijesti', icon: NewsIcon },
-		{ label: 'Raspored', href: '/admin/raspored', icon: CalendarIcon },
-		{ label: 'Momčad', href: '/admin/momcad', icon: PersonIcon },
-		{ label: 'Postignuća', href: '/admin/postignuca', icon: TrophyIcon },
-		{ label: 'Sponzori', href: '/admin/sponzori', icon: HandshakeIcon },
-		{ label: 'Upiti', href: '/admin/upiti', icon: InquiryIcon }
+		{ label: 'Home', href: '/nadzorna-ploca', icon: HomeIcon },
+		{ label: 'Vijesti', href: '/nadzorna-ploca/vijesti', icon: NewsIcon },
+		{ label: 'Raspored', href: '/nadzorna-ploca/raspored', icon: CalendarIcon },
+		{ label: 'Momčad', href: '/nadzorna-ploca/momcad', icon: PersonIcon },
+		{ label: 'Postignuća', href: '/nadzorna-ploca/postignuca', icon: TrophyIcon },
+		{ label: 'Sponzori', href: '/nadzorna-ploca/sponzori', icon: HandshakeIcon },
+		{ label: 'Upiti', href: '/nadzorna-ploca/upiti', icon: InquiryIcon }
 	];
 
-	// Active when the current path equals the item (exact) or is nested under it.
+	// Active when the path equals the item exactly, or (for non-index items) is
+	// nested under it. The Home item ('/nadzorna-ploca') must match EXACTLY, else
+	// it would stay active on every nested section.
 	const isActive = (href: string) =>
-		page.url.pathname === href || page.url.pathname.startsWith(href + '/');
+		page.url.pathname === href ||
+		(href !== '/nadzorna-ploca' && page.url.pathname.startsWith(href + '/'));
 
 	let loggingOut = $state(false);
 	async function handleLogout() {
@@ -79,15 +85,18 @@
 <div class="admin-shell bg-white-smoke">
 	<!-- Blue icon rail -->
 	<aside class="admin-rail bg-blue-dress">
+		<!-- Non-clickable title: everything in the dashboard originates from here. -->
 		<div class="rail-brand">
-			<GridIcon size={26} />
-			<span class="rail-brand-text">Dashboard</span>
+			<GridIcon size={34} />
+			<span class="rail-brand-text">Nadzorna ploča</span>
 		</div>
 
 		<nav class="rail-nav" aria-label="Glavni izbornik">
 			{#each NAV as item (item.href)}
 				<a href={item.href} class="rail-link" class:active={isActive(item.href)}>
-					<span class="rail-icon"><item.icon size={22} /></span>
+					<span class="rail-icon">
+						<item.icon size={26} />
+					</span>
 					<span class="rail-label">{item.label}</span>
 				</a>
 			{/each}
@@ -145,7 +154,7 @@
 	   structural CSS lives here. */
 	.admin-shell {
 		display: grid;
-		grid-template-columns: 248px 1fr;
+		grid-template-columns: 280px 1fr;
 		min-height: 100dvh;
 		color: #102e66; /* deep-sapphire ink on the light page */
 	}
@@ -161,9 +170,11 @@
 	.rail-brand {
 		display: flex;
 		align-items: center;
+		justify-content: center; /* centre the icon + title within the rail */
 		gap: 0.7rem;
 		font-weight: 700;
 		font-size: 1.35rem;
+		white-space: nowrap; /* keep "Nadzorna ploča" on one row */
 		padding: 0 0.5rem 1.5rem;
 	}
 	.rail-nav {
@@ -175,12 +186,12 @@
 	.rail-link {
 		display: flex;
 		align-items: center;
-		gap: 0.9rem;
-		padding: 0.75rem 0.85rem;
+		gap: 0.95rem;
+		padding: 0.8rem 0.9rem;
 		border-radius: 10px;
 		color: #fff;
 		text-decoration: none;
-		font-size: 1.02rem;
+		font-size: 1.15rem;
 		font-weight: 500;
 		font-family: inherit;
 		transition:
@@ -191,8 +202,8 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 24px;
-		height: 24px;
+		width: 28px;
+		height: 28px;
 		flex: 0 0 auto;
 		opacity: 0.92;
 	}
