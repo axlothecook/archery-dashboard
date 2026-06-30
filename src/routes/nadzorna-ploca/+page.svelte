@@ -8,6 +8,7 @@
 	// Content is mapped to real archery admin areas. The data here is placeholder
 	// until the per-entity editors are wired — flagged so it is not mistaken for
 	// live data.
+	import UrgentIcon from '$lib/components/icons/UrgentIcon.svelte';
 
 	// Placeholder "projects" = the editable content areas of the site. Each links
 	// to its (eventual) editor. lorem text stands in until real summaries exist.
@@ -44,21 +45,45 @@
 		}
 	];
 
-	// Placeholder announcements (stand-in copy).
-	const ANNOUNCEMENTS = [
+	// Things that need the admin's URGENT attention. Placeholder copy + links to
+	// the relevant section; empty = nothing urgent (panel shows a calm message).
+	// Reactive so "Ukloni" (remove) can drop an item from the panel.
+	type Urgent = { id: string; title: string; body: string; href: string };
+	let urgent = $state<Urgent[]>([
 		{
-			title: 'Održavanje sustava',
-			body: 'Planirano kratko održavanje nadzorne ploče. Sadržaj ostaje dostupan posjetiteljima.'
+			id: 'u1',
+			title: 'Neodgovoreni upit',
+			body: 'Upit za sponzorstvo čeka odgovor više od 3 dana.',
+			href: '/nadzorna-ploca/upiti'
 		},
 		{
-			title: 'Novi unosi sadržaja',
-			body: 'Dodani su novi predlošci za vijesti i događaje radi bržeg uređivanja.'
+			id: 'u2',
+			title: 'Nacrt članka istječe',
+			body: 'Nacrt vijesti "Najava sezone" nije objavljen, a događaj je sutra.',
+			href: '/nadzorna-ploca/vijesti'
 		},
 		{
-			title: 'Pravila privatnosti',
-			body: 'Ažurirana pravila privatnosti i kolačića vidljiva su na javnim stranicama.'
+			id: 'u3',
+			title: 'Nedostaje slika sponzora',
+			body: 'Partner "KODRA" nema postavljen logotip na javnoj stranici.',
+			href: '/nadzorna-ploca/sponzori'
+		},
+		{
+			id: 'u4',
+			title: 'Događaj bez razine',
+			body: 'Natjecanje "Oluja 2026" nema dodijeljenu razinu natjecanja.',
+			href: '/nadzorna-ploca/raspored'
+		},
+		{
+			id: 'u5',
+			title: 'Profil bez biografije',
+			body: 'Streličar "Leo Sulik" dodan je bez biografije i statistika.',
+			href: '/nadzorna-ploca/momcad'
 		}
-	];
+	]);
+	function removeUrgent(id: string) {
+		urgent = urgent.filter((u) => u.id !== id);
+	}
 
 	// Placeholder team list — admins / developers with role (the detail we agreed
 	// to show). Avatars are an "A" initial in a lighter-blue circle (no photos).
@@ -86,13 +111,25 @@
 
 	<!-- Side column: announcements + team ("trending") -->
 	<aside class="dash-side">
-		<h2 class="dash-heading">Obavijesti</h2>
-		<div class="panel bg-white">
-			{#each ANNOUNCEMENTS as a, i (a.title)}
-				<div class="announce" class:divided={i > 0}>
-					<h4 class="announce-title">{a.title}</h4>
-					<p class="announce-body">{a.body}</p>
+		<h2 class="dash-heading dash-heading--urgent">
+			Hitno
+			<!-- Icon is the urgent orange when there are items, green ("all clear") when none. -->
+			<span class="urgent-ico"><UrgentIcon size={24} color={urgent.length ? '#ff7800' : '#16a34a'} /></span>
+		</h2>
+		<div class="panel bg-white urgent-panel" class:is-empty={urgent.length === 0}>
+			{#each urgent as u, i (u.id)}
+				<div class="urgent-item" class:divided={i > 0}>
+					<h4 class="urgent-title">{u.title}</h4>
+					<p class="urgent-body">{u.body}</p>
+					<div class="urgent-actions">
+						<a class="urgent-btn urgent-btn--fix" href={u.href}>Riješi sada</a>
+						<button class="urgent-btn urgent-btn--remove" type="button" onclick={() => removeUrgent(u.id)}>
+							Ukloni
+						</button>
+					</div>
 				</div>
+			{:else}
+				<p class="urgent-empty">Nema hitnih stavki za upravljanje.</p>
 			{/each}
 		</div>
 
@@ -114,7 +151,7 @@
 <style>
 	.dash {
 		display: grid;
-		grid-template-columns: 1fr 320px;
+		grid-template-columns: 1fr 420px;
 		gap: 2rem;
 		align-items: start;
 	}
@@ -172,22 +209,117 @@
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
 	}
 
-	.announce.divided {
-		margin-top: 1rem;
-		padding-top: 1rem;
-		border-top: 1px solid #eef1f3; /* seashell */
+	/* ---- Urgent (Hitno) panel ---- */
+	.dash-heading--urgent {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 	}
-	.announce-title {
+	.urgent-ico {
+		display: inline-flex;
+		align-items: center;
+	}
+	/* Items are separated by GAP, not a divider line. Tighter padding than the
+	   default .panel (the item cards carry their own padding). */
+	.urgent-panel {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		padding: 0.75rem;
+	}
+	/* Each urgent item is its own card with a faint warm background. */
+	.urgent-item {
+		padding: 0.9rem 1rem;
+		border-radius: 10px;
+		background: #fff5ec; /* faint warm tint matching the urgent orange */
+	}
+	.urgent-title {
 		margin: 0 0 0.35rem;
 		font-size: 0.98rem;
 		font-weight: 700;
 		color: #102e66;
 	}
-	.announce-body {
+	.urgent-body {
 		margin: 0;
 		font-size: 0.85rem;
 		line-height: 1.5;
 		color: #5b6577;
+	}
+	/* Action buttons, bottom-right, with a clear gap above the text. */
+	.urgent-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 0.5rem;
+		margin-top: 1.1rem;
+	}
+	.urgent-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
+		padding: 0.45rem 0.85rem;
+		border-radius: 8px;
+		font-size: 0.82rem;
+		font-weight: 600;
+		font-family: inherit;
+		cursor: pointer;
+		border: 1px solid transparent;
+		text-decoration: none;
+		transition:
+			background-color 0.15s ease,
+			border-color 0.15s ease;
+	}
+	/* "Riješi sada" — light surface (not blue), leads to the section page. */
+	.urgent-btn--fix {
+		background: #fff;
+		color: #102e66;
+		border-color: #d7dee8;
+	}
+	.urgent-btn--fix:hover {
+		background: #eef1f3;
+	}
+	/* "Ukloni" — secondary, removes the item from the panel. */
+	.urgent-btn--remove {
+		background: transparent;
+		color: #5b6577;
+		border-color: #cbd5e1;
+	}
+	.urgent-btn--remove:hover {
+		background: #eef1f3;
+		color: #102e66;
+	}
+	.urgent-empty {
+		margin: 0;
+		font-size: 0.88rem;
+		color: #5b6577;
+	}
+	/* Scrollable when there are many urgent items; custom navy scrollbar (no OS
+	   arrows — same webkit-only approach as the notifications modal). */
+	.urgent-panel {
+		max-height: 27.6rem; /* shows the first 3 items with symmetric top+bottom padding; 4th+ clipped, scroll to reach (sized to the current placeholder item heights) */
+		overflow-y: auto;
+	}
+	.urgent-panel.is-empty {
+		overflow: visible;
+	}
+	.urgent-panel::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+	.urgent-panel::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.urgent-panel::-webkit-scrollbar-thumb {
+		background: #102e66;
+		border-radius: 4px;
+	}
+	.urgent-panel::-webkit-scrollbar-corner {
+		background: transparent;
+	}
+	.urgent-panel::-webkit-scrollbar-button {
+		display: none;
+		width: 0;
+		height: 0;
 	}
 
 	/* ---- Team rows ("A" in a lighter-blue circle + name + role) ---- */

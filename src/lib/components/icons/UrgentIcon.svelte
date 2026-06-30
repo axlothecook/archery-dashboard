@@ -1,7 +1,8 @@
 <script lang="ts">
-	// Urgent-attention glyph (user-provided, software-update-urgent-svgrepo). Keeps
-	// its own orange fill (#ff7800) by design — urgency colour, NOT currentColor.
-	let { size = 24 }: { size?: number } = $props();
+	// Urgent-attention glyph (user-provided, software-update-urgent-svgrepo).
+	// Defaults to its orange urgency fill (#ff7800); pass `color` to override —
+	// e.g. green when there is nothing urgent ("all clear").
+	let { size = 24, color = '#ff7800' }: { size?: number; color?: string } = $props();
 </script>
 
 <svg
@@ -13,6 +14,6 @@
 >
 	<path
 		d="m 8 0 c -0.257812 0 -0.511719 0.0976562 -0.707031 0.292969 l -1.707031 1.707031 h -2.585938 c -0.550781 0 -1 0.449219 -1 1 v 2.585938 l -1.707031 1.707031 c -0.3906252 0.390625 -0.3906252 1.023437 0 1.414062 l 1.707031 1.707031 v 2.585938 c 0 0.550781 0.449219 1 1 1 h 2.585938 l 1.707031 1.707031 c 0.390625 0.390625 1.023437 0.390625 1.414062 0 l 1.707031 -1.707031 h 2.585938 c 0.550781 0 1 -0.449219 1 -1 v -2.585938 l 1.707031 -1.707031 c 0.390625 -0.390625 0.390625 -1.023437 0 -1.414062 l -1.707031 -1.707031 v -2.585938 c 0 -0.550781 -0.449219 -1 -1 -1 h -2.585938 l -1.707031 -1.707031 c -0.195312 -0.1953128 -0.449219 -0.292969 -0.707031 -0.292969 z m -1 4 h 2 v 5 h -2 z m 1 5.75 c 0.6875 0 1.25 0.5625 1.25 1.25 s -0.5625 1.25 -1.25 1.25 s -1.25 -0.5625 -1.25 -1.25 s 0.5625 -1.25 1.25 -1.25 z m 0 0"
-		fill="#ff7800"
+		fill={color}
 	/>
 </svg>
