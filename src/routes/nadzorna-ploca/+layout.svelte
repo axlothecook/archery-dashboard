@@ -22,6 +22,7 @@
 	import SearchIcon from '$lib/components/icons/SearchIcon.svelte';
 	import BellIcon from '$lib/components/icons/BellIcon.svelte';
 	import CloseIcon from '$lib/components/icons/CloseIcon.svelte';
+	import LogoutIcon from '$lib/components/icons/LogoutIcon.svelte';
 
 	let { data, children } = $props();
 
@@ -101,12 +102,6 @@
 				</a>
 			{/each}
 		</nav>
-
-		<div class="rail-foot">
-			<button class="rail-link rail-logout" onclick={handleLogout} disabled={loggingOut}>
-				<span class="rail-label">{loggingOut ? 'Odjava…' : 'Odjava'}</span>
-			</button>
-		</div>
 	</aside>
 
 	<div class="admin-body">
@@ -133,11 +128,20 @@
 
 			<div class="topbar-right">
 				<button class="topbar-bell" aria-label="Obavijesti">
-					<BellIcon size={22} />
+					<BellIcon size={28} />
 				</button>
 				<div class="topbar-user">
 					<span class="user-avatar bg-blue-dress-light-5">{initials || 'A'}</span>
 					<span class="user-name">{data.admin.workName}</span>
+					<button
+						class="topbar-logout"
+						onclick={handleLogout}
+						disabled={loggingOut}
+						aria-label="Odjava"
+						title="Odjava"
+					>
+						<LogoutIcon size={28} />
+					</button>
 				</div>
 			</div>
 		</header>
@@ -182,6 +186,9 @@
 		flex-direction: column;
 		gap: 0.15rem;
 		flex: 1 0 auto;
+		/* The library applies $base-box-shadow to every <nav> globally
+		   (_navbar.scss); kill it here so the sidebar reads as one solid colour. */
+		box-shadow: none;
 	}
 	.rail-link {
 		display: flex;
@@ -217,22 +224,6 @@
 		background: #fff;
 		color: #187ff5; /* blue-dress — chip reads as "active" against the blue rail */
 		font-weight: 600;
-	}
-	.rail-foot {
-		margin-top: 0.5rem;
-		padding-top: 0.75rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.22);
-	}
-	.rail-logout {
-		width: 100%;
-		border: none;
-		background: transparent;
-		cursor: pointer;
-		text-align: left;
-	}
-	.rail-logout:disabled {
-		opacity: 0.6;
-		cursor: default;
 	}
 
 	/* ---- Body (topbar + content) ---- */
@@ -370,10 +361,31 @@
 		font-weight: 700;
 		font-size: 1.02rem;
 	}
+	/* Logout icon button next to the signed-in user's name. */
+	.topbar-logout {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		margin-left: 0.35rem;
+		padding: 0.35rem;
+		border: none;
+		border-radius: 50%;
+		background: transparent;
+		color: #102e66;
+		cursor: pointer;
+		transition: background-color 0.15s ease;
+	}
+	.topbar-logout:hover:not(:disabled) {
+		background: rgba(16, 46, 102, 0.08);
+	}
+	.topbar-logout:disabled {
+		opacity: 0.6;
+		cursor: default;
+	}
 
 	/* ---- Content ---- */
 	.admin-content {
-		padding: 0 2rem 2rem;
+		padding: 2rem;
 		overflow-y: auto;
 	}
 
@@ -404,14 +416,6 @@
 		.rail-link {
 			padding: 0.6rem 0.7rem;
 		}
-		.rail-logout .rail-label {
-			display: inline;
-		}
-		.rail-foot {
-			margin: 0;
-			padding: 0;
-			border: none;
-		}
 		.admin-topbar {
 			padding: 1rem;
 			gap: 0.8rem;
@@ -420,7 +424,7 @@
 			display: none;
 		}
 		.admin-content {
-			padding: 0 1rem 1.25rem;
+			padding: 1.25rem 1rem;
 		}
 	}
 </style>
