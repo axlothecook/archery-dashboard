@@ -19,7 +19,7 @@ const event = (cookie?: string) =>
 
 beforeEach(() => meMock.mockReset());
 
-describe('/admin guard (+layout.server load)', () => {
+describe('/nadzorna-ploca guard (+layout.server load)', () => {
 	it('redirects to /prijava (303) when not authenticated', async () => {
 		meMock.mockResolvedValue(null);
 		// SvelteKit's redirect() throws a { status, location } object.

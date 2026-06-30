@@ -43,7 +43,7 @@
 		submitting = true;
 		try {
 			await login(email, password);
-			await goto('/admin');
+			await goto('/nadzorna-ploca');
 		} catch (err) {
 			errorMsg =
 				err instanceof AuthError && err.status === 401

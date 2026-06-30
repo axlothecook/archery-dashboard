@@ -14,32 +14,32 @@
 	const PROJECTS = [
 		{
 			title: 'Vijesti',
-			href: '/admin/vijesti',
+			href: '/nadzorna-ploca/vijesti',
 			summary: 'Uredi i objavi članke s naslovnice. Nacrti, objava i slike vijesti.'
 		},
 		{
 			title: 'Raspored',
-			href: '/admin/raspored',
+			href: '/nadzorna-ploca/raspored',
 			summary: 'Natjecanja i događaji: dodaj, uredi ili ukloni termine i razine natjecanja.'
 		},
 		{
 			title: 'Momčad',
-			href: '/admin/momcad',
+			href: '/nadzorna-ploca/momcad',
 			summary: 'Streličari, biografije, statistike, uloge i pojedinačna postignuća.'
 		},
 		{
 			title: 'Postignuća',
-			href: '/admin/postignuca',
+			href: '/nadzorna-ploca/postignuca',
 			summary: 'Klupska postignuća i naslovi: kategorije, brojači i ikone.'
 		},
 		{
 			title: 'Sponzori',
-			href: '/admin/sponzori',
+			href: '/nadzorna-ploca/sponzori',
 			summary: 'Partneri kluba: logotipi, poveznice i redoslijed prikaza.'
 		},
 		{
 			title: 'Upiti',
-			href: '/admin/upiti',
+			href: '/nadzorna-ploca/upiti',
 			summary: 'Pristigli upiti za učlanjenje, sponzorstvo i donacije. Status i odgovori.'
 		}
 	];

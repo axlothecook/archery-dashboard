@@ -5,7 +5,7 @@
 // 'include'`) plus POST/PUT/DELETE with JSON bodies. The session cookie is
 // HttpOnly + SameSite=Lax + Secure (__Host-session) — set by the backend on
 // login; the browser sends it automatically same-origin, and SSR loads forward
-// it explicitly (see the /admin +layout.server.ts).
+// it explicitly (see the /nadzorna-ploca +layout.server.ts).
 //
 // Same base URL as the public client (PUBLIC_API_BASE_URL, runtime env). In prod
 // this is the absolute same-origin `https://<host>/api`; in dev it defaults to
@@ -96,7 +96,7 @@ export function logout(fetch?: typeof globalThis.fetch): Promise<{ ok: true }> {
 }
 
 // GET /auth/me — the current admin, or null if we can't confirm a valid session.
-// Used by the /admin guard. `headers` lets the SSR load forward the browser's
+// Used by the /nadzorna-ploca guard. `headers` lets the SSR load forward the browser's
 // Cookie. Returns null (→ guard redirects to /prijava) for BOTH a 401 (no/expired
 // session) AND a network error / unreachable API (status 0): if we can't verify
 // the user is authenticated, treat them as not — sending them to login is the

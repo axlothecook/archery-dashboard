@@ -1,5 +1,5 @@
 <script lang="ts">
-	// /admin section error boundary. Because it lives UNDER /admin/+layout.svelte,
+	// /nadzorna-ploca section error boundary. Because it lives UNDER /nadzorna-ploca/+layout.svelte,
 	// SvelteKit renders it INSIDE the dashboard shell — the blue rail, top bar and
 	// every OTHER section stay fully usable. So if one editor's load throws (e.g.
 	// the backend hiccups loading articles), only THAT panel shows this fallback;
@@ -28,7 +28,7 @@
 	{/if}
 	<div class="sec-err-actions">
 		<button class="sec-err-btn" onclick={retry}>Pokušaj ponovno</button>
-		<a class="sec-err-link" href="/admin/nadzorna-ploca">Natrag na pregled</a>
+		<a class="sec-err-link" href="/nadzorna-ploca">Natrag na pregled</a>
 	</div>
 </div>
 
