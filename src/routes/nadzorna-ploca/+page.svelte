@@ -85,14 +85,51 @@
 		urgent = urgent.filter((u) => u.id !== id);
 	}
 
-	// Placeholder team list — admins / developers with role (the detail we agreed
-	// to show). Avatars are an "A" initial in a lighter-blue circle (no photos).
-	const TEAM = [
-		{ initial: 'A', name: 'Admin Jedan', role: 'developer' },
-		{ initial: 'A', name: 'Admin Dva', role: 'admin' },
-		{ initial: 'A', name: 'Admin Tri', role: 'admin' },
-		{ initial: 'A', name: 'Admin Četiri', role: 'developer' }
+	// Placeholder team list. Each member's fields (display name, real name, email,
+	// phone) are user-entered at account creation; the avatar is a colour circle
+	// with a role letter (A = admin, D = developer) — TODO on adoption: replace the
+	// avatar with a real image-upload field. Colours: the 2nd member is purple, the
+	// rest follow role (developer = green, admin = blue). Hover reveals the details.
+	type Member = {
+		id: string;
+		displayName: string;
+		realName: string;
+		role: 'admin' | 'developer';
+		email: string;
+		phone: string;
+		/** explicit avatar colour key: 'purple' | 'green' | 'blue' */
+		color: 'purple' | 'green' | 'blue';
+	};
+	const TEAM: Member[] = [
+		{
+			id: 'm1',
+			displayName: 'Joškica Pupić',
+			realName: 'Josip Pupić',
+			role: 'admin',
+			email: 'joskica.pupic@vsk.hr',
+			phone: '+385 91 234 5678',
+			color: 'blue'
+		},
+		{
+			id: 'm2',
+			displayName: 'zekke87',
+			realName: 'Željko Kovač',
+			role: 'admin',
+			email: 'zekke87@vsk.hr',
+			phone: '+385 98 765 4321',
+			color: 'purple'
+		},
+		{
+			id: 'm3',
+			displayName: 'axlothecook',
+			realName: 'Axel Inskyrim',
+			role: 'developer',
+			email: 'axelinskyrim@gmail.com',
+			phone: '+385 95 111 2233',
+			color: 'green'
+		}
 	];
+	const roleLetter = (role: Member['role']) => (role === 'developer' ? 'D' : 'A');
 </script>
 
 <div class="dash">
@@ -135,13 +172,29 @@
 
 		<h2 class="dash-heading mt">Tim</h2>
 		<div class="panel bg-white">
-			{#each TEAM as t (t.name)}
+			{#each TEAM as t (t.id)}
 				<div class="member">
-					<span class="member-avatar bg-blue-dress-light-5">{t.initial}</span>
+					<span class="member-avatar member-avatar--{t.color}">{roleLetter(t.role)}</span>
 					<span class="member-meta">
-						<span class="member-name">{t.name}</span>
+						<span class="member-name">{t.displayName}</span>
 						<span class="member-role">{t.role}</span>
 					</span>
+
+					<!-- Hover/focus details popover. -->
+					<div class="member-card">
+						<span class="member-avatar member-avatar--{t.color} member-card-avatar">{roleLetter(t.role)}</span>
+						<div class="member-card-meta">
+							<span class="member-card-name">{t.displayName}</span>
+							<span class="member-card-real">{t.realName}</span>
+							<span class="member-card-role">{t.role}</span>
+						</div>
+						<dl class="member-card-contact">
+							<dt>Email</dt>
+							<dd>{t.email}</dd>
+							<dt>Telefon</dt>
+							<dd>{t.phone}</dd>
+						</dl>
+					</div>
 				</div>
 			{/each}
 		</div>
@@ -228,10 +281,17 @@
 		padding: 0.75rem;
 	}
 	/* Each urgent item is its own card with a faint warm background. */
+	/* FIXED height per item so the panel's scroll window never shifts with content
+	   length (3 always fit identically). The body is clamped to 2 lines. */
 	.urgent-item {
+		box-sizing: border-box;
+		height: 8.625rem; /* 138px — one consistent row height */
+		flex: 0 0 auto;
 		padding: 0.9rem 1rem;
 		border-radius: 10px;
 		background: #fff5ec; /* faint warm tint matching the urgent orange */
+		display: flex;
+		flex-direction: column;
 	}
 	.urgent-title {
 		margin: 0 0 0.35rem;
@@ -244,13 +304,20 @@
 		font-size: 0.85rem;
 		line-height: 1.5;
 		color: #5b6577;
+		/* Clamp to 2 lines so every item keeps the same fixed height. */
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 	/* Action buttons, bottom-right, with a clear gap above the text. */
 	.urgent-actions {
 		display: flex;
 		justify-content: flex-end;
 		gap: 0.5rem;
-		margin-top: 1.1rem;
+		margin-top: auto; /* pin actions to the bottom of the fixed-height card */
+		padding-top: 0.6rem;
 	}
 	.urgent-btn {
 		display: inline-flex;
@@ -296,7 +363,10 @@
 	/* Scrollable when there are many urgent items; custom navy scrollbar (no OS
 	   arrows — same webkit-only approach as the notifications modal). */
 	.urgent-panel {
-		max-height: 27.6rem; /* shows the first 3 items with symmetric top+bottom padding; 4th+ clipped, scroll to reach (sized to the current placeholder item heights) */
+		/* FIXED: exactly 3 fixed-height rows + symmetric padding. Does NOT shift with
+		   content (= padTop .75 + item 8.625 + gap .75 + item 8.625 + gap .75 +
+		   item 8.625 + padBottom .75 = 28.875rem). */
+		max-height: 28.875rem;
 		overflow-y: auto;
 	}
 	.urgent-panel.is-empty {
@@ -324,9 +394,11 @@
 
 	/* ---- Team rows ("A" in a lighter-blue circle + name + role) ---- */
 	.member {
+		position: relative;
 		display: flex;
 		align-items: center;
 		gap: 0.8rem;
+		outline: none;
 	}
 	.member + .member {
 		margin-top: 1.1rem;
@@ -338,14 +410,102 @@
 		width: 2.6rem;
 		height: 2.6rem;
 		border-radius: 50%;
-		color: #fff;
-		font-weight: 700;
+		font-weight: 800;
+		font-size: 1.2rem; /* bigger letter */
 		flex: 0 0 auto;
+	}
+	/* Each avatar: a light tinted circle with the role letter in a DARKER shade of
+	   the same hue. */
+	.member-avatar--blue {
+		background: #cfe0fb; /* light blue-dress */
+		color: #1657b8; /* darker blue */
+	}
+	.member-avatar--purple {
+		background: #e7defb; /* light purple */
+		color: #6b3fc0; /* darker purple */
+	}
+	.member-avatar--green {
+		background: #d4f3df; /* light green */
+		color: #1c8a4b; /* darker green */
 	}
 	.member-meta {
 		display: flex;
 		flex-direction: column;
 		line-height: 1.3;
+	}
+
+	/* ---- Hover/focus details card ---- */
+	.member-card {
+		position: absolute;
+		top: 50%;
+		right: calc(100% + 0.75rem); /* opens to the LEFT of the row (panel is at the screen edge) */
+		transform: translateY(-50%) scale(0.96);
+		transform-origin: right center;
+		width: 17rem;
+		padding: 1rem 1.1rem;
+		background: #fff;
+		border-radius: 12px;
+		box-shadow: 0 8px 30px rgba(16, 46, 102, 0.18);
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transition:
+			opacity 0.15s ease,
+			transform 0.15s ease;
+		z-index: 40;
+	}
+	.member:hover .member-card,
+	.member:focus-visible .member-card,
+	.member:focus-within .member-card {
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(-50%) scale(1);
+	}
+	.member-card-avatar {
+		font-size: 1.4rem;
+		width: 3rem;
+		height: 3rem;
+		margin-bottom: 0.6rem;
+	}
+	.member-card-meta {
+		display: flex;
+		flex-direction: column;
+		line-height: 1.35;
+		margin-bottom: 0.75rem;
+	}
+	.member-card-name {
+		font-weight: 700;
+		font-size: 1.05rem;
+		color: #102e66;
+	}
+	.member-card-real {
+		font-size: 0.88rem;
+		color: #5b6577;
+	}
+	.member-card-role {
+		font-size: 0.78rem;
+		color: #9aa3b2;
+		text-transform: capitalize;
+	}
+	.member-card-contact {
+		margin: 0;
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 0.25rem 0.75rem;
+		padding-top: 0.6rem;
+		border-top: 1px solid #eef1f3;
+	}
+	.member-card-contact dt {
+		margin: 0;
+		font-size: 0.78rem;
+		font-weight: 600;
+		color: #9aa3b2;
+	}
+	.member-card-contact dd {
+		margin: 0;
+		font-size: 0.85rem;
+		color: #102e66;
+		word-break: break-word;
 	}
 	.member-name {
 		font-weight: 700;

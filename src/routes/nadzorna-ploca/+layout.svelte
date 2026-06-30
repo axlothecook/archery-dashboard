@@ -321,7 +321,7 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 1.5rem;
-		padding: 0.7rem 2rem;
+		padding: 0.7rem 3rem;
 		background: #ffffff;
 	}
 
@@ -596,8 +596,9 @@
 
 	/* ---- Content ---- */
 	.admin-content {
-		padding: 2rem;
-		overflow-y: auto;
+		flex: 1 0 auto; /* fill the body height so the bg covers the whole content area */
+		padding: 2rem 3rem;
+		background: #e2e8f0;
 	}
 
 	/* ---- Responsive: collapse the rail to a top strip on small screens ---- */
