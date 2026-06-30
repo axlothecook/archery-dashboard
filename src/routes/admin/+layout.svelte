@@ -17,7 +17,7 @@
 	import PersonIcon from '$lib/components/icons/PersonIcon.svelte';
 	import TrophyIcon from '$lib/components/icons/TrophyIcon.svelte';
 	import HandshakeIcon from '$lib/components/icons/HandshakeIcon.svelte';
-	import MailIcon from '$lib/components/icons/MailIcon.svelte';
+	import InquiryIcon from '$lib/components/icons/InquiryIcon.svelte';
 	import SearchIcon from '$lib/components/icons/SearchIcon.svelte';
 	import BellIcon from '$lib/components/icons/BellIcon.svelte';
 
@@ -32,7 +32,7 @@
 		{ label: 'Momčad', href: '/admin/momcad', icon: PersonIcon },
 		{ label: 'Postignuća', href: '/admin/postignuca', icon: TrophyIcon },
 		{ label: 'Sponzori', href: '/admin/sponzori', icon: HandshakeIcon },
-		{ label: 'Upiti', href: '/admin/upiti', icon: MailIcon }
+		{ label: 'Upiti', href: '/admin/upiti', icon: InquiryIcon }
 	];
 
 	// Active when the current path equals the item (exact) or is nested under it.
@@ -173,9 +173,15 @@
 	}
 	.rail-icon {
 		display: inline-flex;
-		width: 22px;
+		align-items: center;
 		justify-content: center;
+		width: 24px;
+		height: 24px;
+		flex: 0 0 auto;
 		opacity: 0.92;
+	}
+	.rail-icon :global(svg) {
+		display: block;
 	}
 	.rail-link:hover {
 		background: rgba(255, 255, 255, 0.16);

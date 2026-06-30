@@ -8,8 +8,6 @@
 	// Content is mapped to real archery admin areas. The data here is placeholder
 	// until the per-entity editors are wired — flagged so it is not mistaken for
 	// live data.
-	import StarIcon from '$lib/components/icons/StarIcon.svelte';
-	import EyeIcon from '$lib/components/icons/EyeIcon.svelte';
 
 	// Placeholder "projects" = the editable content areas of the site. Each links
 	// to its (eventual) editor. lorem text stands in until real summaries exist.
@@ -78,18 +76,10 @@
 		<h2 class="dash-heading">Sadržaj</h2>
 		<div class="cards">
 			{#each PROJECTS as p (p.href)}
-				<article class="card bg-white">
+				<a class="card bg-white" href={p.href}>
 					<h3 class="card-title">{p.title}</h3>
 					<p class="card-summary">{p.summary}</p>
-					<div class="card-actions">
-						<a class="card-action" href={p.href} aria-label={`Otvori: ${p.title}`}>
-							<StarIcon size={20} />
-						</a>
-						<a class="card-action" href={p.href} aria-label={`Pregledaj: ${p.title}`}>
-							<EyeIcon size={20} />
-						</a>
-					</div>
-				</article>
+				</a>
 			{/each}
 		</div>
 	</section>
@@ -148,10 +138,18 @@
 	.card {
 		display: flex;
 		flex-direction: column;
-		min-height: 11rem;
+		min-height: 8rem;
 		padding: 1.4rem 1.5rem;
 		border-radius: 14px;
+		text-decoration: none;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
+		transition:
+			transform 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+	.card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 24px rgba(16, 46, 102, 0.1);
 	}
 	.card-title {
 		margin: 0 0 0.5rem;
@@ -165,26 +163,6 @@
 		line-height: 1.5;
 		color: #5b6577;
 		flex: 1 1 auto;
-	}
-	.card-actions {
-		display: flex;
-		justify-content: flex-end;
-		gap: 1rem;
-		margin-top: 1.2rem;
-	}
-	.card-action {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		color: #102e66;
-		opacity: 0.7;
-		transition:
-			opacity 0.15s ease,
-			color 0.15s ease;
-	}
-	.card-action:hover {
-		opacity: 1;
-		color: #187ff5; /* blue-dress */
 	}
 
 	/* ---- Side panels ---- */
