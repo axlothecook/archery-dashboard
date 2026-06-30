@@ -20,8 +20,17 @@
 	import InquiryIcon from '$lib/components/icons/InquiryIcon.svelte';
 	import SearchIcon from '$lib/components/icons/SearchIcon.svelte';
 	import BellIcon from '$lib/components/icons/BellIcon.svelte';
+	import CloseIcon from '$lib/components/icons/CloseIcon.svelte';
 
 	let { data, children } = $props();
+
+	// Top-bar search query; the × clear button shows only when there's text.
+	let searchQuery = $state('');
+	let searchInput = $state<HTMLInputElement | null>(null);
+	function clearSearch() {
+		searchQuery = '';
+		searchInput?.focus();
+	}
 
 	// Dashboard sections (built incrementally; hrefs may 404 until their editor
 	// exists). Each pairs a real admin area with a reusable icon component.
@@ -100,7 +109,14 @@
 					type="search"
 					placeholder="Pretraži…"
 					aria-label="Pretraži"
+					bind:value={searchQuery}
+					bind:this={searchInput}
 				/>
+				{#if searchQuery}
+					<button class="search-clear" type="button" aria-label="Očisti pretragu" onclick={clearSearch}>
+						<CloseIcon size={24} />
+					</button>
+				{/if}
 				<button class="search-btn" type="submit" aria-label="Pretraži">
 					<SearchIcon size={28} />
 				</button>
@@ -252,10 +268,37 @@
 		font-family: inherit;
 		color: #102e66;
 		min-width: 0;
-		padding-right: 0.9rem;
+		padding-right: 1.5rem;
 	}
 	.search-input::placeholder {
 		color: #9aa3b2;
+	}
+	/* Suppress the browser's native type="search" clear control so only our custom
+	   × button shows (otherwise both appear). */
+	.search-input::-webkit-search-cancel-button {
+		-webkit-appearance: none;
+		appearance: none;
+	}
+	/* Clear (×) button: shows only when there is text. Same ink colour as the
+	   search icon; a gap separates it from both the input and the search button. */
+	.search-clear {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		margin: 0 0.6rem 0 0.2rem;
+		align-self: center;
+		border: none;
+		border-radius: 50%;
+		background: transparent;
+		color: #102e66; /* same colour as the search SVG */
+		cursor: pointer;
+		flex: 0 0 auto;
+		transition: background-color 0.15s ease;
+	}
+	.search-clear:hover {
+		background: rgba(16, 46, 102, 0.1);
 	}
 	/* Distinct button: a bit DARKER than the input bg, icon centred, slightly wider
 	   so it reads as a YT-style search button. */
