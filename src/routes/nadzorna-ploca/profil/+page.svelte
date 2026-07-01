@@ -2,16 +2,22 @@
 	// Admin profile settings. Opened from the top-bar user chip. Shows the signed-in
 	// admin's info as editable inputs (display name, real name, email, phone) plus a
 	// change-password section; role is read-only (admins don't self-change role).
-	// Placeholder data + no backend save yet — wire to PATCH /profile on adoption.
-	import { currentAdmin } from '$lib/currentAdmin';
+	// Placeholder data lives in the shared reactive `teamStore`; saving pushes edits
+	// there so they show everywhere (Tim list, top-bar chip). No backend save yet —
+	// wire to PATCH /profile on adoption.
+	import { getCurrentAdmin, updateCurrentAdmin } from '$lib/teamStore.svelte';
 	import { showToast } from '$lib/toasts';
 	import Avatar from '$lib/components/Avatar.svelte';
 
-	// Local editable copy of the profile (seeded from the placeholder).
-	let displayName = $state(currentAdmin.displayName);
-	let realName = $state(currentAdmin.realName);
-	let email = $state(currentAdmin.email);
-	let phone = $state(currentAdmin.phone);
+	// Live current-admin record from the shared store.
+	const currentAdmin = $derived(getCurrentAdmin());
+
+	// Local editable copies, seeded from the current admin. Committed to the shared
+	// store on "Spremi promjene" (so the Tim row + chip update on save, not per key).
+	let displayName = $state(getCurrentAdmin().displayName);
+	let realName = $state(getCurrentAdmin().realName);
+	let email = $state(getCurrentAdmin().email);
+	let phone = $state(getCurrentAdmin().phone);
 
 	let currentPassword = $state('');
 	let newPassword = $state('');
@@ -19,7 +25,9 @@
 
 	function saveProfile(e: SubmitEvent) {
 		e.preventDefault();
-		// TODO(adoption): PATCH /profile with the changed fields.
+		// Push edits into the shared store → reflected in the Tim list + top-bar chip.
+		// TODO(adoption): also PATCH /profile to persist server-side.
+		updateCurrentAdmin({ displayName, realName, email, phone });
 		showToast('success', 'Promjene su spremljene.');
 	}
 	function changePassword(e: SubmitEvent) {
@@ -37,7 +45,7 @@
 <svelte:head><title>Profil · VSK</title></svelte:head>
 
 <section class="profile">
-	<header class="profile-head">
+	<header class="profile-head display-f align-items-center gap-1">
 		<Avatar color={currentAdmin.color} role={currentAdmin.role} size={4} fontSize={2} />
 		<div class="profile-id">
 			<h2 class="profile-name">{displayName}</h2>
@@ -45,7 +53,7 @@
 		</div>
 	</header>
 
-	<div class="profile-grid">
+	<div class="profile-grid grid-cols-2 gap-1-5 align-items-start">
 		<!-- Account details -->
 		<form class="card bg-white" onsubmit={saveProfile}>
 			<h3 class="card-title">Podaci računa</h3>
@@ -71,8 +79,8 @@
 				<input class="field-input" type="text" value={currentAdmin.role} disabled />
 			</label>
 
-			<div class="card-actions">
-				<button class="btn btn--primary" type="submit">Spremi promjene</button>
+			<div class="card-actions display-f justify-content-flex-end">
+				<button class="btn btn--primary cursor-pointer" type="submit">Spremi promjene</button>
 			</div>
 		</form>
 
@@ -93,8 +101,8 @@
 				<input class="field-input" type="password" bind:value={confirmPassword} autocomplete="new-password" />
 			</label>
 
-			<div class="card-actions">
-				<button class="btn btn--primary" type="submit">Promijeni lozinku</button>
+			<div class="card-actions display-f justify-content-flex-end">
+				<button class="btn btn--primary cursor-pointer" type="submit">Promijeni lozinku</button>
 			</div>
 		</form>
 	</div>
@@ -105,9 +113,7 @@
 		max-width: 56rem;
 	}
 	.profile-head {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
+		/* layout via utility classes (display-f align-items-center gap-1) */
 		margin-bottom: 1.75rem;
 	}
 	.profile-name {
@@ -124,11 +130,10 @@
 		text-transform: capitalize;
 	}
 
+	/* grid via utility classes (grid-cols-2 gap-1-5 align-items-start); the
+	   single-column stack below the breakpoint stays scoped. */
 	.profile-grid {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 1.5rem;
-		align-items: start;
 	}
 	.card {
 		border-radius: 14px;
@@ -176,8 +181,7 @@
 	}
 
 	.card-actions {
-		display: flex;
-		justify-content: flex-end;
+		/* layout via utility classes (display-f justify-content-flex-end) */
 		margin-top: 0.5rem;
 	}
 	.btn {
@@ -186,7 +190,6 @@
 		font-size: 0.92rem;
 		font-weight: 600;
 		font-family: inherit;
-		cursor: pointer;
 		border: 1px solid transparent;
 	}
 	.btn--primary {
