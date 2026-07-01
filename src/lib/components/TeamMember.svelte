@@ -8,7 +8,7 @@
 	// component rather than inline markup.
 	import { scale } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-	import type { Member } from '$lib/team';
+	import { roleLabel, type Member } from '$lib/team';
 	import CloseIcon from '$lib/components/icons/CloseIcon.svelte';
 	import Avatar from '$lib/components/Avatar.svelte';
 
@@ -42,7 +42,7 @@
 		<Avatar color={member.color} role={member.role} />
 		<span class="member-meta column-nowrap">
 			<span class="member-name">{member.displayName}</span>
-			<span class="member-role">{member.role}</span>
+			<span class="member-role">{roleLabel(member.role)}</span>
 		</span>
 	</button>
 
@@ -56,7 +56,7 @@
 				<Avatar color={member.color} role={member.role} size={2.75} fontSize={1.45} />
 				<div class="member-card-id column-nowrap">
 					<span class="member-card-name">{member.displayName}</span>
-					<span class="member-card-role">{member.role}</span>
+					<span class="member-card-role">{roleLabel(member.role)}</span>
 				</div>
 			</div>
 			<dl class="member-card-contact column-nowrap gap-1-5">
@@ -165,7 +165,6 @@
 	.member-card-role {
 		font-size: 0.88rem;
 		color: #9aa3b2;
-		text-transform: capitalize;
 	}
 	/* contact list layout via utilities (column-nowrap gap-1-5). */
 	.member-card-contact {

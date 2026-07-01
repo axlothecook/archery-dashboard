@@ -13,5 +13,9 @@ export type Member = {
 	color: 'purple' | 'green' | 'blue';
 };
 
-// Role letter shown inside the avatar circle (A = admin, D = developer).
-export const roleLetter = (role: Member['role']) => (role === 'developer' ? 'D' : 'A');
+// Role letter shown inside the avatar circle (A = administrator, P = programer).
+export const roleLetter = (role: Member['role']) => (role === 'developer' ? 'P' : 'A');
+
+// Croatian display label for a role (the stored value stays 'admin'/'developer').
+export const roleLabel = (role: Member['role']) =>
+	role === 'developer' ? 'razvojni programer' : 'administrator';

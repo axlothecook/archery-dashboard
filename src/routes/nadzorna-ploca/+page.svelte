@@ -11,8 +11,64 @@
 	import UrgentIcon from '$lib/components/icons/UrgentIcon.svelte';
 	import TeamMember from '$lib/components/TeamMember.svelte';
 	import UrgentItem from '$lib/components/UrgentItem.svelte';
-	import { team } from '$lib/teamStore.svelte';
+	import { team, getCurrentAdmin } from '$lib/teamStore.svelte';
 	import type { Urgent } from '$lib/urgent';
+
+	// ── Greeting header (item 16) ────────────────────────────────────────────────
+	// Croatian date line + time-of-day greeting + the signed-in admin's name, mirrored
+	// from the reference dashboard. Computed once on mount from the current time.
+	const now = new Date();
+	const HR_DAYS = [
+		'Nedjelja',
+		'Ponedjeljak',
+		'Utorak',
+		'Srijeda',
+		'Četvrtak',
+		'Petak',
+		'Subota'
+	];
+	const HR_MONTHS = [
+		'siječnja',
+		'veljače',
+		'ožujka',
+		'travnja',
+		'svibnja',
+		'lipnja',
+		'srpnja',
+		'kolovoza',
+		'rujna',
+		'listopada',
+		'studenoga',
+		'prosinca'
+	];
+	// Month shown Capitalized (user preference). e.g. "Četvrtak, 2. Srpnja 2026."
+	const monthName = HR_MONTHS[now.getMonth()];
+	const monthCap = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+	const dateLine = `${HR_DAYS[now.getDay()]}, ${now.getDate()}. ${monthCap} ${now.getFullYear()}.`;
+
+	// Time-of-day greeting. Bands follow Unicode CLDR's Croatian day periods
+	// (authoritative): jutro 5–11, dan 12–17, večer 18–21, noć 22–4. `getHours()`
+	// is the device's LOCAL hour (0–23). Exclusive upper edges → no gaps (the old
+	// `<12 / 18+` logic left 17:00–18:00 unassigned). Each band randomly picks one
+	// of two gender-neutral phrases (Croatian gender-agrees on participles and the
+	// admin's gender isn't stored, so all options avoid gendered forms). Croatian
+	// has NO native *hello* for the small hours ("Laku noć" is a farewell only, per
+	// HJP), so the night band pairs the safe evening hello with a playful "Noćna
+	// sova?" (= night owl?). `{name}` is the admin's display name.
+	const adminName = $derived(getCurrentAdmin().displayName);
+	const h = now.getHours();
+	function greetingPool(name: string): string[] {
+		if (h >= 5 && h < 12) return [`Dobro jutro, ${name}`, `Vrijeme za kavu, ${name}?`];
+		if (h >= 12 && h < 18) return [`Dobar dan, ${name}`, `Drago nam je vidjeti te, ${name}`];
+		if (h >= 18 && h < 22) return [`Dobra večer, ${name}`, `Kakav je bio dan, ${name}?`];
+		return [`Dobra večer, ${name}`, `Noćna sova, ${name}?`]; // night (22–04)
+	}
+	// Pick one at load. Math.random is fine at runtime (this is app code, not a
+	// resumable workflow script).
+	const greeting = $derived.by(() => {
+		const pool = greetingPool(adminName);
+		return pool[Math.floor(Math.random() * pool.length)];
+	});
 
 	// Placeholder "projects" = the editable content areas of the site. Each links
 	// to its (eventual) editor. lorem text stands in until real summaries exist.
@@ -94,9 +150,13 @@
 </script>
 
 <div class="dash grid gap-2 align-items-start">
-	<!-- Main column: the project/content cards -->
+	<!-- Main column: greeting header (item 16) + the project/content cards -->
 	<section class="dash-main">
-		<h2 class="dash-heading">Sadržaj</h2>
+		<!-- Greeting: date + time-of-day greeting + admin name. -->
+		<header class="greeting">
+			<p class="greeting-date text-jet-grey fz-1-1">{dateLine}</p>
+			<h1 class="greeting-title text-deep-sapphire fz-2-5">{greeting}</h1>
+		</header>
 		<div class="cards grid grid-cols-2 gap-1-5">
 			{#each PROJECTS as p (p.href)}
 				<a class="card bg-white column-nowrap" href={p.href}>
@@ -132,14 +192,34 @@
 </div>
 
 <style>
+	/* Greeting header (item 16): colour + font-size via utilities; spacing scoped. */
+	/* Top gap = the content area's 2rem top padding + this small margin (a touch more
+	   breathing room below the topbar); bottom gap = 2rem down to the cards. */
+	.greeting {
+		margin-top: 0.6rem;
+		margin-bottom: 2rem;
+	}
+	.greeting-date {
+		margin: 0 0 0.45rem;
+	}
+	.greeting-title {
+		margin: 0;
+		font-weight: 700;
+		line-height: 1.2;
+	}
+
 	/* Layout (grid gap-2 align-items-start) via utility classes; only the
 	   asymmetric fractional track (content ~75% / Hitno-Tim ~25%) stays scoped. */
 	.dash {
 		grid-template-columns: 3fr 1fr;
 	}
-	/* Extra breathing room between the right (Hitno/Tim) column and the screen edge.
-	   Works now that the track is fractional (it absorbs the margin). */
+	/* Extra breathing room between the right (Hitno/Tim) column and the screen edge
+	   (the fractional track absorbs the margin). The top margin drops "Hitno" down so
+	   it lines up with the greeting TITLE line (past the date), not the date. */
 	.dash-side {
+		/* Greeting's own margin-top (0.6rem) + the date line's height incl. its
+		   margin-bottom (1.55rem), so "Hitno" stays aligned with the greeting TITLE. */
+		margin-top: 2.15rem;
 		margin-right: 1.5rem;
 	}
 
