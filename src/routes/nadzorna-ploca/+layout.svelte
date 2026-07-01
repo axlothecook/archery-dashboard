@@ -12,6 +12,7 @@
 	import { scale } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { logout } from '$lib/auth';
+	import { currentAdmin } from '$lib/currentAdmin';
 
 	import GridIcon from '$lib/components/icons/GridIcon.svelte';
 	import HomeIcon from '$lib/components/icons/HomeIcon.svelte';
@@ -25,6 +26,11 @@
 	import BellIcon from '$lib/components/icons/BellIcon.svelte';
 	import CloseIcon from '$lib/components/icons/CloseIcon.svelte';
 	import LogoutIcon from '$lib/components/icons/LogoutIcon.svelte';
+	import NoticeItem from '$lib/components/NoticeItem.svelte';
+	import RailLink from '$lib/components/RailLink.svelte';
+	import Toast from '$lib/components/Toast.svelte';
+	import Avatar from '$lib/components/Avatar.svelte';
+	import type { Notice } from '$lib/notices';
 
 	let { data, children } = $props();
 
@@ -44,7 +50,6 @@
 	// a scrollable list (gap between items; max ~6 visible, scroll on overflow).
 	// Each notice links to the section it relates to (e.g. a Raspored notice opens
 	// the Raspored page) — so items are clickable.
-	type Notice = { id: string; title: string; detail: string; when: string; href: string };
 	const notifications: Notice[] = [
 		{ id: 'n1', title: 'Nova vijest objavljena', detail: 'Admin Dva objavio je članak "Pobjeda na Varaždin Openu".', when: 'prije 2 h', href: '/nadzorna-ploca/vijesti' },
 		{ id: 'n2', title: 'Novi događaj u rasporedu', detail: 'Dodano natjecanje "CEC 2. kolo" (4. srpnja).', when: 'prije 5 h', href: '/nadzorna-ploca/raspored' },
@@ -110,15 +115,6 @@
 		await goto('/prijava');
 	}
 
-	// Initials for the user chip (first letters of the work name, max 2).
-	const initials = $derived(
-		(data.admin.workName ?? '')
-			.split(/\s+/)
-			.filter(Boolean)
-			.slice(0, 2)
-			.map((w: string) => w[0]?.toUpperCase() ?? '')
-			.join('')
-	);
 </script>
 
 <svelte:window onclick={onWindowClick} onkeydown={onWindowKey} />
@@ -139,12 +135,7 @@
 
 		<nav class="rail-nav" aria-label="Glavni izbornik">
 			{#each NAV as item (item.href)}
-				<a href={item.href} class="rail-link" class:active={isActive(item.href)}>
-					<span class="rail-icon">
-						<item.icon size={26} />
-					</span>
-					<span class="rail-label">{item.label}</span>
-				</a>
+				<RailLink href={item.href} label={item.label} icon={item.icon} active={isActive(item.href)} />
 			{/each}
 		</nav>
 	</aside>
@@ -198,11 +189,7 @@
 							</div>
 							<div class="notif-list">
 								{#each notifications as n (n.id)}
-									<a class="notif-item" href={n.href} onclick={() => (noticesOpen = false)}>
-										<p class="notif-item-title">{n.title}</p>
-										<p class="notif-item-detail">{n.detail}</p>
-										<span class="notif-item-when">{n.when}</span>
-									</a>
+									<NoticeItem notice={n} onNavigate={() => (noticesOpen = false)} />
 								{:else}
 									<p class="notif-empty">Nema novih obavijesti.</p>
 								{/each}
@@ -211,8 +198,11 @@
 					{/if}
 				</div>
 				<div class="topbar-user">
-					<span class="user-avatar bg-blue-dress-light-5">{initials || 'A'}</span>
-					<span class="user-name">{data.admin.workName}</span>
+					<!-- Clicking the user chip opens the admin profile settings page. -->
+					<a class="user-chip" href="/nadzorna-ploca/profil" title="Profil i postavke">
+						<Avatar color={currentAdmin.color} role={currentAdmin.role} size={2.5} />
+						<span class="user-name">{currentAdmin.displayName}</span>
+					</a>
 					<button
 						class="topbar-logout"
 						onclick={handleLogout}
@@ -227,6 +217,7 @@
 		</header>
 
 		<main class="admin-content">
+			<Toast />
 			{@render children()}
 		</main>
 	</div>
@@ -270,42 +261,6 @@
 		   (_navbar.scss); kill it here so the sidebar reads as one solid colour. */
 		box-shadow: none;
 	}
-	.rail-link {
-		display: flex;
-		align-items: center;
-		gap: 0.95rem;
-		padding: 0.8rem 0.9rem;
-		border-radius: 10px;
-		color: #fff;
-		text-decoration: none;
-		font-size: 1.15rem;
-		font-weight: 500;
-		font-family: inherit;
-		transition:
-			background-color 0.15s ease,
-			color 0.15s ease;
-	}
-	.rail-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 28px;
-		height: 28px;
-		flex: 0 0 auto;
-		opacity: 0.92;
-	}
-	.rail-icon :global(svg) {
-		display: block;
-	}
-	.rail-link:hover {
-		background: rgba(255, 255, 255, 0.16);
-	}
-	.rail-link.active {
-		background: #fff;
-		color: #187ff5; /* blue-dress — chip reads as "active" against the blue rail */
-		font-weight: 600;
-	}
-
 	/* ---- Body (topbar + content) ---- */
 	.admin-body {
 		display: flex;
@@ -514,35 +469,6 @@
 		width: 0;
 		height: 0;
 	}
-	/* Each item links to its section page — clickable, pointer cursor, darker on hover. */
-	.notif-item {
-		display: block;
-		padding: 0.9rem 1rem;
-		border-radius: 10px;
-		background: #f6f8fa;
-		text-decoration: none;
-		cursor: pointer;
-		transition: background-color 0.15s ease;
-	}
-	.notif-item:hover {
-		background: #e8edf2; /* slightly darker than #f6f8fa */
-	}
-	.notif-item-title {
-		margin: 0 0 0.2rem;
-		font-size: 0.92rem;
-		font-weight: 700;
-		color: #102e66;
-	}
-	.notif-item-detail {
-		margin: 0 0 0.3rem;
-		font-size: 0.82rem;
-		line-height: 1.45;
-		color: #5b6577;
-	}
-	.notif-item-when {
-		font-size: 0.74rem;
-		color: #9aa3b2;
-	}
 	.notif-empty {
 		margin: 0;
 		padding: 1rem 1.1rem 1.25rem;
@@ -557,20 +483,20 @@
 		align-items: center;
 		gap: 0.65rem;
 	}
-	.user-avatar {
-		display: inline-flex;
+	/* Clickable user chip -> profile settings. */
+	.user-chip {
+		display: flex;
 		align-items: center;
-		justify-content: center;
-		width: 2.5rem;
-		height: 2.5rem;
-		border-radius: 50%;
-		color: #fff;
-		font-weight: 700;
-		font-size: 0.95rem;
+		gap: 0.55rem;
+		padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+		border-radius: 999px;
+		text-decoration: none;
+		color: inherit;
 	}
 	.user-name {
 		font-weight: 700;
 		font-size: 1.02rem;
+		color: #102e66;
 	}
 	/* Logout icon button next to the signed-in user's name. */
 	.topbar-logout {
@@ -596,8 +522,9 @@
 
 	/* ---- Content ---- */
 	.admin-content {
+		position: relative; /* anchor for the top-left toast stack */
 		flex: 1 0 auto; /* fill the body height so the bg covers the whole content area */
-		padding: 2rem 3rem;
+		padding: 2rem 9.5rem 2rem 3rem; /* wider right gap to the screen edge */
 		background: #e2e8f0;
 	}
 
@@ -621,12 +548,6 @@
 			flex-direction: row;
 			flex-wrap: wrap;
 			flex: 1 1 100%;
-		}
-		.rail-label {
-			display: none;
-		}
-		.rail-link {
-			padding: 0.6rem 0.7rem;
 		}
 		.admin-topbar {
 			padding: 1rem;
