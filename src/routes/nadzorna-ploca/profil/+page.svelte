@@ -6,6 +6,7 @@
 	// there so they show everywhere (Tim list, top-bar chip). No backend save yet —
 	// wire to PATCH /profile on adoption.
 	import { getCurrentAdmin, updateCurrentAdmin } from '$lib/teamStore.svelte';
+	import { roleLabel } from '$lib/team';
 	import { showToast } from '$lib/toasts';
 	import Avatar from '$lib/components/Avatar.svelte';
 
@@ -49,7 +50,7 @@
 		<Avatar color={currentAdmin.color} role={currentAdmin.role} size={4} fontSize={2} />
 		<div class="profile-id">
 			<h2 class="profile-name">{displayName}</h2>
-			<p class="profile-sub">{realName} · <span class="profile-role">{currentAdmin.role}</span></p>
+			<p class="profile-sub">{realName} · <span class="profile-role">{roleLabel(currentAdmin.role)}</span></p>
 		</div>
 	</header>
 
@@ -76,7 +77,7 @@
 			</label>
 			<label class="field">
 				<span class="field-label">Uloga</span>
-				<input class="field-input" type="text" value={currentAdmin.role} disabled />
+				<input class="field-input" type="text" value={roleLabel(currentAdmin.role)} disabled />
 			</label>
 
 			<div class="card-actions display-f justify-content-flex-end">
@@ -125,9 +126,6 @@
 	.profile-sub {
 		margin: 0.2rem 0 0;
 		color: #5b6577;
-	}
-	.profile-role {
-		text-transform: capitalize;
 	}
 
 	/* grid via utility classes (grid-cols-2 gap-1-5 align-items-start); the
