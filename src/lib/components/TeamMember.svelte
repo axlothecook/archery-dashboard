@@ -37,10 +37,10 @@
 
 <svelte:window onclick={onWindowClick} onkeydown={onWindowKey} />
 
-<div class="member" bind:this={root}>
-	<button class="member-trigger" class:selected={open} type="button" aria-expanded={open} onclick={toggle}>
+<div class="member position-relative" bind:this={root}>
+	<button class="member-trigger cursor-pointer" class:selected={open} type="button" aria-expanded={open} onclick={toggle}>
 		<Avatar color={member.color} role={member.role} />
-		<span class="member-meta">
+		<span class="member-meta column-nowrap">
 			<span class="member-name">{member.displayName}</span>
 			<span class="member-role">{member.role}</span>
 		</span>
@@ -48,34 +48,31 @@
 
 	{#if open}
 		<!-- Click-controlled details popover (opens upward); persists until dismissed. -->
-		<div class="member-card" role="dialog" aria-label={member.displayName} transition:scale={cardAnim}>
-			<button class="member-card-close" type="button" aria-label="Zatvori" onclick={close}>
+		<div class="member-card br-md" role="dialog" aria-label={member.displayName} transition:scale={cardAnim}>
+			<button class="member-card-close br-full cursor-pointer" type="button" aria-label="Zatvori" onclick={close}>
 				<CloseIcon size={22} />
 			</button>
-			<div class="member-card-head">
+			<div class="member-card-head display-f align-items-center">
 				<Avatar color={member.color} role={member.role} size={2.75} fontSize={1.45} />
-				<div class="member-card-id">
+				<div class="member-card-id column-nowrap">
 					<span class="member-card-name">{member.displayName}</span>
 					<span class="member-card-role">{member.role}</span>
 				</div>
 			</div>
-			<dl class="member-card-contact">
-				<div class="member-card-row"><dt>Puno ime:</dt> <dd>{member.realName}</dd></div>
-				<div class="member-card-row"><dt>Telefon:</dt> <dd>{member.phone}</dd></div>
-				<div class="member-card-row"><dt>Email:</dt> <dd>{member.email}</dd></div>
+			<dl class="member-card-contact column-nowrap gap-1-5">
+				<div class="member-card-row display-f gap-0-4"><dt>Puno ime:</dt> <dd>{member.realName}</dd></div>
+				<div class="member-card-row display-f gap-0-4"><dt>Telefon:</dt> <dd>{member.phone}</dd></div>
+				<div class="member-card-row display-f gap-0-4"><dt>Email:</dt> <dd>{member.email}</dd></div>
 			</dl>
 		</div>
 	{/if}
 </div>
 
 <style>
-	/* ---- Team row ("A" in a lighter-blue circle + name + role) ---- */
-	.member {
-		position: relative;
-	}
-	/* The whole row is a button (click to open the details popover). The small
-	   padding + negative margin let the selected/hover highlight have breathing
-	   room without shifting the row. */
+	/* ---- Team row ("A" in a lighter-blue circle + name + role) ----
+	   .member uses .position-relative (utility). The whole row is a button (click
+	   to open the popover); the small padding + negative margin let the selected/
+	   hover highlight breathe without shifting the row. Radius via .br-sm. */
 	.member-trigger {
 		display: flex;
 		align-items: center;
@@ -88,7 +85,6 @@
 		border-radius: 10px;
 		font-family: inherit;
 		text-align: left;
-		cursor: pointer;
 		transition: background-color 0.15s ease;
 	}
 	.member-trigger:hover {
@@ -103,8 +99,6 @@
 		outline-offset: 2px;
 	}
 	.member-meta {
-		display: flex;
-		flex-direction: column;
 		line-height: 1.3;
 	}
 	.member-name {
@@ -118,6 +112,7 @@
 	}
 
 	/* ---- Details card (opens upward, persists until dismissed) ---- */
+	/* radius via .br-md (12px). */
 	.member-card {
 		position: absolute;
 		bottom: calc(100% + 0.5rem); /* opens UPWARD, above the row */
@@ -126,11 +121,10 @@
 		transform-origin: bottom left;
 		padding: 2.1rem 1.4rem; /* taller card via more vertical padding */
 		background: #fff;
-		border-radius: 12px;
 		box-shadow: 0 8px 30px rgba(16, 46, 102, 0.18);
 		z-index: 40;
 	}
-	/* × close button, top-right corner. */
+	/* × close button, top-right corner. Circle via .br-full, cursor via utility. */
 	.member-card-close {
 		position: absolute;
 		top: 0.5rem;
@@ -142,10 +136,8 @@
 		height: 2rem;
 		padding: 0;
 		border: 0;
-		border-radius: 50%;
 		background: none;
 		color: #9aa3b2;
-		cursor: pointer;
 		transition:
 			background-color 0.15s ease,
 			color 0.15s ease;
@@ -154,16 +146,13 @@
 		background: #eef1f3;
 		color: #102e66;
 	}
+	/* head layout via utilities (display-f align-items-center); gap 0.75 off-scale. */
 	.member-card-head {
-		display: flex;
-		align-items: center;
 		gap: 0.75rem;
 		margin-bottom: 1.5rem;
 		padding-right: 1.75rem; /* clear the × */
 	}
 	.member-card-id {
-		display: flex;
-		flex-direction: column;
 		line-height: 1.3;
 		min-width: 0;
 	}
@@ -178,17 +167,14 @@
 		color: #9aa3b2;
 		text-transform: capitalize;
 	}
+	/* contact list layout via utilities (column-nowrap gap-1-5). */
 	.member-card-contact {
 		margin: 0;
-		display: flex;
-		flex-direction: column;
-		gap: 1.5rem;
 		padding-top: 1.6rem;
 		border-top: 1px solid #eef1f3;
 	}
+	/* each row: display-f gap-0-4 via utilities. */
 	.member-card-row {
-		display: flex;
-		gap: 0.4rem;
 		font-size: 0.95rem;
 		line-height: 1.35;
 	}
