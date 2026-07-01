@@ -12,7 +12,10 @@
 	import { scale } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { logout } from '$lib/auth';
-	import { currentAdmin } from '$lib/currentAdmin';
+	import { getCurrentAdmin } from '$lib/teamStore.svelte';
+
+	// Live current-admin record from the shared store (updates when the profile is edited).
+	const currentAdmin = $derived(getCurrentAdmin());
 
 	import GridIcon from '$lib/components/icons/GridIcon.svelte';
 	import HomeIcon from '$lib/components/icons/HomeIcon.svelte';
@@ -30,6 +33,7 @@
 	import RailLink from '$lib/components/RailLink.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 	import Avatar from '$lib/components/Avatar.svelte';
+	import ChevronIcon from '$lib/components/icons/ChevronIcon.svelte';
 	import type { Notice } from '$lib/notices';
 
 	let { data, children } = $props();
@@ -103,6 +107,14 @@
 		page.url.pathname === href ||
 		(href !== '/nadzorna-ploca' && page.url.pathname.startsWith(href + '/'));
 
+	// Sidebar collapse (item 14): the blue rail slides fully off-canvas and the
+	// content takes the full width. A half-stick-out chevron button toggles it and
+	// stays reachable at the screen's left edge while collapsed.
+	let railCollapsed = $state(false);
+	function toggleRail() {
+		railCollapsed = !railCollapsed;
+	}
+
 	let loggingOut = $state(false);
 	async function handleLogout() {
 		if (loggingOut) return;
@@ -124,26 +136,44 @@
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
-<div class="admin-shell bg-white-smoke">
+<div class="admin-shell bg-white-smoke" class:rail-collapsed={railCollapsed}>
 	<!-- Blue icon rail -->
 	<aside class="admin-rail bg-blue-dress">
 		<!-- Non-clickable title: everything in the dashboard originates from here. -->
-		<div class="rail-brand">
+		<div class="rail-brand display-f align-items-center justify-content-center gap-0-7">
 			<GridIcon size={34} />
 			<span class="rail-brand-text">Nadzorna ploča</span>
 		</div>
 
-		<nav class="rail-nav" aria-label="Glavni izbornik">
+		<nav class="rail-nav column-nowrap shadow-none" aria-label="Glavni izbornik">
 			{#each NAV as item (item.href)}
-				<RailLink href={item.href} label={item.label} icon={item.icon} active={isActive(item.href)} />
+				<RailLink
+					href={item.href}
+					label={item.label}
+					icon={item.icon}
+					active={isActive(item.href)}
+					compact={railCollapsed}
+				/>
 			{/each}
 		</nav>
 	</aside>
 
-	<div class="admin-body">
+	<!-- Half-stick-out toggle: collapses the rail to an icons-only strip and back.
+	     Sits half-out on the rail's right edge; follows the edge as it narrows. -->
+	<button
+		class="rail-toggle"
+		type="button"
+		onclick={toggleRail}
+		aria-label={railCollapsed ? 'Otvori izbornik' : 'Zatvori izbornik'}
+		aria-expanded={!railCollapsed}
+	>
+		<ChevronIcon direction={railCollapsed ? 'right' : 'left'} size={26} />
+	</button>
+
+	<div class="admin-body column-nowrap">
 		<!-- Top bar: search pill + notifications + user -->
-		<header class="admin-topbar">
-			<form class="search-pill" role="search" onsubmit={(e) => e.preventDefault()}>
+		<header class="admin-topbar display-f align-items-center justify-content-space-between gap-1-5">
+			<form class="search-pill display-f align-items-stretch" role="search" onsubmit={(e) => e.preventDefault()}>
 				<input
 					class="search-input"
 					type="search"
@@ -162,7 +192,7 @@
 				</button>
 			</form>
 
-			<div class="topbar-right">
+			<div class="topbar-right display-f align-items-center gap-1-4">
 				<div class="notif">
 					<button
 						class="topbar-bell"
@@ -183,11 +213,11 @@
 							aria-label="Obavijesti"
 							transition:scale={noticeAnim}
 						>
-							<div class="notif-head">
+							<div class="notif-head display-f align-items-baseline">
 								<span class="notif-title">Novo</span>
 								<span class="notif-count">({noticeCount})</span>
 							</div>
-							<div class="notif-list">
+							<div class="notif-list column-nowrap gap-0-6">
 								{#each notifications as n (n.id)}
 									<NoticeItem notice={n} onNavigate={() => (noticesOpen = false)} />
 								{:else}
@@ -197,9 +227,9 @@
 						</div>
 					{/if}
 				</div>
-				<div class="topbar-user">
+				<div class="topbar-user display-f align-items-center">
 					<!-- Clicking the user chip opens the admin profile settings page. -->
-					<a class="user-chip" href="/nadzorna-ploca/profil" title="Profil i postavke">
+					<a class="user-chip display-f align-items-center" href="/nadzorna-ploca/profil" title="Profil i postavke">
 						<Avatar color={currentAdmin.color} role={currentAdmin.role} size={2.5} />
 						<span class="user-name">{currentAdmin.displayName}</span>
 					</a>
@@ -232,6 +262,11 @@
 		grid-template-columns: 280px 1fr;
 		min-height: 100dvh;
 		color: #102e66; /* deep-sapphire ink on the light page */
+		transition: grid-template-columns 0.25s ease;
+	}
+	/* Collapsed (item 14): rail column narrows to an icons-only strip (not hidden). */
+	.admin-shell.rail-collapsed {
+		grid-template-columns: 5rem 1fr;
 	}
 
 	/* ---- Blue icon rail ---- */
@@ -241,41 +276,74 @@
 		color: #fff;
 		padding: 1.5rem 1rem;
 		gap: 0.4rem;
+		overflow: hidden; /* clip labels as the column narrows */
 	}
-	.rail-brand {
-		display: flex;
+	/* Collapsed: centre the icons + tighten padding for the narrow strip. */
+	.rail-collapsed .admin-rail {
+		padding-left: 0.5rem;
+		padding-right: 0.5rem;
 		align-items: center;
-		justify-content: center; /* centre the icon + title within the rail */
-		gap: 0.7rem;
+	}
+	.rail-collapsed .rail-brand-text {
+		display: none;
+	}
+
+	/* Half-stick-out toggle button: pinned to the rail's right edge, vertically
+	   centred; follows the edge (280px open → 5rem collapsed) so it never overlaps
+	   the content and stays reachable in both states. */
+	.rail-toggle {
+		position: fixed;
+		top: 50%;
+		left: 280px;
+		transform: translate(-50%, -50%); /* half-out over the rail edge */
+		z-index: 50;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.75rem;
+		height: 2.75rem;
+		padding: 0;
+		border: 1px solid #d7dee8;
+		border-radius: 50%;
+		background: #fff;
+		color: #102e66;
+		cursor: pointer;
+		box-shadow: 0 2px 10px rgba(16, 46, 102, 0.18);
+		transition:
+			left 0.25s ease,
+			transform 0.25s ease,
+			background-color 0.15s ease;
+	}
+	.rail-toggle:hover {
+		background: #eef1f3;
+	}
+	/* Collapsed: follow the narrowed rail edge (5rem), still half-out. */
+	.rail-collapsed .rail-toggle {
+		left: 5rem;
+	}
+	/* layout (display-f align-items-center justify-content-center gap-0-7) via utilities. */
+	.rail-brand {
 		font-weight: 700;
 		font-size: 1.35rem;
 		white-space: nowrap; /* keep "Nadzorna ploča" on one row */
 		padding: 0 0.5rem 1.5rem;
 	}
+	/* column-nowrap + shadow-none via utilities (the latter overrides the library's
+	   global <nav> box-shadow so the sidebar reads as one solid colour). */
 	.rail-nav {
-		display: flex;
-		flex-direction: column;
 		gap: 0.15rem;
 		flex: 1 0 auto;
-		/* The library applies $base-box-shadow to every <nav> globally
-		   (_navbar.scss); kill it here so the sidebar reads as one solid colour. */
-		box-shadow: none;
 	}
-	/* ---- Body (topbar + content) ---- */
+	/* ---- Body (topbar + content) ---- column-nowrap via utility. */
 	.admin-body {
-		display: flex;
-		flex-direction: column;
 		min-width: 0;
 	}
 
 	/* ---- Top bar ---- */
 	/* White strip so the search/user chrome reads as a distinct surface above the
-	   grey content area below. */
+	   grey content area below. Layout via utilities (display-f align-items-center
+	   justify-content-space-between gap-1-5). */
 	.admin-topbar {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1.5rem;
 		padding: 0.7rem 3rem;
 		background: #ffffff;
 	}
@@ -284,9 +352,8 @@
 	   distinct block at the right end with a slightly DARKER fill than the input,
 	   the magnifier centred in it. The pill has no right padding so the button sits
 	   flush to the rounded edge. */
+	/* display-f align-items-stretch via utilities (button = full pill height). */
 	.search-pill {
-		display: flex;
-		align-items: stretch; /* button stretches to full pill height */
 		flex: 1 1 auto;
 		max-width: 720px;
 		min-height: 2.5rem;
@@ -356,10 +423,8 @@
 		background: #b8c2d1; /* darker still on hover */
 	}
 
+	/* display-f align-items-center gap-1-4 via utilities. */
 	.topbar-right {
-		display: flex;
-		align-items: center;
-		gap: 1.4rem;
 		flex: 0 0 auto;
 	}
 	/* Notifications: bell trigger + dropdown panel (no page-dimming backdrop). */
@@ -413,9 +478,8 @@
 		flex-direction: column;
 	}
 	/* Sticky header stays at the top while the list scrolls. */
+	/* display-f align-items-baseline via utilities; gap 0.35 is off-scale. */
 	.notif-head {
-		display: flex;
-		align-items: baseline;
 		gap: 0.35rem;
 		padding: 1.4rem 1.5rem 1.1rem;
 		border-bottom: 1px solid #eef1f3;
@@ -431,11 +495,9 @@
 		font-weight: 600;
 		color: #e60023; /* same red as the bell notification dot */
 	}
-	/* Scrollable list: ~6 items tall, scroll on overflow; gap between items. */
+	/* Scrollable list: ~6 items tall, scroll on overflow. Layout via utilities
+	   (column-nowrap gap-0-6). */
 	.notif-list {
-		display: flex;
-		flex-direction: column;
-		gap: 0.6rem;
 		padding: 1rem;
 		max-height: 31.3rem; /* shows exactly 5 items; the 6th+ are fully clipped out of view (scroll to reach) */
 		overflow-y: auto;
@@ -478,15 +540,12 @@
 	.topbar-bell:hover {
 		background: rgba(16, 46, 102, 0.06);
 	}
+	/* display-f align-items-center via utilities; gap 0.65 off-scale. */
 	.topbar-user {
-		display: flex;
-		align-items: center;
 		gap: 0.65rem;
 	}
-	/* Clickable user chip -> profile settings. */
+	/* Clickable user chip -> profile settings. Layout via utilities; gap 0.55 off-scale. */
 	.user-chip {
-		display: flex;
-		align-items: center;
 		gap: 0.55rem;
 		padding: 0.25rem 0.5rem 0.25rem 0.25rem;
 		border-radius: 999px;
@@ -530,8 +589,21 @@
 
 	/* ---- Responsive: collapse the rail to a top strip on small screens ---- */
 	@media (max-width: 820px) {
-		.admin-shell {
+		.admin-shell,
+		.admin-shell.rail-collapsed {
 			grid-template-columns: 1fr;
+		}
+		/* The collapse toggle is a desktop-only affordance; the top-strip layout
+		   handles small screens on its own. Neutralise any collapsed overrides. */
+		.rail-toggle {
+			display: none;
+		}
+		.rail-collapsed .admin-rail {
+			align-items: center;
+			padding: 0.8rem 1rem;
+		}
+		.rail-collapsed .rail-brand-text {
+			display: inline;
 		}
 		.admin-rail {
 			flex-direction: row;
@@ -558,6 +630,14 @@
 		}
 		.admin-content {
 			padding: 1.25rem 1rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.admin-shell,
+		.admin-rail,
+		.rail-toggle {
+			transition: none;
 		}
 	}
 </style>

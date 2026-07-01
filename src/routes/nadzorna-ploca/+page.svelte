@@ -11,7 +11,7 @@
 	import UrgentIcon from '$lib/components/icons/UrgentIcon.svelte';
 	import TeamMember from '$lib/components/TeamMember.svelte';
 	import UrgentItem from '$lib/components/UrgentItem.svelte';
-	import type { Member } from '$lib/team';
+	import { team } from '$lib/teamStore.svelte';
 	import type { Urgent } from '$lib/urgent';
 
 	// Placeholder "projects" = the editable content areas of the site. Each links
@@ -88,50 +88,18 @@
 		urgent = urgent.filter((u) => u.id !== id);
 	}
 
-	// Placeholder team list. Each member's fields (display name, real name, email,
-	// phone) are user-entered at account creation; the avatar is a colour circle
-	// with a role letter (A = admin, D = developer) — TODO on adoption: replace the
-	// avatar with a real image-upload field. Colours: the 2nd member is purple, the
-	// rest follow role (developer = green, admin = blue). Each row + its hover
-	// popover is rendered by the reusable <TeamMember> component.
-	const TEAM: Member[] = [
-		{
-			id: 'm1',
-			displayName: 'Joškica Pupić',
-			realName: 'Joškica Pupić',
-			role: 'admin',
-			email: 'joskica.pupic@vsk.hr',
-			phone: '+385 91 234 5678',
-			color: 'blue'
-		},
-		{
-			id: 'm2',
-			displayName: 'zekke87',
-			realName: 'Branimir Miklošić',
-			role: 'admin',
-			email: 'zekke87@vsk.hr',
-			phone: '+385 98 765 4321',
-			color: 'purple'
-		},
-		{
-			id: 'm3',
-			displayName: 'axlothecook',
-			realName: 'Ruby Alliston',
-			role: 'developer',
-			email: 'axlothecook@vsk.hr',
-			phone: '+31 6 1112 2334',
-			color: 'green'
-		}
-	];
+	// The Tim list reads the shared reactive `team` store, so profile edits to the
+	// current admin (m1) show up here live. Each row + its hover popover is the
+	// reusable <TeamMember> component.
 </script>
 
-<div class="dash">
+<div class="dash grid gap-2 align-items-start">
 	<!-- Main column: the project/content cards -->
 	<section class="dash-main">
 		<h2 class="dash-heading">Sadržaj</h2>
-		<div class="cards">
+		<div class="cards grid grid-cols-2 gap-1-5">
 			{#each PROJECTS as p (p.href)}
-				<a class="card bg-white" href={p.href}>
+				<a class="card bg-white column-nowrap" href={p.href}>
 					<h3 class="card-title">{p.title}</h3>
 					<p class="card-summary">{p.summary}</p>
 				</a>
@@ -141,7 +109,7 @@
 
 	<!-- Side column: announcements + team ("trending") -->
 	<aside class="dash-side">
-		<h2 class="dash-heading dash-heading--urgent">
+		<h2 class="dash-heading dash-heading--urgent display-f align-items-center gap-0-5">
 			Hitno
 			<!-- Icon is the urgent orange when there are items, green ("all clear") when none. -->
 			<span class="urgent-ico"><UrgentIcon size={24} color={urgent.length ? '#ff7800' : '#16a34a'} /></span>
@@ -155,8 +123,8 @@
 		</div>
 
 		<h2 class="dash-heading mt">Tim</h2>
-		<div class="panel bg-white team-list">
-			{#each TEAM as t (t.id)}
+		<div class="panel bg-white team-list column-nowrap gap-1-1">
+			{#each team as t (t.id)}
 				<TeamMember member={t} />
 			{/each}
 		</div>
@@ -164,13 +132,10 @@
 </div>
 
 <style>
+	/* Layout (grid gap-2 align-items-start) via utility classes; only the
+	   asymmetric fractional track (content ~75% / Hitno-Tim ~25%) stays scoped. */
 	.dash {
-		display: grid;
-		/* Fractional (scalable) columns: content ~75%, the Hitno/Tim rail ~25%.
-		   Both scale with the viewport instead of a fixed pixel track. */
 		grid-template-columns: 3fr 1fr;
-		gap: 2rem;
-		align-items: start;
 	}
 	/* Extra breathing room between the right (Hitno/Tim) column and the screen edge.
 	   Works now that the track is fractional (it absorbs the margin). */
@@ -188,15 +153,8 @@
 		margin-top: 1.75rem;
 	}
 
-	/* ---- Project cards (no gold border, only star + eye actions) ---- */
-	.cards {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 1.5rem;
-	}
+	/* ---- Project cards (grid grid-cols-2 gap-1-5 via utilities) ---- */
 	.card {
-		display: flex;
-		flex-direction: column;
 		min-height: 8rem;
 		padding: 1.4rem 1.5rem;
 		border-radius: 14px;
@@ -232,11 +190,7 @@
 	}
 
 	/* ---- Urgent (Hitno) panel ---- */
-	.dash-heading--urgent {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
+	/* .dash-heading--urgent layout via utilities (display-f align-items-center gap-0-5) */
 	.urgent-ico {
 		display: inline-flex;
 		align-items: center;
@@ -286,12 +240,7 @@
 		height: 0;
 	}
 
-	/* ---- Team list (rows + popovers are the reusable <TeamMember> component) ---- */
-	.team-list {
-		display: flex;
-		flex-direction: column;
-		gap: 1.1rem;
-	}
+	/* ---- Team list (column-nowrap gap-1-1 via utilities; rows are <TeamMember>) ---- */
 
 	/* ---- Responsive ---- */
 	@media (max-width: 1100px) {
