@@ -7,21 +7,18 @@
 	let { notice, onNavigate }: { notice: Notice; onNavigate: () => void } = $props();
 </script>
 
-<a class="notif-item" href={notice.href} onclick={onNavigate}>
+<a class="notif-item display-b br-sm cursor-pointer" href={notice.href} onclick={onNavigate}>
 	<p class="notif-item-title">{notice.title}</p>
 	<p class="notif-item-detail">{notice.detail}</p>
 	<span class="notif-item-when">{notice.when}</span>
 </a>
 
 <style>
-	/* Links to its section page — clickable, pointer cursor, darker on hover. */
+	/* display-b, br-sm (10px), cursor-pointer via utilities. Darker on hover. */
 	.notif-item {
-		display: block;
 		padding: 0.9rem 1rem;
-		border-radius: 10px;
 		background: #f6f8fa;
 		text-decoration: none;
-		cursor: pointer;
 		transition: background-color 0.15s ease;
 	}
 	.notif-item:hover {
