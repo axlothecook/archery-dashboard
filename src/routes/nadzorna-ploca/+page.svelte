@@ -9,6 +9,10 @@
 	// until the per-entity editors are wired — flagged so it is not mistaken for
 	// live data.
 	import UrgentIcon from '$lib/components/icons/UrgentIcon.svelte';
+	import TeamMember from '$lib/components/TeamMember.svelte';
+	import UrgentItem from '$lib/components/UrgentItem.svelte';
+	import type { Member } from '$lib/team';
+	import type { Urgent } from '$lib/urgent';
 
 	// Placeholder "projects" = the editable content areas of the site. Each links
 	// to its (eventual) editor. lorem text stands in until real summaries exist.
@@ -48,7 +52,6 @@
 	// Things that need the admin's URGENT attention. Placeholder copy + links to
 	// the relevant section; empty = nothing urgent (panel shows a calm message).
 	// Reactive so "Ukloni" (remove) can drop an item from the panel.
-	type Urgent = { id: string; title: string; body: string; href: string };
 	let urgent = $state<Urgent[]>([
 		{
 			id: 'u1',
@@ -89,22 +92,13 @@
 	// phone) are user-entered at account creation; the avatar is a colour circle
 	// with a role letter (A = admin, D = developer) — TODO on adoption: replace the
 	// avatar with a real image-upload field. Colours: the 2nd member is purple, the
-	// rest follow role (developer = green, admin = blue). Hover reveals the details.
-	type Member = {
-		id: string;
-		displayName: string;
-		realName: string;
-		role: 'admin' | 'developer';
-		email: string;
-		phone: string;
-		/** explicit avatar colour key: 'purple' | 'green' | 'blue' */
-		color: 'purple' | 'green' | 'blue';
-	};
+	// rest follow role (developer = green, admin = blue). Each row + its hover
+	// popover is rendered by the reusable <TeamMember> component.
 	const TEAM: Member[] = [
 		{
 			id: 'm1',
 			displayName: 'Joškica Pupić',
-			realName: 'Josip Pupić',
+			realName: 'Joškica Pupić',
 			role: 'admin',
 			email: 'joskica.pupic@vsk.hr',
 			phone: '+385 91 234 5678',
@@ -113,7 +107,7 @@
 		{
 			id: 'm2',
 			displayName: 'zekke87',
-			realName: 'Željko Kovač',
+			realName: 'Branimir Miklošić',
 			role: 'admin',
 			email: 'zekke87@vsk.hr',
 			phone: '+385 98 765 4321',
@@ -122,14 +116,13 @@
 		{
 			id: 'm3',
 			displayName: 'axlothecook',
-			realName: 'Axel Inskyrim',
+			realName: 'Ruby Alliston',
 			role: 'developer',
-			email: 'axelinskyrim@gmail.com',
-			phone: '+385 95 111 2233',
+			email: 'axlothecook@vsk.hr',
+			phone: '+31 6 1112 2334',
 			color: 'green'
 		}
 	];
-	const roleLetter = (role: Member['role']) => (role === 'developer' ? 'D' : 'A');
 </script>
 
 <div class="dash">
@@ -154,48 +147,17 @@
 			<span class="urgent-ico"><UrgentIcon size={24} color={urgent.length ? '#ff7800' : '#16a34a'} /></span>
 		</h2>
 		<div class="panel bg-white urgent-panel" class:is-empty={urgent.length === 0}>
-			{#each urgent as u, i (u.id)}
-				<div class="urgent-item" class:divided={i > 0}>
-					<h4 class="urgent-title">{u.title}</h4>
-					<p class="urgent-body">{u.body}</p>
-					<div class="urgent-actions">
-						<a class="urgent-btn urgent-btn--fix" href={u.href}>Riješi sada</a>
-						<button class="urgent-btn urgent-btn--remove" type="button" onclick={() => removeUrgent(u.id)}>
-							Ukloni
-						</button>
-					</div>
-				</div>
+			{#each urgent as u (u.id)}
+				<UrgentItem item={u} onRemove={removeUrgent} />
 			{:else}
 				<p class="urgent-empty">Nema hitnih stavki za upravljanje.</p>
 			{/each}
 		</div>
 
 		<h2 class="dash-heading mt">Tim</h2>
-		<div class="panel bg-white">
+		<div class="panel bg-white team-list">
 			{#each TEAM as t (t.id)}
-				<div class="member">
-					<span class="member-avatar member-avatar--{t.color}">{roleLetter(t.role)}</span>
-					<span class="member-meta">
-						<span class="member-name">{t.displayName}</span>
-						<span class="member-role">{t.role}</span>
-					</span>
-
-					<!-- Hover/focus details popover. -->
-					<div class="member-card">
-						<span class="member-avatar member-avatar--{t.color} member-card-avatar">{roleLetter(t.role)}</span>
-						<div class="member-card-meta">
-							<span class="member-card-name">{t.displayName}</span>
-							<span class="member-card-real">{t.realName}</span>
-							<span class="member-card-role">{t.role}</span>
-						</div>
-						<dl class="member-card-contact">
-							<dt>Email</dt>
-							<dd>{t.email}</dd>
-							<dt>Telefon</dt>
-							<dd>{t.phone}</dd>
-						</dl>
-					</div>
-				</div>
+				<TeamMember member={t} />
 			{/each}
 		</div>
 	</aside>
@@ -204,9 +166,16 @@
 <style>
 	.dash {
 		display: grid;
-		grid-template-columns: 1fr 420px;
+		/* Fractional (scalable) columns: content ~75%, the Hitno/Tim rail ~25%.
+		   Both scale with the viewport instead of a fixed pixel track. */
+		grid-template-columns: 3fr 1fr;
 		gap: 2rem;
 		align-items: start;
+	}
+	/* Extra breathing room between the right (Hitno/Tim) column and the screen edge.
+	   Works now that the track is fractional (it absorbs the margin). */
+	.dash-side {
+		margin-right: 1.5rem;
 	}
 
 	.dash-heading {
@@ -280,81 +249,6 @@
 		gap: 0.75rem;
 		padding: 0.75rem;
 	}
-	/* Each urgent item is its own card with a faint warm background. */
-	/* FIXED height per item so the panel's scroll window never shifts with content
-	   length (3 always fit identically). The body is clamped to 2 lines. */
-	.urgent-item {
-		box-sizing: border-box;
-		height: 8.625rem; /* 138px — one consistent row height */
-		flex: 0 0 auto;
-		padding: 0.9rem 1rem;
-		border-radius: 10px;
-		background: #fff5ec; /* faint warm tint matching the urgent orange */
-		display: flex;
-		flex-direction: column;
-	}
-	.urgent-title {
-		margin: 0 0 0.35rem;
-		font-size: 0.98rem;
-		font-weight: 700;
-		color: #102e66;
-	}
-	.urgent-body {
-		margin: 0;
-		font-size: 0.85rem;
-		line-height: 1.5;
-		color: #5b6577;
-		/* Clamp to 2 lines so every item keeps the same fixed height. */
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		line-clamp: 2;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-	}
-	/* Action buttons, bottom-right, with a clear gap above the text. */
-	.urgent-actions {
-		display: flex;
-		justify-content: flex-end;
-		gap: 0.5rem;
-		margin-top: auto; /* pin actions to the bottom of the fixed-height card */
-		padding-top: 0.6rem;
-	}
-	.urgent-btn {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		line-height: 1;
-		padding: 0.45rem 0.85rem;
-		border-radius: 8px;
-		font-size: 0.82rem;
-		font-weight: 600;
-		font-family: inherit;
-		cursor: pointer;
-		border: 1px solid transparent;
-		text-decoration: none;
-		transition:
-			background-color 0.15s ease,
-			border-color 0.15s ease;
-	}
-	/* "Riješi sada" — light surface (not blue), leads to the section page. */
-	.urgent-btn--fix {
-		background: #fff;
-		color: #102e66;
-		border-color: #d7dee8;
-	}
-	.urgent-btn--fix:hover {
-		background: #eef1f3;
-	}
-	/* "Ukloni" — secondary, removes the item from the panel. */
-	.urgent-btn--remove {
-		background: transparent;
-		color: #5b6577;
-		border-color: #cbd5e1;
-	}
-	.urgent-btn--remove:hover {
-		background: #eef1f3;
-		color: #102e66;
-	}
 	.urgent-empty {
 		margin: 0;
 		font-size: 0.88rem;
@@ -392,135 +286,20 @@
 		height: 0;
 	}
 
-	/* ---- Team rows ("A" in a lighter-blue circle + name + role) ---- */
-	.member {
-		position: relative;
-		display: flex;
-		align-items: center;
-		gap: 0.8rem;
-		outline: none;
-	}
-	.member + .member {
-		margin-top: 1.1rem;
-	}
-	.member-avatar {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 2.6rem;
-		height: 2.6rem;
-		border-radius: 50%;
-		font-weight: 800;
-		font-size: 1.2rem; /* bigger letter */
-		flex: 0 0 auto;
-	}
-	/* Each avatar: a light tinted circle with the role letter in a DARKER shade of
-	   the same hue. */
-	.member-avatar--blue {
-		background: #cfe0fb; /* light blue-dress */
-		color: #1657b8; /* darker blue */
-	}
-	.member-avatar--purple {
-		background: #e7defb; /* light purple */
-		color: #6b3fc0; /* darker purple */
-	}
-	.member-avatar--green {
-		background: #d4f3df; /* light green */
-		color: #1c8a4b; /* darker green */
-	}
-	.member-meta {
+	/* ---- Team list (rows + popovers are the reusable <TeamMember> component) ---- */
+	.team-list {
 		display: flex;
 		flex-direction: column;
-		line-height: 1.3;
-	}
-
-	/* ---- Hover/focus details card ---- */
-	.member-card {
-		position: absolute;
-		top: 50%;
-		right: calc(100% + 0.75rem); /* opens to the LEFT of the row (panel is at the screen edge) */
-		transform: translateY(-50%) scale(0.96);
-		transform-origin: right center;
-		width: 17rem;
-		padding: 1rem 1.1rem;
-		background: #fff;
-		border-radius: 12px;
-		box-shadow: 0 8px 30px rgba(16, 46, 102, 0.18);
-		opacity: 0;
-		visibility: hidden;
-		pointer-events: none;
-		transition:
-			opacity 0.15s ease,
-			transform 0.15s ease;
-		z-index: 40;
-	}
-	.member:hover .member-card,
-	.member:focus-visible .member-card,
-	.member:focus-within .member-card {
-		opacity: 1;
-		visibility: visible;
-		transform: translateY(-50%) scale(1);
-	}
-	.member-card-avatar {
-		font-size: 1.4rem;
-		width: 3rem;
-		height: 3rem;
-		margin-bottom: 0.6rem;
-	}
-	.member-card-meta {
-		display: flex;
-		flex-direction: column;
-		line-height: 1.35;
-		margin-bottom: 0.75rem;
-	}
-	.member-card-name {
-		font-weight: 700;
-		font-size: 1.05rem;
-		color: #102e66;
-	}
-	.member-card-real {
-		font-size: 0.88rem;
-		color: #5b6577;
-	}
-	.member-card-role {
-		font-size: 0.78rem;
-		color: #9aa3b2;
-		text-transform: capitalize;
-	}
-	.member-card-contact {
-		margin: 0;
-		display: grid;
-		grid-template-columns: auto 1fr;
-		gap: 0.25rem 0.75rem;
-		padding-top: 0.6rem;
-		border-top: 1px solid #eef1f3;
-	}
-	.member-card-contact dt {
-		margin: 0;
-		font-size: 0.78rem;
-		font-weight: 600;
-		color: #9aa3b2;
-	}
-	.member-card-contact dd {
-		margin: 0;
-		font-size: 0.85rem;
-		color: #102e66;
-		word-break: break-word;
-	}
-	.member-name {
-		font-weight: 700;
-		font-size: 0.95rem;
-		color: #102e66;
-	}
-	.member-role {
-		font-size: 0.82rem;
-		color: #5b6577;
+		gap: 1.1rem;
 	}
 
 	/* ---- Responsive ---- */
 	@media (max-width: 1100px) {
 		.dash {
 			grid-template-columns: 1fr;
+		}
+		.dash-side {
+			margin-right: 0; /* single column: no asymmetric right margin */
 		}
 	}
 	@media (max-width: 640px) {
