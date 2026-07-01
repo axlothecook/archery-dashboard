@@ -3,18 +3,32 @@
 	// Reused for every dashboard section, so it lives here as a single component.
 	// Owns its own responsive behaviour: at <=720px the rail collapses to a row of
 	// icon-only chips (labels hidden, tighter padding) — see the @media below.
+	// `compact` forces that same icon-only mode on demand (the desktop collapse
+	// toggle, item 14).
 	import type { Component } from 'svelte';
 
 	let {
 		href,
 		label,
 		icon: Icon,
-		active = false
-	}: { href: string; label: string; icon: Component<{ size?: number }>; active?: boolean } =
-		$props();
+		active = false,
+		compact = false
+	}: {
+		href: string;
+		label: string;
+		icon: Component<{ size?: number }>;
+		active?: boolean;
+		compact?: boolean;
+	} = $props();
 </script>
 
-<a {href} class="rail-link" class:active>
+<a
+	{href}
+	class="rail-link display-f align-items-center br-sm text-white"
+	class:active
+	class:compact
+	title={compact ? label : undefined}
+>
 	<span class="rail-icon">
 		<Icon size={26} />
 	</span>
@@ -22,13 +36,10 @@
 </a>
 
 <style>
+	/* display-f align-items-center br-sm (10px) text-white via utilities. */
 	.rail-link {
-		display: flex;
-		align-items: center;
 		gap: 0.95rem;
 		padding: 0.8rem 0.9rem;
-		border-radius: 10px;
-		color: #fff;
 		text-decoration: none;
 		font-size: 1.15rem;
 		font-weight: 500;
@@ -58,7 +69,16 @@
 		font-weight: 600;
 	}
 
-	/* Collapsed rail (icon-only row) on narrow screens. */
+	/* Icon-only mode: on narrow screens (top-strip) OR when `compact` is set (the
+	   desktop collapse toggle). Labels hidden, icon centred, tighter padding. */
+	.rail-link.compact {
+		justify-content: center;
+		padding: 0.6rem;
+		gap: 0;
+	}
+	.rail-link.compact .rail-label {
+		display: none;
+	}
 	@media (max-width: 720px) {
 		.rail-link {
 			padding: 0.6rem 0.7rem;

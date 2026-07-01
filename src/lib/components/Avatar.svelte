@@ -16,18 +16,18 @@
 </script>
 
 <span
-	class="avatar avatar--{color}"
+	class="avatar avatar--{color} br-full"
 	style="width:{size}rem; height:{size}rem; font-size:{fontSize}rem;"
 >
 	{roleLetter(role)}
 </span>
 
 <style>
+	/* circle shape via utility (br-full = 50%). */
 	.avatar {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		border-radius: 50%;
 		font-weight: 800;
 		flex: 0 0 auto;
 	}

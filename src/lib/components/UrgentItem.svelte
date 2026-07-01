@@ -8,10 +8,10 @@
 	let { item, onRemove }: { item: Urgent; onRemove: (id: string) => void } = $props();
 </script>
 
-<div class="urgent-item">
+<div class="urgent-item column-nowrap br-sm">
 	<h4 class="urgent-title">{item.title}</h4>
 	<p class="urgent-body">{item.body}</p>
-	<div class="urgent-actions">
+	<div class="urgent-actions display-f justify-content-flex-end gap-0-5">
 		<a class="urgent-btn urgent-btn--fix" href={item.href}>Riješi sada</a>
 		<button class="urgent-btn urgent-btn--remove" type="button" onclick={() => onRemove(item.id)}>
 			Ukloni
@@ -23,15 +23,13 @@
 	/* Each urgent item is its own card with a faint warm background.
 	   FIXED height per item so the panel's scroll window never shifts with content
 	   length (3 always fit identically). The body is clamped to 2 lines. */
+	/* display+direction (column-nowrap) and radius (br-sm = 10px) via utilities. */
 	.urgent-item {
 		box-sizing: border-box;
 		height: 8.625rem; /* 138px — one consistent row height */
 		flex: 0 0 auto;
 		padding: 0.9rem 1rem;
-		border-radius: 10px;
 		background: #fff5ec; /* faint warm tint matching the urgent orange */
-		display: flex;
-		flex-direction: column;
 	}
 	.urgent-title {
 		margin: 0 0 0.35rem;
@@ -51,11 +49,8 @@
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}
-	/* Action buttons, bottom-right, with a clear gap above the text. */
+	/* Action row layout (display-f justify-content-flex-end gap-0-5) via utilities. */
 	.urgent-actions {
-		display: flex;
-		justify-content: flex-end;
-		gap: 0.5rem;
 		margin-top: auto; /* pin actions to the bottom of the fixed-height card */
 		padding-top: 0.6rem;
 	}
