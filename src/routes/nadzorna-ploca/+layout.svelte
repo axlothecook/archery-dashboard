@@ -114,7 +114,7 @@
 			label: 'Raspored',
 			icon: CalendarIcon,
 			children: [
-				{ label: 'Objavljeni događaji', href: '/nadzorna-ploca/raspored/objavljeno' },
+				{ label: 'Svi događaji', href: '/nadzorna-ploca/raspored/svi' },
 				{ label: 'Novi događaj', href: '/nadzorna-ploca/raspored/novi' }
 			]
 		},
@@ -122,7 +122,7 @@
 			label: 'Momčad',
 			icon: PersonIcon,
 			children: [
-				{ label: 'Objavljeni streličari', href: '/nadzorna-ploca/momcad/objavljeno' },
+				{ label: 'Svi streličari', href: '/nadzorna-ploca/momcad/svi' },
 				{ label: 'Novi streličar', href: '/nadzorna-ploca/momcad/novi' }
 			]
 		},
@@ -130,7 +130,7 @@
 			label: 'Postignuća',
 			icon: TrophyIcon,
 			children: [
-				{ label: 'Objavljena postignuća', href: '/nadzorna-ploca/postignuca/objavljeno' },
+				{ label: 'Sva postignuća', href: '/nadzorna-ploca/postignuca/sva' },
 				{ label: 'Novo postignuće', href: '/nadzorna-ploca/postignuca/novo' }
 			]
 		},
@@ -138,7 +138,7 @@
 			label: 'Sponzori',
 			icon: HandshakeIcon,
 			children: [
-				{ label: 'Objavljeni sponzori', href: '/nadzorna-ploca/sponzori/objavljeno' },
+				{ label: 'Svi sponzori', href: '/nadzorna-ploca/sponzori/svi' },
 				{ label: 'Novi sponzor', href: '/nadzorna-ploca/sponzori/novi' }
 			]
 		},
