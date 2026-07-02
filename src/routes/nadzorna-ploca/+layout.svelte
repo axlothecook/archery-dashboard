@@ -25,6 +25,7 @@
 	import TrophyIcon from '$lib/components/icons/TrophyIcon.svelte';
 	import HandshakeIcon from '$lib/components/icons/HandshakeIcon.svelte';
 	import InquiryIcon from '$lib/components/icons/InquiryIcon.svelte';
+	import AdministrationIcon from '$lib/components/icons/AdministrationIcon.svelte';
 	import SearchIcon from '$lib/components/icons/SearchIcon.svelte';
 	import BellIcon from '$lib/components/icons/BellIcon.svelte';
 	import CloseIcon from '$lib/components/icons/CloseIcon.svelte';
@@ -97,7 +98,8 @@
 		{ label: 'Momčad', href: '/nadzorna-ploca/momcad', icon: PersonIcon },
 		{ label: 'Postignuća', href: '/nadzorna-ploca/postignuca', icon: TrophyIcon },
 		{ label: 'Sponzori', href: '/nadzorna-ploca/sponzori', icon: HandshakeIcon },
-		{ label: 'Upiti', href: '/nadzorna-ploca/upiti', icon: InquiryIcon }
+		{ label: 'Upiti', href: '/nadzorna-ploca/upiti', icon: InquiryIcon },
+		{ label: 'Administracija', href: '/nadzorna-ploca/administracija', icon: AdministrationIcon }
 	];
 
 	// Active when the path equals the item exactly, or (for non-index items) is

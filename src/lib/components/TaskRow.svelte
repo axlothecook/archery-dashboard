@@ -31,12 +31,20 @@
 		const [y, m, d] = iso.split('-');
 		return `${Number(d)}.${Number(m)}.${y}.`;
 	}
+
+	// Overdue: the deadline is today or in the past → shown red (any status).
+	const overdue = $derived.by(() => {
+		if (!task.due) return false;
+		const t = new Date();
+		const todayIso = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+		return task.due <= todayIso;
+	});
 </script>
 
 <tr>
 	<td class="tasks-name fw-600">{task.title}</td>
 	<td>{task.assignee}</td>
-	<td class="tasks-due text-jet-grey">{fmtDue(task.due)}</td>
+	<td class="tasks-due" class:overdue class:text-jet-grey={!overdue}>{fmtDue(task.due)}</td>
 	<td>
 		<span class="tasks-status fw-600 tasks-status--{task.status}">{STATUS_LABEL[task.status]}</span>
 	</td>
@@ -85,6 +93,11 @@
 	}
 	.tasks-due {
 		white-space: nowrap;
+	}
+	/* Deadline today or passed → red. */
+	.tasks-due.overdue {
+		color: #d32752;
+		font-weight: 600;
 	}
 
 	/* Status: BLACK text on a pill-shaped coloured background. */

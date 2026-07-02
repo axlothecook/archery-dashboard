@@ -14,7 +14,7 @@
 	import MailAltIcon from '$lib/components/icons/MailAltIcon.svelte';
 	import ChevronIcon from '$lib/components/icons/ChevronIcon.svelte';
 	import TaskSquareIcon from '$lib/components/icons/TaskSquareIcon.svelte';
-	import TeamIcon from '$lib/components/icons/TeamIcon.svelte';
+	import AdministrationIcon from '$lib/components/icons/AdministrationIcon.svelte';
 	import TeamMember from '$lib/components/TeamMember.svelte';
 	import UrgentItem from '$lib/components/UrgentItem.svelte';
 	import SchedulePanel from '$lib/components/SchedulePanel.svelte';
@@ -80,11 +80,15 @@
 		if (h >= 18 && h < 22) return [`Dobra večer, ${name}`, `Kakav je bio dan, ${name}?`];
 		return [`Dobra večer, ${name}`, `Noćna sova, ${name}?`]; // night (22–04)
 	}
-	// Pick one at load. Math.random is fine at runtime (this is app code, not a
-	// resumable workflow script).
+	// The random variant is decided ONCE on the server (see +page.server.ts) and
+	// passed in as `data.greetVariant`, so the server-rendered phrase and the
+	// hydrated phrase are identical — no re-roll, no refresh "budge". We just index
+	// into the current band's pool with that server-chosen index (clamped in case a
+	// band ever has fewer phrases).
+	let { data } = $props();
 	const greeting = $derived.by(() => {
 		const pool = greetingPool(adminName);
-		return pool[Math.floor(Math.random() * pool.length)];
+		return pool[data.greetVariant] ?? pool[0];
 	});
 
 	// Things that need the admin's URGENT attention. Placeholder copy + links to
@@ -212,8 +216,8 @@
 		</div>
 
 		<h2 class="dash-heading mt display-f align-items-center gap-0-5">
-			<span class="head-ico"><TeamIcon size={22} /></span>
-			Tim
+			<span class="head-ico"><AdministrationIcon size={22} /></span>
+			Administracija
 		</h2>
 		<div class="panel bg-white team-list column-nowrap gap-1-1">
 			{#each team as t (t.id)}

@@ -1,6 +1,7 @@
 <script lang="ts">
-	// Team / teamwork glyph (user-provided, team-teamwork-business-group-svgrepo) —
-	// heading icon for "Tim". Fill-based → inherits colour via currentColor.
+	// Administration / team glyph (user-provided, team-teamwork-business-group-svgrepo).
+	// Used for the "Administracija" heading + sidebar nav item. Fill-based → inherits
+	// colour via currentColor.
 	let { size = 24, color = 'currentColor' }: { size?: number; color?: string } = $props();
 </script>
 
