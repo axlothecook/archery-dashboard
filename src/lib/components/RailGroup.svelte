@@ -4,12 +4,11 @@
 	// page of its own; navigation happens via the sub-options. Plain single-link
 	// items keep using RailLink; this is only for sections that have sub-views.
 	//
-	// The parent auto-expands when the current route is one of its sub-options, so
-	// the active section is always open. In compact (icons-only) rail mode there's
-	// no room for a submenu, so the chevron/label/submenu are hidden and clicking
-	// the icon just expands the rail again via the parent's collapse toggle — but
-	// since compact hides labels entirely, here we simply render the icon and, on
-	// click, still toggle (the submenu shows once the rail is expanded).
+	// Open state is CONTROLLED by the parent (+layout.svelte) so the rail behaves like
+	// an accordion: only ONE group is open at a time. Opening one closes the rest, and
+	// picking a sub-option (which navigates → makes that group the active one) leaves
+	// only the active section open. In compact (icons-only) rail mode there's no room
+	// for a submenu, so the chevron/submenu are hidden.
 	import type { Component } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
@@ -22,12 +21,16 @@
 		label,
 		icon: Icon,
 		items,
-		compact = false
+		compact = false,
+		open = false,
+		onToggle
 	}: {
 		label: string;
 		icon: Component<{ size?: number }>;
 		items: Child[];
 		compact?: boolean;
+		open?: boolean;
+		onToggle?: () => void;
 	} = $props();
 
 	// A child is active on exact match or nested under it.
@@ -36,17 +39,8 @@
 	// The group is "active" (highlight the parent) when any child route is active.
 	const groupActive = $derived(items.some((c) => childActive(c.href)));
 
-	// Open state: user-toggled, but defaults open when the section is active so the
-	// current page's siblings are visible. `$state` seeded from groupActive, then a
-	// derived keeps it open whenever the active route lands inside this group.
-	let open = $state(false);
-	// Force-open when a child becomes active (e.g. navigating into it from elsewhere).
-	$effect(() => {
-		if (groupActive) open = true;
-	});
-
 	function toggle() {
-		open = !open;
+		onToggle?.();
 	}
 </script>
 
@@ -76,7 +70,7 @@
 			{#each items as child (child.href)}
 				<li>
 					<a
-						class="rail-sublink br-sm text-white display-f align-items-center"
+						class="rail-sublink text-white display-f align-items-center"
 						class:active={childActive(child.href)}
 						href={child.href}
 					>
@@ -137,17 +131,25 @@
 		transform: rotate(90deg);
 	}
 
-	/* Sub-options: indented list under the parent. */
+	/* Sub-options (Cloudflare style): a vertical GUIDE LINE runs down the left of the
+	   list, and each option's hover/active highlight is INSET so it never covers the
+	   line. The line is the ul's left border; ul padding creates the gap between the
+	   line and the highlight box; the sublink's own padding positions the text.
+	   margin-left places the line ~under the parent icon's centre (0.9rem link pad +
+	   ~half the 28px icon box). */
 	.rail-sub {
 		list-style: none;
-		margin: 0.15rem 0 0.35rem;
-		padding: 0;
+		margin: 0.15rem 0 0.35rem 1.55rem;
+		padding: 0 0 0 0.55rem;
+		border-left: 1.5px solid rgba(255, 255, 255, 0.28);
 		gap: 0.1rem;
 	}
 	.rail-sublink {
 		gap: 0;
-		/* Indent so sub-options align under the parent's label (icon width + gap). */
-		padding: 0.55rem 0.9rem 0.55rem 3.15rem;
+		/* Left padding here is INSIDE the highlight; the line + ul padding sit to its
+		   left, so the highlight starts after the line. */
+		padding: 0.55rem 0.9rem;
+		border-radius: 8px;
 		text-decoration: none;
 		font-size: 1.02rem;
 		font-weight: 500;

@@ -39,10 +39,20 @@
 		const todayIso = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
 		return task.due <= todayIso;
 	});
+
+	// The name cell is capped at the first task's width; if THIS title is longer it
+	// overflows and we fade the right edge (mask). Only apply the fade when it's
+	// actually overflowing, so short titles aren't faded at their tail.
+	let nameCell: HTMLTableCellElement | undefined = $state();
+	let overflowing = $state(false);
+	$effect(() => {
+		void task.title; // re-check when the title changes
+		if (nameCell) overflowing = nameCell.scrollWidth > nameCell.clientWidth + 1;
+	});
 </script>
 
 <tr>
-	<td class="tasks-name fw-600">{task.title}</td>
+	<td class="tasks-name fw-600" class:faded={overflowing} bind:this={nameCell}>{task.title}</td>
 	<td>{task.assignee}</td>
 	<td class="tasks-due" class:overdue class:text-jet-grey={!overdue}>{fmtDue(task.due)}</td>
 	<td>
@@ -90,6 +100,20 @@
 		color: #102e66;
 		border-bottom: 1px solid #f3f5f8;
 		vertical-align: middle;
+	}
+	/* Task-name cell: fixed max width = the first task's single-line width (~21.25rem,
+	   measured). Longer titles stay on ONE line and, instead of a "…" ellipsis, FADE
+	   to transparent at the right edge (a mask gradient) — since the panel behind is
+	   white, the text fades to white. */
+	.tasks-name {
+		max-width: 21.25rem;
+		white-space: nowrap;
+		overflow: hidden;
+	}
+	/* Only fade when the title actually overflows the capped width (set via JS). */
+	.tasks-name.faded {
+		-webkit-mask-image: linear-gradient(to right, #000 82%, transparent 100%);
+		mask-image: linear-gradient(to right, #000 82%, transparent 100%);
 	}
 	.tasks-due {
 		white-space: nowrap;

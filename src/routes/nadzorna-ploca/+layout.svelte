@@ -153,6 +153,32 @@
 		page.url.pathname === href ||
 		(href !== '/nadzorna-ploca' && page.url.pathname.startsWith(href + '/'));
 
+	// Accordion state for the expandable groups: only ONE group is open at a time.
+	// `openGroup` holds the open group's label (or null). Clicking a parent toggles
+	// it (and closes any other). Which group contains the ACTIVE route:
+	const activeGroupLabel = $derived(
+		NAV.find(
+			(item) => item.children?.some((c) => page.url.pathname.startsWith(c.href))
+		)?.label ?? null
+	);
+	let openGroup = $state<string | null>(null);
+	// Keep the group that owns the current route open, but only REACT to actual route
+	// changes — not on every effect run — so a manual toggle (opening a different
+	// group than the current page's) isn't instantly snapped back. When navigation
+	// lands in a group (e.g. picking a sub-option), open that group and close the
+	// rest; the item whose sub-option was selected stays open.
+	let lastActiveGroup = $state<string | null>(null);
+	$effect(() => {
+		if (activeGroupLabel !== lastActiveGroup) {
+			lastActiveGroup = activeGroupLabel;
+			if (activeGroupLabel) openGroup = activeGroupLabel;
+		}
+	});
+	// Toggle a group: open it (closing others), or close it if it's already open.
+	function toggleGroup(label: string) {
+		openGroup = openGroup === label ? null : label;
+	}
+
 	// Sidebar collapse (item 14): the blue rail slides fully off-canvas and the
 	// content takes the full width. A half-stick-out chevron button toggles it and
 	// stays reachable at the screen's left edge while collapsed.
@@ -201,6 +227,8 @@
 						icon={item.icon}
 						items={item.children}
 						compact={railCollapsed}
+						open={openGroup === item.label}
+						onToggle={() => toggleGroup(item.label)}
 					/>
 				{:else}
 					<RailLink
