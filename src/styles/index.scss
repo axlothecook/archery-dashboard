@@ -8,14 +8,75 @@
 // The dashboard is a LIGHT admin UI (white-smoke page, blue-dress rail), distinct
 // from the public site's navy theme — but it shares the same library palette so
 // the brand colours match.
+//
+// IMPORTANT — why we import PARTIALS individually instead of the aggregate
+// `index.scss`: the library's `colors` partial generates the FULL colour grid
+// (every colour × 9 light × 9 dark shades × 5 action states × 5 position scopes,
+// for both text-* and bg-*) = 38,160 selectors ≈ 3.37 MB — ~96% of the library's
+// compiled CSS. In dev, SvelteKit inlines ALL route/layout CSS as one render-
+// blocking <style> in the SSR <head> (by design, to avoid FOUC — this bypasses
+// `inlineStyleThreshold`, which is build-only). So that 3.37 MB was inlined into
+// every page and the browser sat blank until it parsed it, then painted everything
+// at once = the hard-reload "flicker". We import every partial EXCEPT `colors` and
+// hand-declare only the 6 colour classes the dashboard actually uses (below) →
+// 3.5 MB → ~0.4 MB, flicker gone. Add a class here if a new colour class is needed.
 
 // ---------------------------------------------------------------------------
-// 1. Library variable overrides (must come BEFORE the @import).
+// 1. Library variable overrides (must come BEFORE the imports).
 // ---------------------------------------------------------------------------
 $light-bg-primary: #f3f4f6; // dashboard page background (white-smoke)
 $text: #102e66; // ink (deep-sapphire) on the light bg
 
-@import 'axlothecook-sass-library/sass-library/index.scss';
+// 2. Library partials — all EXCEPT `colors` (see note above).
+@import 'axlothecook-sass-library/sass-library/variables';
+@import 'axlothecook-sass-library/sass-library/functions';
+@import 'axlothecook-sass-library/sass-library/utilities';
+@import 'axlothecook-sass-library/sass-library/breakpoints';
+@import 'axlothecook-sass-library/sass-library/grid';
+@import 'axlothecook-sass-library/sass-library/base';
+@import 'axlothecook-sass-library/sass-library/keyframes';
+@import 'axlothecook-sass-library/sass-library/hover';
+@import 'axlothecook-sass-library/sass-library/components/button';
+@import 'axlothecook-sass-library/sass-library/components/card';
+@import 'axlothecook-sass-library/sass-library/components/carousel';
+@import 'axlothecook-sass-library/sass-library/components/dialog';
+@import 'axlothecook-sass-library/sass-library/components/errorPage';
+@import 'axlothecook-sass-library/sass-library/components/errorPopup';
+@import 'axlothecook-sass-library/sass-library/components/footer';
+@import 'axlothecook-sass-library/sass-library/components/input';
+@import 'axlothecook-sass-library/sass-library/components/menu';
+@import 'axlothecook-sass-library/sass-library/components/navbar';
+@import 'axlothecook-sass-library/sass-library/components/notification';
+@import 'axlothecook-sass-library/sass-library/components/radioInput';
+@import 'axlothecook-sass-library/sass-library/components/searchBar';
+// NB: `components/select` is intentionally OMITTED. The dashboard uses its own custom
+// DashSelect (`.dash-select-*`), not the library `.default-select`. That partial also
+// emits the customizable-select selector `::picker(select):popover-open` (a pseudo-
+// class after a pseudo-element), which lightningcss rejects → breaks `vite build`.
+@import 'axlothecook-sass-library/sass-library/components/spinner';
+@import 'axlothecook-sass-library/sass-library/components/textarea';
+
+// The 6 colour utility classes the dashboard uses (replaces the 3.37 MB `colors`
+// partial). Values resolved from the library palette. Keep in sync if the palette
+// changes; add a line here when the markup starts using a new bg-*/text-* class.
+.bg-blue-dress {
+	background-color: #187ff5;
+}
+.bg-white {
+	background-color: #fff;
+}
+.bg-white-smoke {
+	background-color: #f3f4f6;
+}
+.text-deep-sapphire {
+	color: #102e66;
+}
+.text-jet-grey {
+	color: #607480;
+}
+.text-white {
+	color: #fff;
+}
 
 // ---------------------------------------------------------------------------
 // 3. Theme control panel — CSS custom properties.
@@ -29,8 +90,21 @@ $text: #102e66; // ink (deep-sapphire) on the light bg
 	--color-ink: #102e66; // body text (deep-sapphire) on light surfaces
 	--color-ink-muted: #5b6577; // secondary text
 
-	--font-primary: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	--font-primary: 'Inter Variable', 'Inter Fallback', system-ui, -apple-system, 'Segoe UI',
+		Roboto, sans-serif;
 }
+
+// ── Inter font faces are declared in app.html, NOT here ──────────────────────
+// The Inter Variable + 'Inter Fallback' @font-face rules live in the STATIC <style>
+// in src/app.html, on purpose. If they were here (a JS-imported module), the Vite
+// dev server would inline them in the SSR head AND re-inject them on hydration
+// (SvelteKit dev double-injection) → the font re-registers ~0.7s after load → the
+// browser re-resolves fonts → a brief text flicker right after the initial paint.
+// Declaring them once in the static head avoids that. This file still sets the
+// font-family on html/body below (for the base/utility cascade) and imports the
+// library — it just doesn't declare the faces. We DON'T import @fontsource/inter
+// either (see +layout.svelte): its per-weight CSS hardcodes font-display:swap and
+// splits Inter into 42 churning faces.
 
 // Override the library base (its _base.scss sets :root bg to $primary = dark red).
 // :root has higher specificity than html, so override on :root itself.

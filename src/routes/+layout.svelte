@@ -5,12 +5,13 @@
 	// is a standalone full-screen page. So this root layout is intentionally bare.
 	const favicon = '/favicon.png';
 
-	import '@fontsource/inter/300.css';
-	import '@fontsource/inter/400.css';
-	import '@fontsource/inter/500.css';
-	import '@fontsource/inter/600.css';
-	import '@fontsource/inter/700.css';
-	import '@fontsource/inter/800.css';
+	// Inter is self-declared in styles/index.scss (ONE variable font face per subset,
+	// font-display: optional) — NOT imported from @fontsource here. The per-weight
+	// @fontsource CSS hardcodes `font-display: swap` and split Inter into 42
+	// @font-face rules across 6 weights × subsets; in dev those got double-injected
+	// (SSR + client) and churned, re-resolving fonts ~1s after load = the
+	// normal→thin→normal weight flicker. One variable face + `optional` removes both
+	// the swap and the churn. See index.scss.
 	import '../styles/index.scss';
 
 	let { children } = $props();
