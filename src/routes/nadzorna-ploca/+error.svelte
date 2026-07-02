@@ -20,8 +20,8 @@
 	<p class="sec-err-code">{status}</p>
 	<h2 class="sec-err-title">Ovaj odjeljak se nije učitao</h2>
 	<p class="sec-err-msg">
-		Došlo je do pogreške pri učitavanju ovog odjeljka. Ostatak nadzorne ploče i dalje radi —
-		odaberite drugu sekciju u izborniku ili pokušajte ponovno.
+		Došlo je do pogreške pri učitavanju ovog odjeljka. Ostatak nadzorne ploče i dalje radi.
+		Odaberite drugu sekciju u izborniku ili pokušajte ponovno.
 	</p>
 	{#if message}
 		<p class="sec-err-detail">{message}</p>
