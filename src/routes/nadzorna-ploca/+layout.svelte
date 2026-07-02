@@ -32,6 +32,7 @@
 	import LogoutIcon from '$lib/components/icons/LogoutIcon.svelte';
 	import NoticeItem from '$lib/components/NoticeItem.svelte';
 	import RailLink from '$lib/components/RailLink.svelte';
+	import RailGroup from '$lib/components/RailGroup.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 	import Avatar from '$lib/components/Avatar.svelte';
 	import ChevronIcon from '$lib/components/icons/ChevronIcon.svelte';
@@ -91,13 +92,56 @@
 	// exists). Each pairs a real admin area with a reusable icon component.
 	// Everything lives under /nadzorna-ploca: "Home" is the dashboard index, every
 	// other section is nested beneath it (/nadzorna-ploca/momcad, …).
+	//
+	// Cloudflare-style nav: a content section is a PARENT with a `children` submenu
+	// — clicking it toggles the submenu in place (it has no page of its own); the
+	// sub-options are the actual page links. Items WITHOUT `children` (Početno,
+	// Upiti, Administracija) are plain links that navigate directly. The child
+	// routes are placeholders until each editor is built (they 404 for now).
+	//   objavljeno = "manage published", nacrti = drafts, novo/novi = create new.
 	const NAV = [
 		{ label: 'Početno', href: '/nadzorna-ploca', icon: HomeIcon },
-		{ label: 'Vijesti', href: '/nadzorna-ploca/vijesti', icon: NewsIcon },
-		{ label: 'Raspored', href: '/nadzorna-ploca/raspored', icon: CalendarIcon },
-		{ label: 'Momčad', href: '/nadzorna-ploca/momcad', icon: PersonIcon },
-		{ label: 'Postignuća', href: '/nadzorna-ploca/postignuca', icon: TrophyIcon },
-		{ label: 'Sponzori', href: '/nadzorna-ploca/sponzori', icon: HandshakeIcon },
+		{
+			label: 'Vijesti',
+			icon: NewsIcon,
+			children: [
+				{ label: 'Objavljene vijesti', href: '/nadzorna-ploca/vijesti/objavljeno' },
+				{ label: 'Nacrti', href: '/nadzorna-ploca/vijesti/nacrti' },
+				{ label: 'Novi članak', href: '/nadzorna-ploca/vijesti/novi' }
+			]
+		},
+		{
+			label: 'Raspored',
+			icon: CalendarIcon,
+			children: [
+				{ label: 'Objavljeni događaji', href: '/nadzorna-ploca/raspored/objavljeno' },
+				{ label: 'Novi događaj', href: '/nadzorna-ploca/raspored/novi' }
+			]
+		},
+		{
+			label: 'Momčad',
+			icon: PersonIcon,
+			children: [
+				{ label: 'Objavljeni streličari', href: '/nadzorna-ploca/momcad/objavljeno' },
+				{ label: 'Novi streličar', href: '/nadzorna-ploca/momcad/novi' }
+			]
+		},
+		{
+			label: 'Postignuća',
+			icon: TrophyIcon,
+			children: [
+				{ label: 'Objavljena postignuća', href: '/nadzorna-ploca/postignuca/objavljeno' },
+				{ label: 'Novo postignuće', href: '/nadzorna-ploca/postignuca/novo' }
+			]
+		},
+		{
+			label: 'Sponzori',
+			icon: HandshakeIcon,
+			children: [
+				{ label: 'Objavljeni sponzori', href: '/nadzorna-ploca/sponzori/objavljeno' },
+				{ label: 'Novi sponzor', href: '/nadzorna-ploca/sponzori/novi' }
+			]
+		},
 		{ label: 'Upiti', href: '/nadzorna-ploca/upiti', icon: InquiryIcon },
 		{ label: 'Administracija', href: '/nadzorna-ploca/administracija', icon: AdministrationIcon }
 	];
@@ -142,20 +186,31 @@
 	<!-- Blue icon rail -->
 	<aside class="admin-rail bg-blue-dress">
 		<!-- Non-clickable title: everything in the dashboard originates from here. -->
-		<div class="rail-brand display-f align-items-center justify-content-center gap-0-7">
-			<GridIcon size={34} />
+		<div class="rail-brand display-f align-items-center gap-0-7">
+			<span class="rail-brand-icon">
+				<GridIcon size={36} />
+			</span>
 			<span class="rail-brand-text">Nadzorna ploča</span>
 		</div>
 
 		<nav class="rail-nav column-nowrap shadow-none" aria-label="Glavni izbornik">
-			{#each NAV as item (item.href)}
-				<RailLink
-					href={item.href}
-					label={item.label}
-					icon={item.icon}
-					active={isActive(item.href)}
-					compact={railCollapsed}
-				/>
+			{#each NAV as item (item.label)}
+				{#if item.children}
+					<RailGroup
+						label={item.label}
+						icon={item.icon}
+						items={item.children}
+						compact={railCollapsed}
+					/>
+				{:else}
+					<RailLink
+						href={item.href}
+						label={item.label}
+						icon={item.icon}
+						active={isActive(item.href)}
+						compact={railCollapsed}
+					/>
+				{/if}
 			{/each}
 		</nav>
 	</aside>
@@ -328,7 +383,24 @@
 		font-weight: 700;
 		font-size: 1.35rem;
 		white-space: nowrap; /* keep "Nadzorna ploča" on one row */
-		padding: 0 0.5rem 1.5rem;
+		/* Match the nav items' horizontal padding (.rail-link = 0.8rem 0.9rem) so the
+		   brand icon + text start at the SAME left line as the options below and the
+		   row extends to the same right edge. */
+		padding: 0 0.9rem 1.5rem;
+	}
+	/* Bigger brand mark, fully CONTAINED in its box (no overflow). The box's LEFT edge
+	   aligns with the nav icons (same .rail-brand padding as .rail-link), so the row
+	   starts at the same vertical line; the row spans full width so it ends there too. */
+	.rail-brand-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		flex: 0 0 auto;
+	}
+	.rail-brand-icon :global(svg) {
+		display: block;
 	}
 	/* column-nowrap + shadow-none via utilities (the latter overrides the library's
 	   global <nav> box-shadow so the sidebar reads as one solid colour). */
