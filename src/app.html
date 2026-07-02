@@ -4,14 +4,80 @@
 		<meta charset="utf-8" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!-- Preload BOTH Inter subsets so they arrive together inside the font-display:
+		     block window (see index.scss) — the whole word (latin + Croatian latin-ext)
+		     then paints at once in the right weight, no "Croatian letters thinner" beat.
+		     crossorigin is REQUIRED on font preloads (even same-origin) or it's ignored. -->
+		<link
+			rel="preload"
+			as="font"
+			type="font/woff2"
+			href="%sveltekit.assets%/fonts/inter-latin-wght-normal.woff2"
+			crossorigin="anonymous"
+		/>
+		<link
+			rel="preload"
+			as="font"
+			type="font/woff2"
+			href="%sveltekit.assets%/fonts/inter-latin-ext-wght-normal.woff2"
+			crossorigin="anonymous"
+		/>
 		<style>
-			/* First-paint background so a cold visit never flashes an unstyled frame
-			   (the library base would otherwise paint its default red). Keep in sync
-			   with --color-bg (white-smoke) in src/styles/index.scss. */
+			/* Critical first-paint styles, inlined so they're in the very first HTML
+			   frame — BEFORE any JS-injected CSS. On the Vite DEV server the SCSS
+			   (@font-face + base font + utilities) is injected by JS after the module
+			   loads, so without this the first frame is unstyled and everything pops in
+			   at once (the reload "flicker"). In PROD the layout CSS is a <head> <link>
+			   so this is just a safety net.
+
+			   The Inter @font-face rules live HERE (static head), NOT in the JS-imported
+			   index.scss. Reason: on the Vite dev server, CSS imported through a module
+			   is inlined into the SSR head AND re-injected by the client on hydration
+			   (SvelteKit dev double-injection), so an @font-face declared there gets
+			   re-registered ~0.7s after load → the browser re-resolves the font → a
+			   brief text flicker AFTER the initial paint. Declaring the faces once in
+			   this static <style> (never HMR-touched) means they're registered a single
+			   time → no re-resolve, no flicker, in dev AND prod. Keep font-family and the
+			   fallback metrics in sync with src/styles/index.scss (which keeps the stack
+			   for the utility/base rules but no longer declares Inter). */
+			@font-face {
+				font-family: 'Inter Variable';
+				font-style: normal;
+				font-weight: 100 900;
+				font-display: block;
+				src:
+					url('/fonts/inter-latin-wght-normal.woff2') format('woff2') tech('variations'),
+					url('/fonts/inter-latin-wght-normal.woff2') format('woff2-variations');
+				unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+					U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+					U+2212, U+2215, U+FEFF, U+FFFD;
+			}
+			@font-face {
+				font-family: 'Inter Variable';
+				font-style: normal;
+				font-weight: 100 900;
+				font-display: block;
+				src:
+					url('/fonts/inter-latin-ext-wght-normal.woff2') format('woff2') tech('variations'),
+					url('/fonts/inter-latin-ext-wght-normal.woff2') format('woff2-variations');
+				unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+					U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+					U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+			}
+			@font-face {
+				font-family: 'Inter Fallback';
+				src: local('Arial');
+				size-adjust: 107.12%;
+				ascent-override: 90.44%;
+				descent-override: 22.52%;
+				line-gap-override: 0%;
+			}
 			html,
 			body {
 				margin: 0;
 				background-color: #f3f4f6;
+				font-family: 'Inter Variable', 'Inter Fallback', system-ui, -apple-system,
+					'Segoe UI', Roboto, sans-serif;
 			}
 		</style>
 		%sveltekit.head%

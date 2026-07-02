@@ -14,18 +14,20 @@
 	import ApproveIcon from '$lib/components/icons/ApproveIcon.svelte';
 	import TaskRow from '$lib/components/TaskRow.svelte';
 	import DashSelect from '$lib/components/DashSelect.svelte';
+	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import {
 		tasks,
 		addTask,
 		updateTask,
 		deleteTask,
-		setApproved,
 		STATUS_LABEL,
 		HEAD_ADMIN,
 		type Task,
 		type TaskStatus
 	} from '$lib/tasks.svelte';
 	import { team, getCurrentAdmin } from '$lib/teamStore.svelte';
+
+	let confirmDlg = $state<ConfirmDialog>();
 
 	// Only the head admin may approve; the current placeholder admin is the head admin.
 	const isHeadAdmin = $derived(getCurrentAdmin().displayName === HEAD_ADMIN);
@@ -101,13 +103,15 @@
 
 	// Završetak odobren (finished tasks only). Tick = approve finishing → delete the
 	// task (confirm first). X = not approved → keep it, mark unapproved.
-	function approveFinish(id: string) {
+	async function approveFinish(id: string) {
 		const t = tasks.find((x) => x.id === id);
-		const ok = confirm(`Odobriti završetak i obrisati zadatak "${t?.title ?? ''}"?`);
+		const ok = await confirmDlg?.ask(`Odobri završetak i obriši zadatak "${t?.title ?? ''}"?`, 'Obriši');
 		if (ok) deleteTask(id);
 	}
+	// X = completion not approved → the task goes back to "U tijeku" (still ongoing),
+	// unapproved.
 	function rejectFinish(id: string) {
-		setApproved(id, false);
+		updateTask(id, { status: 'in_progress', approved: false });
 	}
 </script>
 
@@ -190,6 +194,8 @@
 		</form>
 	</div>
 {/if}
+
+<ConfirmDialog bind:this={confirmDlg} />
 
 <style>
 	/* Panel surface: padding + radius + shadow live here (the +page `.panel` rule is
@@ -329,7 +335,7 @@
 	}
 	.btn--ghost {
 		background: #fff;
-		color: #5b6577;
+		color: #102e66; /* same navy as the confirm button's bg */
 		border-color: #d7dee8;
 	}
 	.btn--ghost:hover {

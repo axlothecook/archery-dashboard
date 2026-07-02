@@ -19,10 +19,13 @@ export default defineConfig({
 			}
 		}
 	},
-	// rolldown-vite (Vite 8) defaults to the lightningcss CSS transformer, which
-	// rejects the sass-library's bleeding-edge customizable-<select> selectors. Use
-	// the postcss transformer + skip CSS minify so those valid modern selectors pass
-	// through untouched (same workaround as the public site).
+	// rolldown-vite (Vite 8) defaults to lightningcss for BOTH the CSS transform and
+	// the minify pass. lightningcss rejects the sass-library's bleeding-edge
+	// customizable-<select> selectors (e.g. `::picker(select):popover-open` — a
+	// pseudo-CLASS after a pseudo-ELEMENT, which lightningcss disallows). Use the
+	// postcss transformer AND force the esbuild minifier so those valid modern
+	// selectors pass through untouched (esbuild doesn't strict-validate selectors;
+	// `cssMinify: false` alone wasn't honored by the SSR build environment here).
 	css: { transformer: 'postcss' },
-	build: { cssMinify: false }
+	build: { cssMinify: 'esbuild' }
 });

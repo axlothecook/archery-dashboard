@@ -59,3 +59,19 @@ export function updateCurrentAdmin(patch: Partial<Omit<Member, 'id' | 'role' | '
 	const admin = getCurrentAdmin();
 	Object.assign(admin, patch);
 }
+
+// ── Team management (item 24, "Administracija") ──────────────────────────────
+// Create / remove staff accounts. Placeholder (in-memory) — TODO(adoption): wire
+// to POST/DELETE /admin/team. Avatar colour rotates through the palette keys.
+const COLORS: Member['color'][] = ['blue', 'purple', 'green'];
+let nextNum = team.length;
+
+export function addMember(m: Omit<Member, 'id' | 'color'>) {
+	nextNum += 1;
+	team.push({ ...m, id: `m${nextNum}`, color: COLORS[team.length % COLORS.length] });
+}
+
+export function removeMember(id: string) {
+	const i = team.findIndex((m) => m.id === id);
+	if (i !== -1) team.splice(i, 1);
+}
