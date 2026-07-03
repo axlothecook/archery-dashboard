@@ -8,6 +8,10 @@
 	import EditIcon from '$lib/components/icons/EditIcon.svelte';
 	import TrashIcon from '$lib/components/icons/TrashIcon.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
+	import TextSizeIcon from '$lib/components/icons/TextSizeIcon.svelte';
+	import CategoryIcon from '$lib/components/icons/CategoryIcon.svelte';
+	import ClockIcon from '$lib/components/icons/ClockIcon.svelte';
+	import StatusIcon from '$lib/components/icons/StatusIcon.svelte';
 
 	// Per-cell action: add `.faded` when the (single-line, capped) title overflows, so
 	// the right edge fades to transparent (→ white panel) instead of showing a "…".
@@ -75,10 +79,18 @@
 		<thead>
 			<tr>
 				<th class="art-th-poster"></th>
-				<th class="art-col-title">Naslov</th>
-				<th class="art-col-mid art-col-first-mid">Vrsta</th>
-				<th class="art-col-mid">Datum</th>
-				<th class="art-col-mid">Stanje</th>
+				<th class="art-col-title">
+					<span class="th-in display-f align-items-center gap-0-4"><TextSizeIcon size={18} />Naslov</span>
+				</th>
+				<th class="art-col-mid art-col-first-mid">
+					<span class="th-in display-f align-items-center gap-0-4"><CategoryIcon size={18} />Vrsta</span>
+				</th>
+				<th class="art-col-mid">
+					<span class="th-in display-f align-items-center gap-0-4"><ClockIcon size={18} />Datum</span>
+				</th>
+				<th class="art-col-mid">
+					<span class="th-in display-f align-items-center gap-0-4"><StatusIcon size={18} />Stanje</span>
+				</th>
 				<th class="art-th-actions"></th>
 				<th class="art-col-spacer"></th>
 			</tr>
@@ -171,19 +183,19 @@
 	   width so the empty space lands on the FAR RIGHT (not between Stanje and the
 	   actions). Net: narrower title, tight middle group, actions pulled left. */
 	.art-col-title {
-		width: 26rem;
-		max-width: 26rem;
+		width: 22rem;
+		max-width: 22rem;
 	}
 	.art-col-mid {
 		width: 1%;
 		white-space: nowrap;
-		padding-left: 0.6rem;
-		padding-right: 0.6rem;
+		padding-left: 0.9rem;
+		padding-right: 0.9rem;
 	}
-	/* Push the whole Vrsta/Datum/Stanje group AWAY from the title: a wide gap after
-	   the narrow Naslov column. */
+	/* Push the whole Vrsta/Datum/Stanje group well AWAY from the title: a big fixed
+	   gap after the narrow Naslov column, so the group sits far to its right. */
 	.art-col-first-mid {
-		padding-left: 4rem;
+		padding-left: 8rem;
 	}
 	.art-col-spacer {
 		width: auto;
@@ -203,7 +215,7 @@
 		height: 2.1rem;
 	}
 	.art-title {
-		max-width: 26rem;
+		max-width: 22rem;
 		white-space: nowrap;
 		overflow: hidden;
 	}
