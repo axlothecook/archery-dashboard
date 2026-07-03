@@ -2,7 +2,6 @@
 	// Vijesti → Nacrti: draft articles (not yet public). Same table as Objavljene.
 	import type { ArticleAdminRow } from '$lib/articles';
 	import ArticleTable from '$lib/components/ArticleTable.svelte';
-	import AddIcon from '$lib/components/icons/AddIcon.svelte';
 	import NewsIcon from '$lib/components/icons/NewsIcon.svelte';
 
 	let { data } = $props();
@@ -16,18 +15,12 @@
 <svelte:head><title>Nacrti · VSK</title></svelte:head>
 
 <section class="art-section">
-	<div class="mgmt-head display-f align-items-center justify-content-space-between">
-		<div class="display-f align-items-center gap-0-7">
-			<NewsIcon size={28} />
-			<div>
-				<h2 class="mgmt-title">Nacrti</h2>
-				<p class="mgmt-sub">Članci u pripremi, još nisu objavljeni. Dovršite ih i objavite kada su spremni.</p>
-			</div>
+	<div class="mgmt-head display-f align-items-center gap-0-7">
+		<NewsIcon size={28} />
+		<div>
+			<h2 class="mgmt-title">Nacrti</h2>
+			<p class="mgmt-sub">Članci u pripremi, još nisu objavljeni. Dovršite ih i objavite kada su spremni.</p>
 		</div>
-		<a class="btn-add cursor-pointer display-f align-items-center gap-0-4" href="/nadzorna-ploca/vijesti/novi">
-			<AddIcon size={18} />
-			Novi članak
-		</a>
 	</div>
 
 	<div class="panel bg-white">
@@ -55,21 +48,6 @@
 		margin: 0.35rem 0 0;
 		font-size: 0.95rem;
 		color: #5b6577;
-	}
-	.btn-add {
-		padding: 0.5rem 0.9rem;
-		border: 0;
-		border-radius: 8px;
-		background: #102e66;
-		color: #fff;
-		font-size: 0.88rem;
-		font-weight: 600;
-		font-family: inherit;
-		text-decoration: none;
-		white-space: nowrap;
-	}
-	.btn-add:hover {
-		background: #0c2350;
 	}
 	.panel {
 		border-radius: 14px;

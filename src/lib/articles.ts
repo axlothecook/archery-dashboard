@@ -75,3 +75,34 @@ export function createArticle(
 export function deleteArticle(id: string, fetch?: typeof globalThis.fetch): Promise<{ ok: true }> {
 	return adminRequest(`/admin/articles/${id}`, { method: 'DELETE', fetch });
 }
+
+// A published archer that can be tagged as "mentioned" on an article.
+export type ArcherOption = { id: string; name: string };
+
+// GET /admin/archers/options — published archers for the mentioned-archers picker.
+export function fetchArcherOptions(
+	fetch?: typeof globalThis.fetch,
+	headers?: Record<string, string>
+): Promise<ArcherOption[]> {
+	return adminRequest<ArcherOption[]>('/admin/archers/options', { fetch, headers });
+}
+
+// POST /admin/client-errors — "report a problem" sink. Fire-and-forget from the UI
+// when a widget fails to load its data (the widget still degrades gracefully). Never
+// throws to the caller — a failed report must not cascade into a second failure.
+export async function reportClientError(
+	context: string,
+	message: string,
+	url?: string,
+	fetch?: typeof globalThis.fetch
+): Promise<void> {
+	try {
+		await adminRequest('/admin/client-errors', {
+			method: 'POST',
+			body: { context, message, url: url ?? null },
+			fetch
+		});
+	} catch {
+		// swallow — reporting is best-effort; don't let it surface another error.
+	}
+}
