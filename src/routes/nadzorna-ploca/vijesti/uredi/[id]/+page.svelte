@@ -318,7 +318,14 @@
 		color: #a4133c;
 		font-size: 0.92rem;
 	}
+	/* Keep the whole white panel within the viewport height: it's a flex column with a
+	   capped height; the two-column form scrolls INSIDE it while the action buttons
+	   stay pinned at the bottom, so the div never extends past the screen no matter how
+	   many gallery images the article has. */
 	.panel {
+		display: flex;
+		flex-direction: column;
+		max-height: calc(100vh - 12rem);
 		border-radius: 14px;
 		padding: 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
@@ -326,8 +333,12 @@
 	.form-grid {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: 1.5rem;
+		gap: 1.5rem 2rem;
 		align-items: start;
+		flex: 1 1 auto;
+		min-height: 0; /* allow the grid to shrink so it scrolls instead of growing */
+		overflow-y: auto;
+		padding-right: 0.5rem; /* room for the inner scrollbar */
 	}
 	.col {
 		min-width: 0;
@@ -335,8 +346,10 @@
 	.body-field {
 		flex: 1 1 auto;
 	}
+	/* The body textarea fills the left column's height so the left column matches the
+	   (media-heavy) right column, using the otherwise-unused right-side space. */
 	.body-textarea {
-		min-height: 16rem;
+		min-height: 14rem;
 		height: 100%;
 	}
 	.mt-0-6 {

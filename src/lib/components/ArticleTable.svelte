@@ -124,7 +124,7 @@
 					</td>
 					<td class="art-title fw-600 art-col-title" use:fadeIfOverflow={a.title}>{a.title}</td>
 					<td class="art-col-mid art-col-first-mid">
-						<span class="art-badge">{MEDIA_TYPE_LABEL[a.mediaType]}</span>
+						<span class="art-badge art-badge--{a.mediaType}">{MEDIA_TYPE_LABEL[a.mediaType]}</span>
 					</td>
 					<td class="art-date text-jet-grey art-col-mid">{fmtDate(a.publishedAt)}</td>
 					<td class="art-flags art-col-mid">
@@ -272,11 +272,25 @@
 		display: inline-block;
 		padding: 0.4rem 0.7rem;
 		border-radius: 999px;
-		background: #eef2fb;
-		color: #1b3a7a;
 		font-size: 0.82rem;
 		font-weight: 600;
 		white-space: nowrap;
+		/* default (Događaj/event): current bluish */
+		background: #eef2fb;
+		color: #1b3a7a;
+	}
+	/* Per media-type badge colours. Događaj keeps the default above. */
+	.art-badge--gallery {
+		background: #efe6fb; /* purple */
+		color: #5b2ea6;
+	}
+	.art-badge--external-link {
+		background: #fde6d6; /* orange */
+		color: #9a4a12;
+	}
+	.art-badge--video-only {
+		background: #dbeafe; /* supermarket blue */
+		color: #1552b0;
 	}
 	.art-date {
 		white-space: nowrap;
