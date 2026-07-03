@@ -195,6 +195,9 @@
 		max-height: calc(100vh - 22rem);
 		min-height: 8rem;
 		overflow-y: auto;
+		/* Suppress the tiny sub-pixel horizontal overflow (rounding) so no stray
+		   x-scrollbar appears; the row fits within the panel. */
+		overflow-x: hidden;
 	}
 	.art-scroll::-webkit-scrollbar {
 		width: 8px;
