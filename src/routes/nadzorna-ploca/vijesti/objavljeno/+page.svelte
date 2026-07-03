@@ -196,9 +196,10 @@
 		max-height: calc(100vh - 22rem);
 		min-height: 8rem;
 		overflow-y: auto;
-		/* Suppress the tiny sub-pixel horizontal overflow (rounding) so no stray
-		   x-scrollbar appears; the row fits within the panel. */
-		overflow-x: hidden;
+		/* Columns are kept to the RIGHT (wide title + wide inter-column gaps), which can
+		   exceed the panel width — allow horizontal scroll so the actions stay reachable
+		   rather than clipping them. */
+		overflow-x: auto;
 	}
 	.art-scroll::-webkit-scrollbar {
 		width: 8px;

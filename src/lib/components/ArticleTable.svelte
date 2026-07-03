@@ -215,21 +215,23 @@
 	/* NB: prefixed with .art-table th/td to out-specify the base `.art-table td`
 	   padding rule (compound selector), which otherwise wins and eats these. */
 	.art-table :is(th, td).art-col-title {
-		width: 25rem;
-		max-width: 25rem;
+		width: 33rem;
+		max-width: 33rem;
 	}
-	.art-table :is(th, td).art-col-mid {
+	/* EQUAL gap between the four right columns (Vrsta / Datum / Stanje / actions):
+	   each carries the SAME left padding (the gap before it) and a minimal right pad,
+	   so every adjacent-column gap is identical. */
+	.art-table :is(th, td).art-col-mid,
+	.art-table :is(th, td).art-actions-cell {
 		width: 1%;
 		white-space: nowrap;
-		/* Wider inter-column spacing so the Vrsta / Datum / Stanje / actions group
-		   spreads out and extends further to the right (Vrsta itself stays put). */
-		padding-left: 2.25rem;
-		padding-right: 2.25rem;
+		padding-left: 3.5rem;
+		padding-right: 0;
 	}
-	/* Gap after the title before Vrsta. Kept modest so the widened inter-column gaps
-	   fit without overflowing (Vrsta still sits clear of the title). */
+	/* Vrsta is the first of the group; its left padding is the (equal) gap after the
+	   title, matching the gaps between the other columns. */
 	.art-table :is(th, td).art-col-first-mid {
-		padding-left: 2rem;
+		padding-left: 3.5rem;
 	}
 	.art-table :is(th, td).art-col-spacer {
 		/* Keeps a slight gap between the rightmost (actions) column and the scrollbar,
@@ -252,9 +254,9 @@
 		height: 2.1rem;
 	}
 	.art-title {
-		/* Title cap; longer titles fade at the edge. Sized so the widened column gaps +
-		   actions still fit the panel without horizontal scroll. */
-		max-width: 25rem;
+		/* Cap at the 2nd article's full width (~33rem) so titles up to that length show
+		   in full and only longer ones fade. */
+		max-width: 33rem;
 		white-space: nowrap;
 		overflow: hidden;
 	}
@@ -268,7 +270,7 @@
 	}
 	.art-badge {
 		display: inline-block;
-		padding: 0.2rem 0.6rem;
+		padding: 0.4rem 0.7rem;
 		border-radius: 999px;
 		background: #eef2fb;
 		color: #1b3a7a;
@@ -282,10 +284,13 @@
 	.art-flags {
 		white-space: nowrap;
 	}
-	/* State word pill — always shown (never a bare dash). */
+	/* State word pill — always shown (never a bare dash). Fixed min-width + centred so
+	   Objavljeno / Skriveno / Nacrt are all the SAME length. Taller vertical padding. */
 	.art-state {
 		display: inline-block;
-		padding: 0.2rem 0.6rem;
+		min-width: 6.5rem;
+		text-align: center;
+		padding: 0.4rem 0.7rem;
 		border-radius: 999px;
 		font-size: 0.8rem;
 		font-weight: 600;
@@ -302,10 +307,6 @@
 	.art-state--draft {
 		background: #fde7d8;
 		color: #8a4b1e;
-	}
-	.art-actions-cell {
-		width: 1%;
-		padding-left: 2.25rem; /* match the inter-column spacing */
 	}
 	.art-actions {
 		gap: 0.75rem;
