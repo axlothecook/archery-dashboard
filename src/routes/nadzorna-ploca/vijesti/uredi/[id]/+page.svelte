@@ -176,7 +176,7 @@
 				</label>
 			</div>
 
-			<!-- RIGHT: media + meta. -->
+			<!-- MIDDLE: media type + poster + video/external. -->
 			<div class="col column-nowrap gap-1">
 				<div class="field column-nowrap gap-0-3">
 					<span class="field-label fw-600">Vrsta medija</span>
@@ -194,34 +194,6 @@
 						<input class="field-input w-full br-xs" type="text" bind:value={posterImageAlt} required />
 					</label>
 				</fieldset>
-
-				{#if showGallery}
-					<fieldset class="group">
-						<legend class="group-legend">Galerija <span class="field-hint">(do 10 slika)</span></legend>
-						{#each images as img, i (i)}
-							<div class="img-row">
-								<label class="field column-nowrap gap-0-3">
-									<span class="field-label fw-600">URL slike {i + 1}</span>
-									<input class="field-input w-full br-xs" type="url" bind:value={img.url} />
-								</label>
-								<div class="img-row-alt display-f gap-0-5 mt-0-6">
-									<label class="field column-nowrap gap-0-3 w-full">
-										<span class="field-label fw-600">Opis (alt)</span>
-										<input class="field-input w-full br-xs" type="text" bind:value={img.alt} />
-									</label>
-									<button class="img-del cursor-pointer display-f" type="button" aria-label="Ukloni sliku" title="Ukloni" onclick={() => removeImage(i)}>
-										<TrashIcon size={18} />
-									</button>
-								</div>
-							</div>
-						{/each}
-						{#if images.length < 10}
-							<button class="btn-ghost-add cursor-pointer display-f align-items-center gap-0-4" type="button" onclick={addImage}>
-								<AddIcon size={16} /> Dodaj sliku
-							</button>
-						{/if}
-					</fieldset>
-				{/if}
 
 				{#if showVideo}
 					<fieldset class="group">
@@ -248,6 +220,37 @@
 							<span class="field-label fw-600">Naziv izvora</span>
 							<input class="field-input w-full br-xs" type="text" bind:value={externalSourceName} />
 						</label>
+					</fieldset>
+				{/if}
+			</div>
+
+			<!-- RIGHT: gallery + mentioned archers. -->
+			<div class="col column-nowrap gap-1">
+				{#if showGallery}
+					<fieldset class="group">
+						<legend class="group-legend">Galerija <span class="field-hint">(do 10 slika)</span></legend>
+						{#each images as img, i (i)}
+							<div class="img-row">
+								<label class="field column-nowrap gap-0-3">
+									<span class="field-label fw-600">URL slike {i + 1}</span>
+									<input class="field-input w-full br-xs" type="url" bind:value={img.url} />
+								</label>
+								<div class="img-row-alt display-f gap-0-5 mt-0-6">
+									<label class="field column-nowrap gap-0-3 w-full">
+										<span class="field-label fw-600">Opis (alt)</span>
+										<input class="field-input w-full br-xs" type="text" bind:value={img.alt} />
+									</label>
+									<button class="img-del cursor-pointer display-f" type="button" aria-label="Ukloni sliku" title="Ukloni" onclick={() => removeImage(i)}>
+										<TrashIcon size={18} />
+									</button>
+								</div>
+							</div>
+						{/each}
+						{#if images.length < 10}
+							<button class="btn-ghost-add cursor-pointer display-f align-items-center gap-0-4" type="button" onclick={addImage}>
+								<AddIcon size={16} /> Dodaj sliku
+							</button>
+						{/if}
 					</fieldset>
 				{/if}
 
@@ -278,7 +281,8 @@
 
 <style>
 	.art-section {
-		max-width: 72rem;
+		/* Full content width — the 3-column form uses it so the panel stays short. */
+		width: 100%;
 	}
 	.mgmt-head {
 		margin-bottom: 1.25rem;
@@ -318,39 +322,24 @@
 		color: #a4133c;
 		font-size: 0.92rem;
 	}
-	/* Keep the whole white panel within the viewport height: it's a flex column with a
-	   capped height; the two-column form scrolls INSIDE it while the action buttons
-	   stay pinned at the bottom, so the div never extends past the screen no matter how
-	   many gallery images the article has. */
 	.panel {
-		display: flex;
-		flex-direction: column;
-		max-height: calc(100vh - 12rem);
 		border-radius: 14px;
 		padding: 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
 	}
+	/* THREE columns so the fields spread horizontally (using the unused right-side
+	   space) and the white div stays short — no internal scroll. */
 	.form-grid {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 1.5rem 2rem;
+		grid-template-columns: 1fr 1fr 1fr;
+		gap: 1.25rem 1.5rem;
 		align-items: start;
-		flex: 1 1 auto;
-		min-height: 0; /* allow the grid to shrink so it scrolls instead of growing */
-		overflow-y: auto;
-		padding-right: 0.5rem; /* room for the inner scrollbar */
 	}
 	.col {
 		min-width: 0;
 	}
-	.body-field {
-		flex: 1 1 auto;
-	}
-	/* The body textarea fills the left column's height so the left column matches the
-	   (media-heavy) right column, using the otherwise-unused right-side space. */
 	.body-textarea {
-		min-height: 14rem;
-		height: 100%;
+		min-height: 11rem;
 	}
 	.mt-0-6 {
 		margin-top: 0.6rem;
@@ -450,12 +439,15 @@
 	.btn--ghost:hover:not(:disabled) {
 		background: #eef1f3;
 	}
-	@media (max-width: 900px) {
+	/* Collapse 3 → 2 → 1 columns as the screen narrows. */
+	@media (max-width: 1200px) {
+		.form-grid {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+	@media (max-width: 760px) {
 		.form-grid {
 			grid-template-columns: 1fr;
-		}
-		.body-textarea {
-			min-height: 12rem;
 		}
 	}
 </style>
