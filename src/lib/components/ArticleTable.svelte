@@ -4,7 +4,7 @@
 	// title, media-type badge, date, status/flags, edit + delete. Real data from
 	// GET /admin/articles. Delete confirms via the shared ConfirmDialog.
 	import { goto } from '$app/navigation';
-	import { MEDIA_TYPE_LABEL, deleteArticle, type ArticleAdminRow } from '$lib/articles';
+	import { MEDIA_TYPE_LABEL, deleteArticle, updateArticle, type ArticleAdminRow } from '$lib/articles';
 	import EditIcon from '$lib/components/icons/EditIcon.svelte';
 	import TrashIcon from '$lib/components/icons/TrashIcon.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
@@ -12,6 +12,8 @@
 	import CategoryIcon from '$lib/components/icons/CategoryIcon.svelte';
 	import ClockIcon from '$lib/components/icons/ClockIcon.svelte';
 	import StatusIcon from '$lib/components/icons/StatusIcon.svelte';
+	import EyeIcon from '$lib/components/icons/EyeIcon.svelte';
+	import EyeOffIcon from '$lib/components/icons/EyeOffIcon.svelte';
 
 	// Per-cell action: add `.faded` when the (single-line, capped) title overflows, so
 	// the right edge fades to transparent (→ white panel) instead of showing a "…".
@@ -66,6 +68,20 @@
 			error = e instanceof Error ? e.message : 'Brisanje nije uspjelo.';
 		}
 	}
+
+	// Inline hide/unhide toggle: flips the article's `hidden` (PATCH), updating the
+	// row's Stanje live. Optimistic — revert on failure. The eye icon reflects the
+	// current visibility (eye = visible, eye-off = hidden).
+	async function toggleHidden(a: ArticleAdminRow) {
+		const next = !a.hidden;
+		a.hidden = next; // optimistic (row object is reactive)
+		try {
+			await updateArticle(a.id, { hidden: next });
+		} catch (e) {
+			a.hidden = !next; // revert
+			error = e instanceof Error ? e.message : 'Promjena vidljivosti nije uspjela.';
+		}
+	}
 </script>
 
 {#if error}
@@ -78,8 +94,9 @@
 	<table class="art-table w-full">
 		<thead>
 			<tr>
-				<th class="art-th-poster"></th>
-				<th class="art-col-title">
+				<!-- Naslov header spans the poster + title columns so "Tt Naslov" starts at
+				     the LEFT edge of the poster thumbnails (aligned with each article's pic). -->
+				<th class="art-col-title-head" colspan="2">
 					<span class="th-in display-f align-items-center gap-0-4"><TextSizeIcon size={18} />Naslov</span>
 				</th>
 				<th class="art-col-mid art-col-first-mid">
@@ -126,6 +143,21 @@
 							<button class="art-act cursor-pointer display-f" type="button" aria-label="Uredi" title="Uredi" onclick={() => edit(a)}>
 								<EditIcon size={18} />
 							</button>
+							{#if a.status === 'published'}
+								<!-- Eye toggle: hide/unhide a published article; icon reflects current
+								     visibility and flips the Stanje live. -->
+								<button
+									class="art-act cursor-pointer display-f"
+									class:art-act--hidden={a.hidden}
+									type="button"
+									aria-pressed={a.hidden}
+									aria-label={a.hidden ? 'Prikaži na javnoj stranici' : 'Sakrij s javne stranice'}
+									title={a.hidden ? 'Skriveno — klik za prikaz' : 'Vidljivo — klik za skrivanje'}
+									onclick={() => toggleHidden(a)}
+								>
+									{#if a.hidden}<EyeOffIcon size={18} />{:else}<EyeIcon size={18} />{/if}
+								</button>
+							{/if}
 							<button class="art-act art-act--del cursor-pointer display-f" type="button" aria-label="Izbriši" title="Izbriši" onclick={() => remove(a)}>
 								<TrashIcon size={18} />
 							</button>
@@ -172,7 +204,6 @@
 		border-bottom: 1px solid #f3f5f8;
 		vertical-align: middle;
 	}
-	.art-th-poster,
 	.art-poster-cell {
 		width: 1%;
 		padding-right: 0.5rem;
@@ -197,7 +228,7 @@
 	/* Push the whole Vrsta/Datum/Stanje group well AWAY from the title: a big fixed
 	   gap after the narrow Naslov column, so the group sits far to its right. */
 	.art-table :is(th, td).art-col-first-mid {
-		padding-left: 5rem;
+		padding-left: 6rem;
 	}
 	.art-table :is(th, td).art-col-spacer {
 		width: auto;
@@ -287,5 +318,9 @@
 	}
 	.art-act--del:hover {
 		color: #d32752;
+	}
+	/* Eye toggle when the article is hidden: muted so it reads as "currently off". */
+	.art-act--hidden {
+		color: #9aa3b2;
 	}
 </style>
