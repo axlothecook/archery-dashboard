@@ -84,10 +84,13 @@
 					</td>
 					<td class="art-date text-jet-grey">{fmtDate(a.publishedAt)}</td>
 					<td class="art-flags">
-						{#if a.hidden}<span class="art-flag art-flag--hidden">Skriveno</span>{/if}
-						{#if a.hasPendingDraft}<span class="art-flag art-flag--pending">Nacrt izmjena</span>{/if}
-						{#if a.adminEdited}<span class="art-flag art-flag--edited">Uređeno</span>{/if}
-						{#if !a.hidden && !a.hasPendingDraft && !a.adminEdited}<span class="text-jet-grey">—</span>{/if}
+						<!-- The list is already status-scoped (Objavljene = published, Nacrti =
+						     draft), so the only per-row state worth flagging is "hidden". -->
+						{#if a.hidden}
+							<span class="art-flag art-flag--hidden">Skriveno</span>
+						{:else}
+							<span class="text-jet-grey">—</span>
+						{/if}
 					</td>
 					<td class="art-actions-cell">
 						<div class="art-actions display-f align-items-center">
@@ -189,14 +192,6 @@
 	.art-flag--hidden {
 		background: #f1f3f7;
 		color: #5b6577;
-	}
-	.art-flag--pending {
-		background: #fde7d8;
-		color: #8a4b1e;
-	}
-	.art-flag--edited {
-		background: #fff3cd;
-		color: #7a5b00;
 	}
 	.art-actions-cell {
 		width: 1%;

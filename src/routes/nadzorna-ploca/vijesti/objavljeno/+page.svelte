@@ -110,7 +110,8 @@
 
 <style>
 	.art-section {
-		max-width: 64rem;
+		/* Full width: the white panel spans the whole grey content area side to side. */
+		width: 100%;
 	}
 	.mgmt-head {
 		margin-bottom: 1.5rem;
@@ -166,7 +167,7 @@
 		color: #5b6577;
 	}
 	.filter-count {
-		margin-left: auto;
+		/* Sit with the filters at the LEFT (not pushed to the far right). */
 		align-self: flex-end;
 		padding-bottom: 0.5rem;
 		font-size: 0.85rem;
