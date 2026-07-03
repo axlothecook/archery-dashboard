@@ -182,11 +182,13 @@
 	   padding so they sit close together; a trailing spacer absorbs all leftover
 	   width so the empty space lands on the FAR RIGHT (not between Stanje and the
 	   actions). Net: narrower title, tight middle group, actions pulled left. */
-	.art-col-title {
+	/* NB: prefixed with .art-table th/td to out-specify the base `.art-table td`
+	   padding rule (compound selector), which otherwise wins and eats these. */
+	.art-table :is(th, td).art-col-title {
 		width: 22rem;
 		max-width: 22rem;
 	}
-	.art-col-mid {
+	.art-table :is(th, td).art-col-mid {
 		width: 1%;
 		white-space: nowrap;
 		padding-left: 0.9rem;
@@ -194,10 +196,10 @@
 	}
 	/* Push the whole Vrsta/Datum/Stanje group well AWAY from the title: a big fixed
 	   gap after the narrow Naslov column, so the group sits far to its right. */
-	.art-col-first-mid {
+	.art-table :is(th, td).art-col-first-mid {
 		padding-left: 8rem;
 	}
-	.art-col-spacer {
+	.art-table :is(th, td).art-col-spacer {
 		width: auto;
 		padding: 0;
 		border-bottom: 0;
