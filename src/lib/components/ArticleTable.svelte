@@ -185,8 +185,8 @@
 	/* NB: prefixed with .art-table th/td to out-specify the base `.art-table td`
 	   padding rule (compound selector), which otherwise wins and eats these. */
 	.art-table :is(th, td).art-col-title {
-		width: 22rem;
-		max-width: 22rem;
+		width: 33rem;
+		max-width: 33rem;
 	}
 	.art-table :is(th, td).art-col-mid {
 		width: 1%;
@@ -197,7 +197,7 @@
 	/* Push the whole Vrsta/Datum/Stanje group well AWAY from the title: a big fixed
 	   gap after the narrow Naslov column, so the group sits far to its right. */
 	.art-table :is(th, td).art-col-first-mid {
-		padding-left: 8rem;
+		padding-left: 5rem;
 	}
 	.art-table :is(th, td).art-col-spacer {
 		width: auto;
@@ -217,7 +217,9 @@
 		height: 2.1rem;
 	}
 	.art-title {
-		max-width: 22rem;
+		/* Cap at the 2nd article's full width (~522px) so titles up to that length show
+		   in full and ONLY longer ones fade. */
+		max-width: 33rem;
 		white-space: nowrap;
 		overflow: hidden;
 	}
