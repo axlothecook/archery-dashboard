@@ -123,6 +123,7 @@
 			icon: PersonIcon,
 			children: [
 				{ label: 'Svi streličari', href: '/nadzorna-ploca/momcad/svi' },
+				{ label: 'Nacrti', href: '/nadzorna-ploca/momcad/nacrti' },
 				{ label: 'Novi streličar', href: '/nadzorna-ploca/momcad/novi' }
 			]
 		},

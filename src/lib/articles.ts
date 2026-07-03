@@ -1,0 +1,77 @@
+// Dashboard-side types + fetch helpers for the Vijesti (articles) section.
+// The list shape mirrors the backend's admin-only ArticleAdminRow DTO (see
+// Archery-club-backend/src/mappers/article.ts) returned by GET /admin/articles.
+// Real data — the same DB the public site reads (drafts included for admins).
+import { adminRequest } from '$lib/auth';
+
+export type ArticleMediaType = 'event' | 'gallery' | 'external-link' | 'video-only';
+export type ArticleStatus = 'draft' | 'published';
+
+// One row in the Objavljene vijesti / Nacrti tables.
+export type ArticleAdminRow = {
+	id: string;
+	slug: string;
+	title: string;
+	mediaType: ArticleMediaType;
+	status: ArticleStatus;
+	hidden: boolean;
+	source: 'facebook' | 'manual';
+	posterImage: { url: string; alt: string };
+	publishedAt: string | null; // ISO
+	updatedAt: string; // ISO
+	hasPendingDraft: boolean;
+	adminEdited: boolean;
+};
+
+// Croatian labels for the media-type badge.
+export const MEDIA_TYPE_LABEL: Record<ArticleMediaType, string> = {
+	event: 'Događaj',
+	gallery: 'Galerija',
+	'external-link': 'Vanjski link',
+	'video-only': 'Video'
+};
+
+// GET /admin/articles?status= — list articles for the dashboard. Pass a status to
+// filter (published / draft), or omit for all. Uses the load `fetch` + forwarded
+// cookie during SSR (like the other admin loads). Returns [] on a soft failure so
+// the page renders an empty/error state rather than crashing the whole section.
+export function fetchArticles(
+	status: ArticleStatus | undefined,
+	fetch?: typeof globalThis.fetch,
+	headers?: Record<string, string>
+): Promise<ArticleAdminRow[]> {
+	const q = status ? `?status=${status}` : '';
+	return adminRequest<ArticleAdminRow[]>(`/admin/articles${q}`, { fetch, headers });
+}
+
+// Payload for creating an article (POST /admin/articles). Matches the backend
+// createBody: HR source text + media + optional gallery/video/external + mentions.
+export type ArticleImageInput = { url: string; alt: string; order: number };
+export type CreateArticleInput = {
+	slug?: string;
+	mediaType: ArticleMediaType;
+	posterImageUrl: string;
+	posterImageAlt: string;
+	images: ArticleImageInput[];
+	videoUrl: string | null;
+	videoPosterUrl: string | null;
+	externalUrl: string | null;
+	externalSourceName: string | null;
+	status: ArticleStatus;
+	hidden: boolean;
+	mentionedArcherIds: string[];
+	title: string;
+	body: string;
+	excerpt: string;
+};
+
+export function createArticle(
+	input: CreateArticleInput,
+	fetch?: typeof globalThis.fetch
+): Promise<{ id: string; slug: string }> {
+	return adminRequest('/admin/articles', { method: 'POST', body: input, fetch });
+}
+
+export function deleteArticle(id: string, fetch?: typeof globalThis.fetch): Promise<{ ok: true }> {
+	return adminRequest(`/admin/articles/${id}`, { method: 'DELETE', fetch });
+}
