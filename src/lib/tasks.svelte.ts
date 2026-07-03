@@ -26,12 +26,22 @@ export const STATUS_LABEL: Record<TaskStatus, string> = {
 // The head admin who may approve tasks. Matches the current placeholder admin.
 export const HEAD_ADMIN = 'Joškica Pupić';
 
+// Placeholder due-dates are computed RELATIVE TO TODAY (not hardcoded) so the demo
+// always looks right whatever the day: tasks 1 & 2 stay upcoming, task 3 is today,
+// task 4 is 2 days before task 3 (overdue). `offset` = days from today; returns a
+// local yyyy-mm-dd string (matches TaskRow's local "today" for the overdue check).
+function dueInDays(offset: number): string {
+	const d = new Date();
+	d.setDate(d.getDate() + offset);
+	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 export const tasks = $state<Task[]>([
 	{
 		id: 't1',
 		title: 'Objaviti članak o pobjedi na Varaždin Openu',
 		assignee: 'zekke87',
-		due: '2026-07-04',
+		due: dueInDays(2), // upcoming
 		status: 'in_progress',
 		approved: false
 	},
@@ -39,7 +49,7 @@ export const tasks = $state<Task[]>([
 		id: 't2',
 		title: 'Dovršiti nacrt članka "Najava sezone" i objaviti ga',
 		assignee: 'axlothecook',
-		due: '2026-07-06',
+		due: dueInDays(4), // upcoming
 		status: 'pending',
 		approved: false
 	},
@@ -47,7 +57,7 @@ export const tasks = $state<Task[]>([
 		id: 't3',
 		title: 'Ažurirati biografiju za Amandu Mlinarić',
 		assignee: 'Joškica Pupić',
-		due: '2026-07-02',
+		due: dueInDays(0), // today
 		status: 'in_progress',
 		approved: true
 	},
@@ -55,7 +65,7 @@ export const tasks = $state<Task[]>([
 		id: 't4',
 		title: 'Dovršiti raspored za srpanj',
 		assignee: 'zekke87',
-		due: '2026-06-30',
+		due: dueInDays(-2), // 2 days before task 3 → overdue
 		status: 'done',
 		approved: true
 	}
