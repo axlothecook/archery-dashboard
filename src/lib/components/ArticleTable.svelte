@@ -76,7 +76,7 @@
 			<tr>
 				<th class="art-th-poster"></th>
 				<th class="art-col-title">Naslov</th>
-				<th class="art-col-mid">Vrsta</th>
+				<th class="art-col-mid art-col-first-mid">Vrsta</th>
 				<th class="art-col-mid">Datum</th>
 				<th class="art-col-mid">Stanje</th>
 				<th class="art-th-actions"></th>
@@ -94,7 +94,7 @@
 						{/if}
 					</td>
 					<td class="art-title fw-600 art-col-title" use:fadeIfOverflow={a.title}>{a.title}</td>
-					<td class="art-col-mid">
+					<td class="art-col-mid art-col-first-mid">
 						<span class="art-badge">{MEDIA_TYPE_LABEL[a.mediaType]}</span>
 					</td>
 					<td class="art-date text-jet-grey art-col-mid">{fmtDate(a.publishedAt)}</td>
@@ -179,6 +179,11 @@
 		white-space: nowrap;
 		padding-left: 0.6rem;
 		padding-right: 0.6rem;
+	}
+	/* Push the whole Vrsta/Datum/Stanje group AWAY from the title: a wide gap after
+	   the narrow Naslov column. */
+	.art-col-first-mid {
+		padding-left: 4rem;
 	}
 	.art-col-spacer {
 		width: auto;
