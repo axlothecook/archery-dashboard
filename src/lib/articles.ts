@@ -72,6 +72,26 @@ export function createArticle(
 	return adminRequest('/admin/articles', { method: 'POST', body: input, fetch });
 }
 
+// The full editable article (GET /admin/articles/:id) for the edit form.
+export type ArticleEditData = CreateArticleInput & { id: string; slug: string };
+
+export function fetchArticle(
+	id: string,
+	fetch?: typeof globalThis.fetch,
+	headers?: Record<string, string>
+): Promise<ArticleEditData> {
+	return adminRequest<ArticleEditData>(`/admin/articles/${id}`, { fetch, headers });
+}
+
+// PATCH /admin/articles/:id — update fields (all optional server-side).
+export function updateArticle(
+	id: string,
+	patch: Partial<CreateArticleInput>,
+	fetch?: typeof globalThis.fetch
+): Promise<{ ok: true }> {
+	return adminRequest(`/admin/articles/${id}`, { method: 'PATCH', body: patch, fetch });
+}
+
 export function deleteArticle(id: string, fetch?: typeof globalThis.fetch): Promise<{ ok: true }> {
 	return adminRequest(`/admin/articles/${id}`, { method: 'DELETE', fetch });
 }

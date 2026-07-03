@@ -9,6 +9,20 @@
 	import TrashIcon from '$lib/components/icons/TrashIcon.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 
+	// Per-cell action: add `.faded` when the (single-line, capped) title overflows, so
+	// the right edge fades to transparent (→ white panel) instead of showing a "…".
+	// Re-checks on the title text + on resize. Works per-row inside the {#each}.
+	function fadeIfOverflow(node: HTMLElement, _title: string) {
+		const check = () => node.classList.toggle('faded', node.scrollWidth > node.clientWidth + 1);
+		check();
+		const ro = new ResizeObserver(check);
+		ro.observe(node);
+		return {
+			update: () => check(),
+			destroy: () => ro.disconnect()
+		};
+	}
+
 	let {
 		articles = $bindable(),
 		emptyText,
@@ -61,11 +75,12 @@
 		<thead>
 			<tr>
 				<th class="art-th-poster"></th>
-				<th>Naslov</th>
-				<th>Vrsta</th>
-				<th>Datum</th>
-				<th>Stanje</th>
+				<th class="art-col-title">Naslov</th>
+				<th class="art-col-mid">Vrsta</th>
+				<th class="art-col-mid">Datum</th>
+				<th class="art-col-mid">Stanje</th>
 				<th class="art-th-actions"></th>
+				<th class="art-col-spacer"></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -78,18 +93,20 @@
 							<span class="art-poster art-poster--empty" aria-hidden="true"></span>
 						{/if}
 					</td>
-					<td class="art-title fw-600">{a.title}</td>
-					<td>
+					<td class="art-title fw-600 art-col-title" use:fadeIfOverflow={a.title}>{a.title}</td>
+					<td class="art-col-mid">
 						<span class="art-badge">{MEDIA_TYPE_LABEL[a.mediaType]}</span>
 					</td>
-					<td class="art-date text-jet-grey">{fmtDate(a.publishedAt)}</td>
-					<td class="art-flags">
-						<!-- The list is already status-scoped (Objavljene = published, Nacrti =
-						     draft), so the only per-row state worth flagging is "hidden". -->
-						{#if a.hidden}
-							<span class="art-flag art-flag--hidden">Skriveno</span>
+					<td class="art-date text-jet-grey art-col-mid">{fmtDate(a.publishedAt)}</td>
+					<td class="art-flags art-col-mid">
+						<!-- Always a state WORD: Nacrt (draft) / Skriveno (published but hidden) /
+						     Objavljeno (live). -->
+						{#if a.status === 'draft'}
+							<span class="art-state art-state--draft">Nacrt</span>
+						{:else if a.hidden}
+							<span class="art-state art-state--hidden">Skriveno</span>
 						{:else}
-							<span class="text-jet-grey">—</span>
+							<span class="art-state art-state--published">Objavljeno</span>
 						{/if}
 					</td>
 					<td class="art-actions-cell">
@@ -102,6 +119,7 @@
 							</button>
 						</div>
 					</td>
+					<td class="art-col-spacer"></td>
 				</tr>
 			{/each}
 		</tbody>
@@ -147,6 +165,26 @@
 		width: 1%;
 		padding-right: 0.5rem;
 	}
+	/* Column sizing: title fixed & narrower (overflow fades); the middle columns
+	   (Vrsta/Datum/Stanje) + actions shrink to content with tighter horizontal
+	   padding so they sit close together; a trailing spacer absorbs all leftover
+	   width so the empty space lands on the FAR RIGHT (not between Stanje and the
+	   actions). Net: narrower title, tight middle group, actions pulled left. */
+	.art-col-title {
+		width: 26rem;
+		max-width: 26rem;
+	}
+	.art-col-mid {
+		width: 1%;
+		white-space: nowrap;
+		padding-left: 0.6rem;
+		padding-right: 0.6rem;
+	}
+	.art-col-spacer {
+		width: auto;
+		padding: 0;
+		border-bottom: 0;
+	}
 	.art-poster {
 		display: block;
 		width: 3.4rem;
@@ -160,10 +198,17 @@
 		height: 2.1rem;
 	}
 	.art-title {
-		max-width: 22rem;
+		max-width: 26rem;
 		white-space: nowrap;
 		overflow: hidden;
-		text-overflow: ellipsis;
+	}
+	/* When the title overflows (the `faded` class is added imperatively by
+	   use:fadeIfOverflow), fade the right edge to transparent → the white panel shows
+	   through, instead of a "…" ellipsis. :global on the class since it's toggled in JS
+	   (svelte-check can't see it statically). */
+	.art-title:global(.faded) {
+		-webkit-mask-image: linear-gradient(to right, #000 82%, transparent 100%);
+		mask-image: linear-gradient(to right, #000 82%, transparent 100%);
 	}
 	.art-badge {
 		display: inline-block;
@@ -181,23 +226,32 @@
 	.art-flags {
 		white-space: nowrap;
 	}
-	.art-flag {
+	/* State word pill — always shown (never a bare dash). */
+	.art-state {
 		display: inline-block;
-		padding: 0.15rem 0.5rem;
+		padding: 0.2rem 0.6rem;
 		border-radius: 999px;
-		font-size: 0.78rem;
+		font-size: 0.8rem;
 		font-weight: 600;
-		margin-right: 0.3rem;
+		white-space: nowrap;
 	}
-	.art-flag--hidden {
+	.art-state--published {
+		background: #d4f3df;
+		color: #10683a;
+	}
+	.art-state--hidden {
 		background: #f1f3f7;
 		color: #5b6577;
+	}
+	.art-state--draft {
+		background: #fde7d8;
+		color: #8a4b1e;
 	}
 	.art-actions-cell {
 		width: 1%;
 	}
 	.art-actions {
-		gap: 0.25rem;
+		gap: 0.75rem;
 	}
 	.art-act {
 		align-items: center;
