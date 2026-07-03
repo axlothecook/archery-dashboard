@@ -11,6 +11,7 @@
 	import DashSelect from '$lib/components/DashSelect.svelte';
 	import AddIcon from '$lib/components/icons/AddIcon.svelte';
 	import NewsIcon from '$lib/components/icons/NewsIcon.svelte';
+	import FilterIcon from '$lib/components/icons/FilterIcon.svelte';
 
 	let { data } = $props();
 	// Local mutable copy (ArticleTable removes rows on delete); re-synced on load change.
@@ -83,27 +84,32 @@
 		</a>
 	</div>
 
-	<div class="panel bg-white column-nowrap">
-		{#if data.loadError}
-			<p class="art-load-error" role="alert">Učitavanje vijesti nije uspjelo. Osvježite stranicu ili pokušajte kasnije.</p>
-		{/if}
-
-		<!-- Filter bar -->
-		<div class="filter-bar display-f align-items-center gap-1">
-			<div class="filter-item">
+	<div class="layout">
+		<!-- Filter panel: its own div, standing to the LEFT of the articles. -->
+		<aside class="panel bg-white filter-panel column-nowrap gap-1">
+			<h3 class="filter-heading display-f align-items-center gap-0-5">
+				<FilterIcon size={18} />
+				Filteri
+			</h3>
+			<div class="filter-item column-nowrap gap-0-3">
 				<span class="filter-label">Mjesec</span>
 				<DashSelect options={monthOptions} bind:value={monthFilter} ariaLabel="Filtriraj po mjesecu" />
 			</div>
-			<div class="filter-item">
+			<div class="filter-item column-nowrap gap-0-3">
 				<span class="filter-label">Vrsta</span>
 				<DashSelect options={typeOptions} bind:value={typeFilter} ariaLabel="Filtriraj po vrsti" />
 			</div>
 			<span class="filter-count text-jet-grey">{filtered.length} od {articles.length}</span>
-		</div>
+		</aside>
 
-		<!-- Capped, scrollable list (navy Hitno-style scrollbar). -->
-		<div class="art-scroll">
-			<ArticleTable articles={filtered} emptyText="Nema vijesti za odabrane filtere." {onDeleted} />
+		<!-- Articles panel. -->
+		<div class="panel bg-white articles-panel column-nowrap">
+			{#if data.loadError}
+				<p class="art-load-error" role="alert">Učitavanje vijesti nije uspjelo. Osvježite stranicu ili pokušajte kasnije.</p>
+			{/if}
+			<div class="art-scroll">
+				<ArticleTable articles={filtered} emptyText="Nema vijesti za odabrane filtere." {onDeleted} />
+			</div>
 		</div>
 	</div>
 </section>
@@ -147,29 +153,39 @@
 		padding: 1.25rem 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
 	}
+	/* Two side-by-side panels: a fixed-width filter panel on the LEFT + the articles
+	   panel filling the rest of the width. */
+	.layout {
+		display: grid;
+		grid-template-columns: 16rem 1fr;
+		gap: 1.25rem;
+		align-items: start;
+	}
+	.filter-panel {
+		position: sticky;
+		top: 1rem;
+	}
+	.filter-heading {
+		margin: 0 0 0.25rem;
+		font-size: 1.05rem;
+		font-weight: 700;
+		color: #102e66;
+	}
+	.articles-panel {
+		min-width: 0;
+	}
 	.art-load-error {
 		margin: 0 0 1rem;
 		color: #a4133c;
 		font-size: 0.92rem;
 	}
-	.filter-bar {
-		margin-bottom: 1rem;
-		flex-wrap: wrap;
-	}
-	.filter-item {
-		min-width: 12rem;
-	}
 	.filter-label {
-		display: block;
-		margin-bottom: 0.25rem;
 		font-size: 0.8rem;
 		font-weight: 600;
 		color: #5b6577;
 	}
 	.filter-count {
-		/* Sit with the filters at the LEFT (not pushed to the far right). */
-		align-self: flex-end;
-		padding-bottom: 0.5rem;
+		margin-top: 0.25rem;
 		font-size: 0.85rem;
 	}
 	/* Cap the list height so the page never grows past the screen; scroll within.
@@ -198,5 +214,14 @@
 		display: none;
 		width: 0;
 		height: 0;
+	}
+	/* Stack the filter panel above the articles on narrow screens. */
+	@media (max-width: 820px) {
+		.layout {
+			grid-template-columns: 1fr;
+		}
+		.filter-panel {
+			position: static;
+		}
 	}
 </style>
