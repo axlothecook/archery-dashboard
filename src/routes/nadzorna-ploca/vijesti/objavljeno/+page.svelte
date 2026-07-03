@@ -87,10 +87,13 @@
 	<div class="layout">
 		<!-- Filter panel: its own div, standing to the LEFT of the articles. -->
 		<aside class="panel bg-white filter-panel column-nowrap gap-1">
-			<h3 class="filter-heading display-f align-items-center gap-0-5">
-				<FilterIcon size={18} />
-				Filteri
-			</h3>
+			<div class="filter-head display-f align-items-center justify-content-space-between">
+				<h3 class="filter-heading display-f align-items-center gap-0-5">
+					<FilterIcon size={18} />
+					Filteri
+				</h3>
+				<span class="filter-count text-jet-grey">{filtered.length} od {articles.length}</span>
+			</div>
 			<div class="filter-item column-nowrap gap-0-3">
 				<span class="filter-label">Mjesec</span>
 				<DashSelect options={monthOptions} bind:value={monthFilter} ariaLabel="Filtriraj po mjesecu" />
@@ -99,7 +102,6 @@
 				<span class="filter-label">Vrsta</span>
 				<DashSelect options={typeOptions} bind:value={typeFilter} ariaLabel="Filtriraj po vrsti" />
 			</div>
-			<span class="filter-count text-jet-grey">{filtered.length} od {articles.length}</span>
 		</aside>
 
 		<!-- Articles panel. -->
@@ -166,7 +168,7 @@
 		top: 1rem;
 	}
 	.filter-heading {
-		margin: 0 0 0.25rem;
+		margin: 0;
 		font-size: 1.05rem;
 		font-weight: 700;
 		color: #102e66;
@@ -185,7 +187,6 @@
 		color: #5b6577;
 	}
 	.filter-count {
-		margin-top: 0.25rem;
 		font-size: 0.85rem;
 	}
 	/* Cap the list height so the page never grows past the screen; scroll within.

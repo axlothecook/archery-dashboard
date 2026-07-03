@@ -148,7 +148,6 @@
 								     visibility and flips the Stanje live. -->
 								<button
 									class="art-act cursor-pointer display-f"
-									class:art-act--hidden={a.hidden}
 									type="button"
 									aria-pressed={a.hidden}
 									aria-label={a.hidden ? 'Prikaži na javnoj stranici' : 'Sakrij s javne stranice'}
@@ -216,22 +215,27 @@
 	/* NB: prefixed with .art-table th/td to out-specify the base `.art-table td`
 	   padding rule (compound selector), which otherwise wins and eats these. */
 	.art-table :is(th, td).art-col-title {
-		width: 33rem;
-		max-width: 33rem;
+		width: 25rem;
+		max-width: 25rem;
 	}
 	.art-table :is(th, td).art-col-mid {
 		width: 1%;
 		white-space: nowrap;
-		padding-left: 0.9rem;
-		padding-right: 0.9rem;
+		/* Wider inter-column spacing so the Vrsta / Datum / Stanje / actions group
+		   spreads out and extends further to the right (Vrsta itself stays put). */
+		padding-left: 2.25rem;
+		padding-right: 2.25rem;
 	}
-	/* Push the whole Vrsta/Datum/Stanje group well AWAY from the title: a big fixed
-	   gap after the narrow Naslov column, so the group sits far to its right. */
+	/* Gap after the title before Vrsta. Kept modest so the widened inter-column gaps
+	   fit without overflowing (Vrsta still sits clear of the title). */
 	.art-table :is(th, td).art-col-first-mid {
-		padding-left: 6rem;
+		padding-left: 2rem;
 	}
 	.art-table :is(th, td).art-col-spacer {
+		/* Keeps a slight gap between the rightmost (actions) column and the scrollbar,
+		   even when the table is wide enough to otherwise collapse the slack. */
 		width: auto;
+		min-width: 1.25rem;
 		padding: 0;
 		border-bottom: 0;
 	}
@@ -248,9 +252,9 @@
 		height: 2.1rem;
 	}
 	.art-title {
-		/* Cap at the 2nd article's full width (~522px) so titles up to that length show
-		   in full and ONLY longer ones fade. */
-		max-width: 33rem;
+		/* Title cap; longer titles fade at the edge. Sized so the widened column gaps +
+		   actions still fit the panel without horizontal scroll. */
+		max-width: 25rem;
 		white-space: nowrap;
 		overflow: hidden;
 	}
@@ -292,8 +296,8 @@
 		color: #10683a;
 	}
 	.art-state--hidden {
-		background: #f1f3f7;
-		color: #5b6577;
+		background: #fdefc4;
+		color: #7a5b00;
 	}
 	.art-state--draft {
 		background: #fde7d8;
@@ -301,6 +305,7 @@
 	}
 	.art-actions-cell {
 		width: 1%;
+		padding-left: 2.25rem; /* match the inter-column spacing */
 	}
 	.art-actions {
 		gap: 0.75rem;
@@ -319,8 +324,6 @@
 	.art-act--del:hover {
 		color: #d32752;
 	}
-	/* Eye toggle when the article is hidden: muted so it reads as "currently off". */
-	.art-act--hidden {
-		color: #9aa3b2;
-	}
+	/* All three action icons share the same base colour + size; the eye's glyph
+	   (eye vs eye-off) alone conveys the hidden state, so it isn't recoloured. */
 </style>
