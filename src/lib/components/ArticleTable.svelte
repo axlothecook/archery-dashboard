@@ -99,13 +99,13 @@
 				<th class="art-col-title-head" colspan="2">
 					<span class="th-in display-f align-items-center gap-0-4"><TextSizeIcon size={18} />Naslov</span>
 				</th>
-				<th class="art-col-mid art-col-first-mid">
+				<th class="art-col-mid art-col-first-mid art-col-vrsta">
 					<span class="th-in display-f align-items-center gap-0-4"><CategoryIcon size={18} />Vrsta</span>
 				</th>
-				<th class="art-col-mid">
+				<th class="art-col-mid art-col-datum">
 					<span class="th-in display-f align-items-center gap-0-4"><ClockIcon size={18} />Datum</span>
 				</th>
-				<th class="art-col-mid">
+				<th class="art-col-mid art-col-stanje">
 					<span class="th-in display-f align-items-center gap-0-4"><StatusIcon size={18} />Stanje</span>
 				</th>
 				<th class="art-th-actions"></th>
@@ -123,11 +123,11 @@
 						{/if}
 					</td>
 					<td class="art-title fw-600 art-col-title" use:fadeIfOverflow={a.title}>{a.title}</td>
-					<td class="art-col-mid art-col-first-mid">
+					<td class="art-col-mid art-col-first-mid art-col-vrsta">
 						<span class="art-badge art-badge--{a.mediaType}">{MEDIA_TYPE_LABEL[a.mediaType]}</span>
 					</td>
-					<td class="art-date text-jet-grey art-col-mid">{fmtDate(a.publishedAt)}</td>
-					<td class="art-flags art-col-mid">
+					<td class="art-date text-jet-grey art-col-mid art-col-datum">{fmtDate(a.publishedAt)}</td>
+					<td class="art-flags art-col-mid art-col-stanje">
 						<!-- Always a state WORD: Nacrt (draft) / Skriveno (published but hidden) /
 						     Objavljeno (live). -->
 						{#if a.status === 'draft'}
@@ -220,13 +220,25 @@
 	}
 	/* EQUAL gap between the four right columns (Vrsta / Datum / Stanje / actions):
 	   each carries the SAME left padding (the gap before it) and a minimal right pad,
-	   so every adjacent-column gap is identical. */
+	   so every adjacent-column gap is identical. FIXED widths (not shrink-to-content)
+	   so the columns keep the SAME positions regardless of which rows the filter shows. */
 	.art-table :is(th, td).art-col-mid,
 	.art-table :is(th, td).art-actions-cell {
-		width: 1%;
 		white-space: nowrap;
 		padding-left: 3.5rem;
 		padding-right: 0;
+	}
+	.art-table :is(th, td).art-col-vrsta {
+		width: 9rem;
+	}
+	.art-table :is(th, td).art-col-datum {
+		width: 7rem;
+	}
+	.art-table :is(th, td).art-col-stanje {
+		width: 8rem;
+	}
+	.art-table :is(th, td).art-actions-cell {
+		width: 8rem;
 	}
 	/* Vrsta is the first of the group; its left padding is the (equal) gap after the
 	   title, matching the gaps between the other columns. */
@@ -289,8 +301,8 @@
 		color: #9a4a12;
 	}
 	.art-badge--video-only {
-		background: #dbeafe; /* supermarket blue */
-		color: #1552b0;
+		background: #fbdce2; /* crimson red */
+		color: #9e1230;
 	}
 	.art-date {
 		white-space: nowrap;
