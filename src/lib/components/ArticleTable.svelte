@@ -154,7 +154,7 @@
 									title={a.hidden ? 'Skriveno — klik za prikaz' : 'Vidljivo — klik za skrivanje'}
 									onclick={() => toggleHidden(a)}
 								>
-									{#if a.hidden}<EyeOffIcon size={18} />{:else}<EyeIcon size={18} />{/if}
+									{#if a.hidden}<EyeOffIcon size={22} />{:else}<EyeIcon size={22} />{/if}
 								</button>
 							{/if}
 							<button class="art-act art-act--del cursor-pointer display-f" type="button" aria-label="Izbriši" title="Izbriši" onclick={() => remove(a)}>
@@ -290,7 +290,8 @@
 		display: inline-block;
 		min-width: 6.5rem;
 		text-align: center;
-		padding: 0.4rem 0.7rem;
+		/* Less horizontal, more vertical padding (taller pill). */
+		padding: 0.55rem 0.4rem;
 		border-radius: 999px;
 		font-size: 0.8rem;
 		font-weight: 600;
