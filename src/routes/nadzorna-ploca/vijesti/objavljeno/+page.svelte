@@ -1,18 +1,69 @@
 <script lang="ts">
-	// Vijesti → Objavljene vijesti: the list of published articles (real backend
-	// data). Shares the ArticleTable with the Nacrti tab.
-	import type { ArticleAdminRow } from '$lib/articles';
+	// Vijesti → Objavljene vijesti: published articles (real backend data). Filters by
+	// month + media type make a long list parseable; the list scrolls within a capped
+	// height (same navy Hitno-style scrollbar) so the page itself doesn't grow forever.
+	import {
+		MEDIA_TYPE_LABEL,
+		type ArticleAdminRow,
+		type ArticleMediaType
+	} from '$lib/articles';
 	import ArticleTable from '$lib/components/ArticleTable.svelte';
+	import DashSelect from '$lib/components/DashSelect.svelte';
 	import AddIcon from '$lib/components/icons/AddIcon.svelte';
 	import NewsIcon from '$lib/components/icons/NewsIcon.svelte';
 
 	let { data } = $props();
-	// Local mutable copy (ArticleTable removes rows on delete). Seeded from the load
-	// data and re-synced whenever it changes (e.g. navigating back re-runs the load).
+	// Local mutable copy (ArticleTable removes rows on delete); re-synced on load change.
 	let articles = $state<ArticleAdminRow[]>([]);
 	$effect(() => {
 		articles = data.articles;
 	});
+
+	// ── Filters ────────────────────────────────────────────────────────────────
+	let monthFilter = $state('all'); // 'all' | 'YYYY-MM'
+	let typeFilter = $state('all'); // 'all' | ArticleMediaType
+
+	const HR_MONTHS = [
+		'siječanj', 'veljača', 'ožujak', 'travanj', 'svibanj', 'lipanj',
+		'srpanj', 'kolovoz', 'rujan', 'listopad', 'studeni', 'prosinac'
+	];
+
+	// Month options built from the articles actually present (newest first), so you
+	// only ever pick a month that has content. Value = YYYY-MM, label = "srpanj 2026.".
+	const monthOptions = $derived.by(() => {
+		const seen = new Map<string, string>();
+		for (const a of articles) {
+			if (!a.publishedAt) continue;
+			const d = new Date(a.publishedAt);
+			const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+			if (!seen.has(key)) seen.set(key, `${HR_MONTHS[d.getMonth()]} ${d.getFullYear()}.`);
+		}
+		const opts = [...seen.entries()].sort((a, b) => b[0].localeCompare(a[0]));
+		return [{ value: 'all', label: 'Svi mjeseci' }, ...opts.map(([value, label]) => ({ value, label }))];
+	});
+
+	const typeOptions = [
+		{ value: 'all', label: 'Sve vrste' },
+		...(Object.keys(MEDIA_TYPE_LABEL) as ArticleMediaType[]).map((v) => ({ value: v, label: MEDIA_TYPE_LABEL[v] }))
+	];
+
+	const filtered = $derived(
+		articles.filter((a) => {
+			if (typeFilter !== 'all' && a.mediaType !== typeFilter) return false;
+			if (monthFilter !== 'all') {
+				if (!a.publishedAt) return false;
+				const d = new Date(a.publishedAt);
+				const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+				if (key !== monthFilter) return false;
+			}
+			return true;
+		})
+	);
+	// ArticleTable binds `articles` for its delete-removal; the filtered view is
+	// read-only, so pass a copy and let deletes flow through the master list instead.
+	function onDeleted(id: string) {
+		articles = articles.filter((a) => a.id !== id);
+	}
 </script>
 
 <svelte:head><title>Objavljene vijesti · VSK</title></svelte:head>
@@ -32,11 +83,28 @@
 		</a>
 	</div>
 
-	<div class="panel bg-white">
+	<div class="panel bg-white column-nowrap">
 		{#if data.loadError}
 			<p class="art-load-error" role="alert">Učitavanje vijesti nije uspjelo. Osvježite stranicu ili pokušajte kasnije.</p>
 		{/if}
-		<ArticleTable bind:articles emptyText="Još nema objavljenih vijesti." />
+
+		<!-- Filter bar -->
+		<div class="filter-bar display-f align-items-center gap-1">
+			<div class="filter-item">
+				<span class="filter-label">Mjesec</span>
+				<DashSelect options={monthOptions} bind:value={monthFilter} ariaLabel="Filtriraj po mjesecu" />
+			</div>
+			<div class="filter-item">
+				<span class="filter-label">Vrsta</span>
+				<DashSelect options={typeOptions} bind:value={typeFilter} ariaLabel="Filtriraj po vrsti" />
+			</div>
+			<span class="filter-count text-jet-grey">{filtered.length} od {articles.length}</span>
+		</div>
+
+		<!-- Capped, scrollable list (navy Hitno-style scrollbar). -->
+		<div class="art-scroll">
+			<ArticleTable articles={filtered} emptyText="Nema vijesti za odabrane filtere." {onDeleted} />
+		</div>
 	</div>
 </section>
 
@@ -82,5 +150,52 @@
 		margin: 0 0 1rem;
 		color: #a4133c;
 		font-size: 0.92rem;
+	}
+	.filter-bar {
+		margin-bottom: 1rem;
+		flex-wrap: wrap;
+	}
+	.filter-item {
+		min-width: 12rem;
+	}
+	.filter-label {
+		display: block;
+		margin-bottom: 0.25rem;
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: #5b6577;
+	}
+	.filter-count {
+		margin-left: auto;
+		align-self: flex-end;
+		padding-bottom: 0.5rem;
+		font-size: 0.85rem;
+	}
+	/* Cap the list height so the page never grows past the screen; scroll within.
+	   Navy scrollbar to match the Hitno panel. calc keeps it within the viewport
+	   below the header + filter bar. */
+	.art-scroll {
+		max-height: calc(100vh - 22rem);
+		min-height: 8rem;
+		overflow-y: auto;
+	}
+	.art-scroll::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+	.art-scroll::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.art-scroll::-webkit-scrollbar-thumb {
+		background: #102e66;
+		border-radius: 4px;
+	}
+	.art-scroll::-webkit-scrollbar-corner {
+		background: transparent;
+	}
+	.art-scroll::-webkit-scrollbar-button {
+		display: none;
+		width: 0;
+		height: 0;
 	}
 </style>

@@ -33,11 +33,11 @@
 		onToggle?: () => void;
 	} = $props();
 
-	// A child is active on exact match or nested under it.
+	// A child is active on exact match or nested under it (used to highlight the
+	// selected SUB-OPTION). The parent itself is intentionally NOT highlighted when a
+	// child is active — the sub-option carries the active state, not the parent.
 	const childActive = (href: string) =>
 		page.url.pathname === href || page.url.pathname.startsWith(href + '/');
-	// The group is "active" (highlight the parent) when any child route is active.
-	const groupActive = $derived(items.some((c) => childActive(c.href)));
 
 	function toggle() {
 		onToggle?.();
@@ -47,7 +47,6 @@
 <div class="rail-group column-nowrap">
 	<button
 		class="rail-link rail-group-btn display-f align-items-center br-sm text-white w-full cursor-pointer"
-		class:active={groupActive}
 		class:compact
 		type="button"
 		aria-expanded={open}
@@ -114,11 +113,8 @@
 	.rail-link:hover {
 		background: rgba(255, 255, 255, 0.16);
 	}
-	.rail-link.active {
-		background: #fff;
-		color: #187ff5; /* blue-dress — reads as "active" against the blue rail */
-		font-weight: 600;
-	}
+	/* NB: the parent (group) button is intentionally NOT highlighted when a child is
+	   active — the active state lives on the selected sub-option, not the parent. */
 
 	/* Chevron sits at the far end, rotates down when the submenu is open. */
 	.rail-chevron {

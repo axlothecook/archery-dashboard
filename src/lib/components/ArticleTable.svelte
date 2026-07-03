@@ -11,10 +11,14 @@
 
 	let {
 		articles = $bindable(),
-		emptyText
+		emptyText,
+		onDeleted
 	}: {
 		articles: ArticleAdminRow[];
 		emptyText: string;
+		// When the parent owns the master list (e.g. a filtered view), it passes
+		// onDeleted and we call it instead of mutating our (derived, read-only) prop.
+		onDeleted?: (id: string) => void;
 	} = $props();
 
 	let confirmDlg = $state<ConfirmDialog>();
@@ -38,7 +42,8 @@
 		if (!ok) return;
 		try {
 			await deleteArticle(a.id);
-			articles = articles.filter((x) => x.id !== a.id);
+			if (onDeleted) onDeleted(a.id);
+			else articles = articles.filter((x) => x.id !== a.id);
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Brisanje nije uspjelo.';
 		}
