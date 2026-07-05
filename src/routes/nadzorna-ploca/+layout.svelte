@@ -66,10 +66,28 @@
 	];
 	let noticesOpen = $state(false);
 	const noticeCount = $derived(notifications.length);
-	const hasNew = $derived(noticeCount > 0);
+	// The bell's red dot means "there are new notifications". It clears once the user
+	// OPENS the panel (they've now seen there are notifications), so it doesn't keep
+	// nagging on every visit.
+	let seenNotices = $state(false);
+	// The "Novo (N)" count is a first-time nudge: once the user has opened and then
+	// CLOSED the panel, they've seen them all, so on reopen we drop the "(N)" and show
+	// just "Novo".
+	let noticesClosedOnce = $state(false);
+	const hasNew = $derived(noticeCount > 0 && !seenNotices);
+	const showNoticeCount = $derived(!noticesClosedOnce);
 
+	function openNotices() {
+		noticesOpen = true;
+		seenNotices = true; // opening acknowledges the red dot
+	}
+	function closeNotices() {
+		if (noticesOpen) noticesClosedOnce = true; // first close hides the "(N)" on reopen
+		noticesOpen = false;
+	}
 	function toggleNotices() {
-		noticesOpen = !noticesOpen;
+		if (noticesOpen) closeNotices();
+		else openNotices();
 	}
 	// Respect the OS "reduce motion" setting — skip the open/close animation then.
 	const reduceMotion =
@@ -78,14 +96,15 @@
 	const noticeAnim = reduceMotion
 		? { start: 1, duration: 0 }
 		: { start: 0.95, duration: 160, easing: cubicOut };
-	// Close the dropdown on an outside click or Escape.
+	// Close the dropdown on an outside click or Escape (both count as the user having
+	// closed it → the "(N)" count drops on reopen).
 	function onWindowClick(e: MouseEvent) {
 		if (!noticesOpen) return;
 		const t = e.target as HTMLElement;
-		if (!t.closest('.notif')) noticesOpen = false;
+		if (!t.closest('.notif')) closeNotices();
 	}
 	function onWindowKey(e: KeyboardEvent) {
-		if (e.key === 'Escape') noticesOpen = false;
+		if (e.key === 'Escape') closeNotices();
 	}
 
 	// Dashboard sections (built incrementally; hrefs may 404 until their editor
@@ -309,11 +328,13 @@
 						>
 							<div class="notif-head display-f align-items-baseline">
 								<span class="notif-title">Novo</span>
-								<span class="notif-count">({noticeCount})</span>
+								{#if showNoticeCount}
+									<span class="notif-count">({noticeCount})</span>
+								{/if}
 							</div>
-							<div class="notif-list column-nowrap gap-0-6">
+							<div class="notif-list column-nowrap gap-0-6 custom-scrollbar">
 								{#each notifications as n (n.id)}
-									<NoticeItem notice={n} onNavigate={() => (noticesOpen = false)} />
+									<NoticeItem notice={n} onNavigate={closeNotices} />
 								{:else}
 									<p class="notif-empty">Nema novih obavijesti.</p>
 								{/each}
@@ -354,7 +375,11 @@
 	.admin-shell {
 		display: grid;
 		grid-template-columns: 280px 1fr;
-		min-height: 100dvh;
+		/* Fixed to the viewport so the PAGE never scrolls — only designated inner divs
+		   (Hitno, the article table, a tall textarea, …) scroll. Bounding the shell here
+		   (base layout) makes every page share the same frame + bottom gap, so it never
+		   needs per-page height tuning. */
+		height: 100dvh;
 		color: #102e66; /* deep-sapphire ink on the light page */
 		transition: grid-template-columns 0.25s ease;
 	}
@@ -445,9 +470,12 @@
 		gap: 0.15rem;
 		flex: 1 0 auto;
 	}
-	/* ---- Body (topbar + content) ---- column-nowrap via utility. */
+	/* ---- Body (topbar + content) ---- column-nowrap via utility. Bounded to the shell
+	   height so .admin-content fills the space below the top bar (min-height:0 lets the
+	   content area shrink and delegate overflow to its inner scroll divs). */
 	.admin-body {
 		min-width: 0;
+		min-height: 0;
 	}
 
 	/* ---- Top bar ---- */
@@ -607,40 +635,12 @@
 		color: #e60023; /* same red as the bell notification dot */
 	}
 	/* Scrollable list: ~6 items tall, scroll on overflow. Layout via utilities
-	   (column-nowrap gap-0-6). */
+	   (column-nowrap gap-0-6). Scrollbar styling comes from the shared
+	   `.custom-scrollbar` class (library). */
 	.notif-list {
 		padding: 1rem;
 		max-height: 31.3rem; /* shows exactly 5 items; the 6th+ are fully clipped out of view (scroll to reach) */
 		overflow-y: auto;
-		/* NOTE: deliberately NOT setting `scrollbar-width`/`scrollbar-color` here.
-		   When the standard `scrollbar-width` is set, Chromium switches to the
-		   standard scrollbar and IGNORES the ::-webkit-scrollbar rules below — which
-		   left the native OS arrow buttons visible. Using only the webkit path lets
-		   the custom thumb + button-removal actually apply (the user is on Chromium).
-		   Firefox would show its default thin bar, which is acceptable. */
-	}
-	/* Fully define EVERY scrollbar part (incl. width+height) so Chromium uses the
-	   custom scrollbar and does NOT fall back to the OS scrollbar (whose stepper
-	   arrows can't be removed) — the same approach the public archer page uses. */
-	.notif-list::-webkit-scrollbar {
-		width: 8px;
-		height: 8px;
-	}
-	.notif-list::-webkit-scrollbar-track {
-		background: transparent;
-	}
-	.notif-list::-webkit-scrollbar-thumb {
-		background: #102e66; /* same as the bell SVG colour */
-		border-radius: 4px;
-	}
-	.notif-list::-webkit-scrollbar-corner {
-		background: transparent;
-	}
-	/* No stepper arrows at the ends of the scrollbar (all directions/positions). */
-	.notif-list::-webkit-scrollbar-button {
-		display: none;
-		width: 0;
-		height: 0;
 	}
 	.notif-empty {
 		margin: 0;
@@ -691,11 +691,27 @@
 	}
 
 	/* ---- Content ---- */
+	/* The shared padded frame for EVERY page. The page never scrolls: this area is
+	   bounded to the remaining viewport height and clips overflow — each page delegates
+	   its overflow to a designated inner scroll div. The 2rem bottom padding is the
+	   shared bottom gap all pages inherit (no per-page tuning). */
 	.admin-content {
 		position: relative; /* anchor for the top-left toast stack */
-		flex: 1 0 auto; /* fill the body height so the bg covers the whole content area */
+		flex: 1 1 auto; /* fill the body height below the top bar */
+		min-height: 0; /* allow inner scroll children to bound to this height */
+		overflow: hidden; /* page doesn't scroll; inner divs do */
+		display: flex;
+		flex-direction: column;
 		padding: 2rem 9.5rem 2rem 3rem; /* wider right gap to the screen edge */
 		background: #e2e8f0;
+	}
+	/* The page content wrapper fills the content frame so a page's own scroll div can
+	   bound to the available height. Direct page children (the <section>) stretch. */
+	.admin-content > :global(section) {
+		min-height: 0;
+		display: flex;
+		flex-direction: column;
+		flex: 1 1 auto;
 	}
 
 	/* ---- Responsive: collapse the rail to a top strip on small screens ---- */

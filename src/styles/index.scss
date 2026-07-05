@@ -48,6 +48,7 @@ $text: #102e66; // ink (deep-sapphire) on the light bg
 @import 'axlothecook-sass-library/sass-library/components/navbar';
 @import 'axlothecook-sass-library/sass-library/components/notification';
 @import 'axlothecook-sass-library/sass-library/components/radioInput';
+@import 'axlothecook-sass-library/sass-library/components/scrollbar';
 @import 'axlothecook-sass-library/sass-library/components/searchBar';
 // NB: `components/select` is intentionally OMITTED. The dashboard uses its own custom
 // DashSelect (`.dash-select-*`), not the library `.default-select`. That partial also
@@ -119,6 +120,26 @@ body {
 	font-family: var(--font-primary);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+}
+
+// Laptop scaling: on shorter viewports (≈1366×768 and down) shrink the whole dashboard
+// via the root font-size so the rem-based heights, padding, and text all scale down
+// together — the dashboard fits without the page scrolling / clipping, while larger
+// screens keep the full 16px sizing. Base layer so every page inherits it.
+@media (max-height: 900px) {
+	html {
+		font-size: 14px;
+	}
+}
+@media (max-height: 820px) {
+	html {
+		font-size: 12px;
+	}
+}
+@media (max-height: 700px) {
+	html {
+		font-size: 11px;
+	}
 }
 
 a {

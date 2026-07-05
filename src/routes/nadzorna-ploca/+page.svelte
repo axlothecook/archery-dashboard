@@ -20,7 +20,13 @@
 	import SchedulePanel from '$lib/components/SchedulePanel.svelte';
 	import TasksPanel from '$lib/components/TasksPanel.svelte';
 	import MailPanel from '$lib/components/MailPanel.svelte';
+	import { MAILS } from '$lib/mail';
 	import { team, getCurrentAdmin } from '$lib/teamStore.svelte';
+
+	// Show a "(N)" count next to "Dolazna pošta" only when there are MORE than the 3 that
+	// fit without scrolling — mirrors the notifications "Novo (N)" cue.
+	const mailCount = MAILS.length;
+	const showMailCount = mailCount > 3;
 	import type { Urgent } from '$lib/urgent';
 
 	// Component refs so the outside heading rows can drive the panels.
@@ -135,7 +141,7 @@
 	// reusable <TeamMember> component.
 </script>
 
-<div class="dash grid gap-2 align-items-start">
+<div class="dash grid gap-2 align-items-stretch">
 	<!-- Main column: greeting (item 16) + tasks table (21) + schedule (20) -->
 	<section class="dash-main">
 		<!-- Greeting: date + time-of-day greeting + admin name. -->
@@ -193,6 +199,7 @@
 					<h2 class="dash-heading display-f align-items-center gap-0-5">
 						<span class="head-ico"><MailAltIcon size={22} /></span>
 						Dolazna pošta
+						{#if showMailCount}<span class="mail-count">({mailCount})</span>{/if}
 					</h2>
 				</div>
 				<MailPanel />
@@ -208,7 +215,7 @@
 			<span class="urgent-ico"><UrgentIcon size={24} color={urgent.length ? '#ff7800' : '#16a34a'} /></span>
 		</h2>
 		<div class="panel bg-white urgent-panel" class:is-empty={urgent.length === 0}>
-			<div class="urgent-scroll" class:is-empty={urgent.length === 0}>
+			<div class="urgent-scroll custom-scrollbar" class:is-empty={urgent.length === 0}>
 				{#each urgent as u (u.id)}
 					<UrgentItem item={u} onRemove={removeUrgent} />
 				{:else}
@@ -259,6 +266,12 @@
 		   margin-bottom (1.55rem), so "Hitno" stays aligned with the greeting TITLE. */
 		margin-top: 2.15rem;
 		margin-right: 1.5rem;
+		/* Column flex so the last panel (Administracija) can grow to fill down to the
+		   left column's bottom — the grid's align-items:stretch makes both columns equal
+		   height, and .team-list flex-grow claims the leftover space so its bottom lines
+		   up with the Raspored/Dolazna posta panels on the left. */
+		display: flex;
+		flex-direction: column;
 	}
 
 	.dash-heading {
@@ -269,6 +282,13 @@
 	}
 	.dash-heading.mt {
 		margin-top: 1.75rem;
+	}
+	/* "(N)" mail count next to the Dolazna pošta title — same red cue as the
+	   notifications "Novo (N)". */
+	.mail-count {
+		font-size: 1rem;
+		font-weight: 600;
+		color: #e60023;
 	}
 	/* Heading row: title on the left, an action (Dodaj zadatak / week arrows) on the
 	   right — the heading's own bottom margin spaces it from the panel below. The
@@ -368,6 +388,7 @@
 		/* Gap between the item cards and the scrollbar (inside the scroll area) so the
 		   scrollbar doesn't touch the content's right edge. */
 		padding-right: 0.75rem;
+		/* Scrollbar styling comes from the shared `.custom-scrollbar` class (library). */
 	}
 	.urgent-scroll.is-empty {
 		overflow: visible;
@@ -377,31 +398,13 @@
 		font-size: 0.88rem;
 		color: #5b6577;
 	}
-	.urgent-scroll::-webkit-scrollbar {
-		width: 8px;
-		height: 8px;
-	}
-	.urgent-scroll::-webkit-scrollbar-track {
-		background: transparent;
-	}
-	.urgent-scroll::-webkit-scrollbar-thumb {
-		background: #102e66;
-		border-radius: 4px;
-	}
-	.urgent-scroll::-webkit-scrollbar-corner {
-		background: transparent;
-	}
-	.urgent-scroll::-webkit-scrollbar-button {
-		display: none;
-		width: 0;
-		height: 0;
-	}
 
 	/* ---- Team list (column-nowrap gap-1-1 via utilities; rows are <TeamMember>) ----
-	   min-height so the Tim panel's bottom lines up with the Raspored + Dolazna pošta
-	   panels below-left (which are 20rem tall but start higher). */
+	   flex-grow so the Administracija panel fills the rest of the right column and its
+	   bottom lines up with the Raspored + Dolazna pošta panels on the left (the grid's
+	   align-items:stretch + .dash-side flex column make this exact, whatever the content). */
 	.team-list {
-		min-height: 17.3rem;
+		flex: 1 1 auto;
 	}
 
 	/* ---- Responsive ---- */
