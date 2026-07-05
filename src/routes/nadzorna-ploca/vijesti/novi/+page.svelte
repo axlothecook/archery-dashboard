@@ -127,7 +127,7 @@
 		<p class="form-error" role="alert">{error}</p>
 	{/if}
 
-	<form class="panel bg-white" onsubmit={(e) => e.preventDefault()}>
+	<form class="panel bg-white custom-scrollbar" onsubmit={(e) => e.preventDefault()}>
 		<div class="form-grid">
 			<!-- LEFT: the article text (fills the tall column). -->
 			<div class="col column-nowrap gap-1">
@@ -285,6 +285,11 @@
 		border-radius: 14px;
 		padding: 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
+		/* Fill the shared content frame and scroll the form INSIDE the panel (the page
+		   never scrolls; the panel bottoms on the shared 2rem line like every page). */
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow-y: auto;
 	}
 	/* Two columns: text left, media/meta right. The left body textarea grows to keep
 	   both columns roughly the same height so the whole form fits without page scroll. */

@@ -109,7 +109,7 @@
 			{#if data.loadError}
 				<p class="art-load-error" role="alert">Učitavanje vijesti nije uspjelo. Osvježite stranicu ili pokušajte kasnije.</p>
 			{/if}
-			<div class="art-scroll">
+			<div class="art-scroll custom-scrollbar">
 				<ArticleTable articles={filtered} emptyText="Nema vijesti za odabrane filtere." {onDeleted} />
 			</div>
 		</div>
@@ -162,6 +162,10 @@
 		grid-template-columns: 16rem 1fr;
 		gap: 1.25rem;
 		align-items: start;
+		/* Fill the remaining height of the section so the articles panel + its inner
+		   scroll bound to the shared frame (no page scroll). */
+		flex: 1 1 auto;
+		min-height: 0;
 	}
 	.filter-panel {
 		position: sticky;
@@ -175,6 +179,9 @@
 	}
 	.articles-panel {
 		min-width: 0;
+		/* Fill the grid row height + be a flex column so .art-scroll bounds to it. */
+		align-self: stretch;
+		min-height: 0;
 	}
 	.art-load-error {
 		margin: 0 0 1rem;
@@ -189,36 +196,18 @@
 	.filter-count {
 		font-size: 0.85rem;
 	}
-	/* Cap the list height so the page never grows past the screen; scroll within.
-	   Navy scrollbar to match the Hitno panel. calc keeps it within the viewport
-	   below the header + filter bar. */
+	/* The list fills the remaining height of the shared content frame and scrolls inside
+	   (the page itself never scrolls — see .admin-content). No per-page viewport calc:
+	   flex + min-height:0 lets it bound to whatever height the shared frame gives it. */
 	.art-scroll {
-		max-height: calc(100vh - 22rem);
+		flex: 1 1 auto;
 		min-height: 8rem;
 		overflow-y: auto;
 		/* Columns are kept to the RIGHT (wide title + wide inter-column gaps), which can
 		   exceed the panel width — allow horizontal scroll so the actions stay reachable
 		   rather than clipping them. */
 		overflow-x: auto;
-	}
-	.art-scroll::-webkit-scrollbar {
-		width: 8px;
-		height: 8px;
-	}
-	.art-scroll::-webkit-scrollbar-track {
-		background: transparent;
-	}
-	.art-scroll::-webkit-scrollbar-thumb {
-		background: #102e66;
-		border-radius: 4px;
-	}
-	.art-scroll::-webkit-scrollbar-corner {
-		background: transparent;
-	}
-	.art-scroll::-webkit-scrollbar-button {
-		display: none;
-		width: 0;
-		height: 0;
+		/* Scrollbar styling comes from the shared `.custom-scrollbar` class (library). */
 	}
 	/* Stack the filter panel above the articles on narrow screens. */
 	@media (max-width: 820px) {

@@ -31,7 +31,8 @@
 	let title = $state(a.title);
 	let excerpt = $state(a.excerpt);
 	let body = $state(a.body);
-	let slug = $state(a.slug);
+	// Slug is NOT admin-editable: the backend generates it from the title on create and
+	// never changes it on edit (PATCH ignores slug), so there's no slug field here.
 	let mediaType = $state<ArticleMediaType>(a.mediaType);
 	let posterImageUrl = $state(a.posterImageUrl);
 	let posterImageAlt = $state(a.posterImageAlt);
@@ -66,7 +67,6 @@
 	function buildPatch(status: 'draft' | 'published'): Partial<CreateArticleInput> {
 		const t = (s: string) => s.trim();
 		return {
-			slug: t(slug) || undefined,
 			mediaType,
 			posterImageUrl: t(posterImageUrl),
 			posterImageAlt: t(posterImageAlt),
@@ -154,7 +154,7 @@
 		<p class="form-error" role="alert">{error}</p>
 	{/if}
 
-	<form class="panel bg-white" onsubmit={(e) => e.preventDefault()}>
+	<form class="panel bg-white custom-scrollbar" onsubmit={(e) => e.preventDefault()}>
 		<div class="form-grid">
 			<!-- LEFT: the article text. -->
 			<div class="col column-nowrap gap-1">
@@ -164,15 +164,11 @@
 				</label>
 				<label class="field column-nowrap gap-0-3">
 					<span class="field-label fw-600">Sažetak</span>
-					<textarea class="field-input field-textarea w-full br-xs" rows="3" bind:value={excerpt}></textarea>
+					<textarea class="field-input field-textarea custom-scrollbar w-full br-xs" rows="2" bind:value={excerpt}></textarea>
 				</label>
 				<label class="field column-nowrap gap-0-3 body-field">
 					<span class="field-label fw-600">Tijelo članka <span class="field-hint">(Markdown)</span></span>
-					<textarea class="field-input field-textarea body-textarea w-full br-xs" bind:value={body}></textarea>
-				</label>
-				<label class="field column-nowrap gap-0-3">
-					<span class="field-label fw-600">Slug</span>
-					<input class="field-input w-full br-xs" type="text" bind:value={slug} />
+					<textarea class="field-input field-textarea body-textarea custom-scrollbar w-full br-xs" bind:value={body}></textarea>
 				</label>
 			</div>
 
@@ -222,38 +218,9 @@
 						</label>
 					</fieldset>
 				{/if}
-			</div>
 
-			<!-- RIGHT: gallery + mentioned archers. -->
-			<div class="col column-nowrap gap-1">
-				{#if showGallery}
-					<fieldset class="group">
-						<legend class="group-legend">Galerija <span class="field-hint">(do 10 slika)</span></legend>
-						{#each images as img, i (i)}
-							<div class="img-row">
-								<label class="field column-nowrap gap-0-3">
-									<span class="field-label fw-600">URL slike {i + 1}</span>
-									<input class="field-input w-full br-xs" type="url" bind:value={img.url} />
-								</label>
-								<div class="img-row-alt display-f gap-0-5 mt-0-6">
-									<label class="field column-nowrap gap-0-3 w-full">
-										<span class="field-label fw-600">Opis (alt)</span>
-										<input class="field-input w-full br-xs" type="text" bind:value={img.alt} />
-									</label>
-									<button class="img-del cursor-pointer display-f" type="button" aria-label="Ukloni sliku" title="Ukloni" onclick={() => removeImage(i)}>
-										<TrashIcon size={18} />
-									</button>
-								</div>
-							</div>
-						{/each}
-						{#if images.length < 10}
-							<button class="btn-ghost-add cursor-pointer display-f align-items-center gap-0-4" type="button" onclick={addImage}>
-								<AddIcon size={16} /> Dodaj sliku
-							</button>
-						{/if}
-					</fieldset>
-				{/if}
-
+				<!-- Označeni streličari: below Naslovna slika (more width here than the
+				     right column) so the multi-select never overflows the panel. -->
 				<div class="field column-nowrap gap-0-3">
 					<span class="field-label fw-600">Označeni streličari</span>
 					<ArcherPicker
@@ -263,6 +230,39 @@
 						bind:selected={mentionedArcherIds}
 					/>
 				</div>
+			</div>
+
+			<!-- RIGHT: gallery. -->
+			<div class="col column-nowrap gap-1">
+				{#if showGallery}
+					<fieldset class="group gallery-group">
+						<legend class="group-legend">Galerija <span class="field-hint">(do 10 slika)</span></legend>
+						<div class="gallery-scroll custom-scrollbar">
+							{#each images as img, i (i)}
+								<div class="img-row">
+									<label class="field column-nowrap gap-0-3">
+										<span class="field-label fw-600">URL slike {i + 1}</span>
+										<input class="field-input w-full br-xs" type="url" bind:value={img.url} />
+									</label>
+									<div class="img-row-alt display-f gap-0-5 mt-0-6">
+										<label class="field column-nowrap gap-0-3 w-full">
+											<span class="field-label fw-600">Opis (alt)</span>
+											<input class="field-input w-full br-xs" type="text" bind:value={img.alt} />
+										</label>
+										<button class="img-del cursor-pointer display-f" type="button" aria-label="Ukloni sliku" title="Ukloni" onclick={() => removeImage(i)}>
+											<TrashIcon size={18} />
+										</button>
+									</div>
+								</div>
+							{/each}
+						</div>
+						{#if images.length < 10}
+							<button class="btn-ghost-add cursor-pointer display-f align-items-center gap-0-4" type="button" onclick={addImage}>
+								<AddIcon size={16} /> Dodaj sliku
+							</button>
+						{/if}
+					</fieldset>
+				{/if}
 			</div>
 		</div>
 
@@ -326,6 +326,11 @@
 		border-radius: 14px;
 		padding: 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
+		/* Fill the shared content frame and scroll the form INSIDE the panel (the page
+		   never scrolls; the panel bottoms on the shared 2rem line like every page). */
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow-y: auto;
 	}
 	/* THREE columns so the fields spread horizontally (using the unused right-side
 	   space) and the white div stays short — no internal scroll. */
@@ -339,7 +344,8 @@
 		min-width: 0;
 	}
 	.body-textarea {
-		min-height: 11rem;
+		/* Tijelo is the long field — give it the height (Sazetak is short, 2 rows). */
+		min-height: 18rem;
 	}
 	.mt-0-6 {
 		margin-top: 0.6rem;
@@ -380,6 +386,18 @@
 		font-size: 0.9rem;
 		font-weight: 700;
 		color: #102e66;
+	}
+	/* Galerija: the URL+opis rows scroll inside .gallery-scroll while "Dodaj sliku"
+	   stays pinned at the bottom of the fieldset (outside the scroll area). */
+	.gallery-group {
+		display: flex;
+		flex-direction: column;
+	}
+	.gallery-scroll {
+		max-height: 22rem;
+		overflow-y: auto;
+		/* Gap between the rows and the scrollbar (matches the other scroll panels). */
+		padding-right: 0.75rem;
 	}
 	.img-row + .img-row {
 		margin-top: 0.8rem;

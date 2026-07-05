@@ -118,7 +118,7 @@
 <svelte:window onkeydown={onKey} />
 
 <section class="panel bg-white tasks">
-	<div class="tasks-scroll overflow-x-auto">
+	<div class="tasks-scroll overflow-x-auto custom-scrollbar">
 		<table class="tasks-table w-full">
 			<thead>
 				<tr>
@@ -218,25 +218,7 @@
 		/* Gap between the table's right edge and the scrollbar (inside the scroll area) so
 		   the scrollbar doesn't touch the content. */
 		padding-right: 0.75rem;
-	}
-	.tasks-scroll::-webkit-scrollbar {
-		width: 8px;
-		height: 8px;
-	}
-	.tasks-scroll::-webkit-scrollbar-track {
-		background: transparent;
-	}
-	.tasks-scroll::-webkit-scrollbar-thumb {
-		background: #102e66;
-		border-radius: 4px;
-	}
-	.tasks-scroll::-webkit-scrollbar-corner {
-		background: transparent;
-	}
-	.tasks-scroll::-webkit-scrollbar-button {
-		display: none;
-		width: 0;
-		height: 0;
+		/* Scrollbar styling comes from the shared `.custom-scrollbar` class (library). */
 	}
 	.tasks-table {
 		border-collapse: collapse;
