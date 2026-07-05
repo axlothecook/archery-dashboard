@@ -96,7 +96,10 @@
 
 <style>
 	td {
-		padding: 0.75rem;
+		/* Vertical padding trimmed (0.75 → 0.6rem) so the taller status pill still lets
+		   exactly 4 rows fit the 16.5rem panel with NO scrollbar; a 5th row scrolls.
+		   Horizontal padding unchanged (0.75rem) so column spacing is untouched. */
+		padding: 0.6rem 0.75rem;
 		color: #102e66;
 		border-bottom: 1px solid #f3f5f8;
 		vertical-align: middle;
@@ -124,10 +127,14 @@
 		font-weight: 600;
 	}
 
-	/* Status: BLACK text on a pill-shaped coloured background. */
+	/* Status: BLACK text on a pill-shaped coloured background. Matches the Vijesti
+	   Stanje pill (.art-state) sizing: same min-width + centred text + padding, so the
+	   status pills are uniform width and consistent with the Vijesti page. */
 	.tasks-status {
 		display: inline-block;
-		padding: 0.25rem 0.8rem;
+		min-width: 6.5rem;
+		text-align: center;
+		padding: 0.55rem 0.4rem;
 		border-radius: 999px;
 		font-size: 0.92rem;
 		color: #1b1b1b;

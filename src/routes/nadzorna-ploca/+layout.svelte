@@ -155,30 +155,37 @@
 		page.url.pathname === href ||
 		(href !== '/nadzorna-ploca' && page.url.pathname.startsWith(href + '/'));
 
-	// Accordion state for the expandable groups: only ONE group is open at a time.
-	// `openGroup` holds the open group's label (or null). Clicking a parent toggles
-	// it (and closes any other). Which group contains the ACTIVE route:
+	// Accordion state for the expandable groups. Multiple groups may be open at once;
+	// `openGroups` is the set of open group labels. Which group contains the ACTIVE
+	// route (the one that owns the current page):
 	const activeGroupLabel = $derived(
 		NAV.find(
 			(item) => item.children?.some((c) => page.url.pathname.startsWith(c.href))
 		)?.label ?? null
 	);
-	let openGroup = $state<string | null>(null);
-	// Keep the group that owns the current route open, but only REACT to actual route
-	// changes — not on every effect run — so a manual toggle (opening a different
-	// group than the current page's) isn't instantly snapped back. When navigation
-	// lands in a group (e.g. picking a sub-option), open that group and close the
-	// rest; the item whose sub-option was selected stays open.
+	let openGroups = $state<Set<string>>(new Set());
+	// On an ACTUAL route change (a navigating item was clicked — a sub-option or a
+	// plain link), close every OTHER submenu and keep only the group that owns the
+	// new route open. Guard on `lastActiveGroup` so this reacts to navigation only,
+	// NOT to manual parent toggles — otherwise opening a second group would snap shut.
+	// Between navigations the set is free: the user can open any number of groups, and
+	// opening one never closes the active group (the reset happens on navigation only).
 	let lastActiveGroup = $state<string | null>(null);
 	$effect(() => {
 		if (activeGroupLabel !== lastActiveGroup) {
 			lastActiveGroup = activeGroupLabel;
-			if (activeGroupLabel) openGroup = activeGroupLabel;
+			// Reset to just the active group (or nothing, for a plain-link route).
+			openGroups = new Set(activeGroupLabel ? [activeGroupLabel] : []);
 		}
 	});
-	// Toggle a group: open it (closing others), or close it if it's already open.
+	// Toggle a single group open/closed, independently of the others. The active
+	// group is not special here — clicking its own parent may collapse it (it stays
+	// the "you are here" anchor); it reopens on the next navigation into it.
 	function toggleGroup(label: string) {
-		openGroup = openGroup === label ? null : label;
+		const next = new Set(openGroups);
+		if (next.has(label)) next.delete(label);
+		else next.add(label);
+		openGroups = next;
 	}
 
 	// Sidebar collapse (item 14): the blue rail slides fully off-canvas and the
@@ -229,7 +236,7 @@
 						icon={item.icon}
 						items={item.children}
 						compact={railCollapsed}
-						open={openGroup === item.label}
+						open={openGroups.has(item.label)}
 						onToggle={() => toggleGroup(item.label)}
 					/>
 				{:else}

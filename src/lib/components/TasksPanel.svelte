@@ -201,7 +201,9 @@
 	/* Panel surface: padding + radius + shadow live here (the +page `.panel` rule is
 	   scoped to that file and doesn't reach this child component). */
 	.tasks {
-		padding: 1.4rem 1.5rem;
+		/* Even 1rem frame: content inset 1rem from left/top/bottom, scrollbar (inside
+		   .tasks-scroll) 1rem from the right edge. */
+		padding: 1rem;
 		border-radius: 14px;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
 	}
@@ -213,6 +215,9 @@
 	.tasks-scroll {
 		height: 16.5rem;
 		overflow-y: auto;
+		/* Gap between the table's right edge and the scrollbar (inside the scroll area) so
+		   the scrollbar doesn't touch the content. */
+		padding-right: 0.75rem;
 	}
 	.tasks-scroll::-webkit-scrollbar {
 		width: 8px;
