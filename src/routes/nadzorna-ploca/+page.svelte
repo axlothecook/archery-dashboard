@@ -208,11 +208,13 @@
 			<span class="urgent-ico"><UrgentIcon size={24} color={urgent.length ? '#ff7800' : '#16a34a'} /></span>
 		</h2>
 		<div class="panel bg-white urgent-panel" class:is-empty={urgent.length === 0}>
-			{#each urgent as u (u.id)}
-				<UrgentItem item={u} onRemove={removeUrgent} />
-			{:else}
-				<p class="urgent-empty">Nema hitnih stavki za upravljanje.</p>
-			{/each}
+			<div class="urgent-scroll" class:is-empty={urgent.length === 0}>
+				{#each urgent as u (u.id)}
+					<UrgentItem item={u} onRemove={removeUrgent} />
+				{:else}
+					<p class="urgent-empty">Nema hitnih stavki za upravljanje.</p>
+				{/each}
+			</div>
 		</div>
 
 		<h2 class="dash-heading mt display-f align-items-center gap-0-5">
@@ -343,46 +345,53 @@
 		display: inline-flex;
 		align-items: center;
 	}
-	/* Items are separated by GAP, not a divider line. Tighter padding than the
-	   default .panel (the item cards carry their own padding). */
+	/* Outer white surface: right padding = the gap between the scrollbar and the white
+	   panel edge (test: 1rem); the inner .urgent-scroll holds the items + does the
+	   scrolling, so the scrollbar sits 1rem in from the right edge (like the Vijesti
+	   table + Zadaci). Left/top/bottom keep the original 0.75rem breathing room. */
 	.urgent-panel {
+		/* Even 1rem frame: content is inset 1rem from the left/top/bottom white edges,
+		   and the scrollbar (inside .urgent-scroll) sits 1rem from the right edge — so the
+		   scrollbar's top/bottom also respect the same 1rem the left content uses. */
+		padding: 1rem;
+	}
+	/* Items are separated by GAP, not a divider line. The item cards carry their own
+	   padding; this box holds them and scrolls. */
+	.urgent-scroll {
 		display: flex;
 		flex-direction: column;
 		gap: 0.75rem;
-		padding: 0.75rem;
+		/* FIXED: exactly 3 fixed-height rows. Does NOT shift with content
+		   (= item 8.625 + gap .75 + item 8.625 + gap .75 + item 8.625 = 27.375rem). */
+		max-height: 27.375rem;
+		overflow-y: auto;
+		/* Gap between the item cards and the scrollbar (inside the scroll area) so the
+		   scrollbar doesn't touch the content's right edge. */
+		padding-right: 0.75rem;
+	}
+	.urgent-scroll.is-empty {
+		overflow: visible;
 	}
 	.urgent-empty {
 		margin: 0;
 		font-size: 0.88rem;
 		color: #5b6577;
 	}
-	/* Scrollable when there are many urgent items; custom navy scrollbar (no OS
-	   arrows — same webkit-only approach as the notifications modal). */
-	.urgent-panel {
-		/* FIXED: exactly 3 fixed-height rows + symmetric padding. Does NOT shift with
-		   content (= padTop .75 + item 8.625 + gap .75 + item 8.625 + gap .75 +
-		   item 8.625 + padBottom .75 = 28.875rem). */
-		max-height: 28.875rem;
-		overflow-y: auto;
-	}
-	.urgent-panel.is-empty {
-		overflow: visible;
-	}
-	.urgent-panel::-webkit-scrollbar {
+	.urgent-scroll::-webkit-scrollbar {
 		width: 8px;
 		height: 8px;
 	}
-	.urgent-panel::-webkit-scrollbar-track {
+	.urgent-scroll::-webkit-scrollbar-track {
 		background: transparent;
 	}
-	.urgent-panel::-webkit-scrollbar-thumb {
+	.urgent-scroll::-webkit-scrollbar-thumb {
 		background: #102e66;
 		border-radius: 4px;
 	}
-	.urgent-panel::-webkit-scrollbar-corner {
+	.urgent-scroll::-webkit-scrollbar-corner {
 		background: transparent;
 	}
-	.urgent-panel::-webkit-scrollbar-button {
+	.urgent-scroll::-webkit-scrollbar-button {
 		display: none;
 		width: 0;
 		height: 0;

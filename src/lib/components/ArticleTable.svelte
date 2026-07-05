@@ -282,7 +282,11 @@
 	}
 	.art-badge {
 		display: inline-block;
-		padding: 0.4rem 0.7rem;
+		/* Match the Stanje (.art-state) pill exactly: same min-width + centred text +
+		   padding, so Vrsta and Stanje pills read as one uniform pill size. */
+		min-width: 6.5rem;
+		text-align: center;
+		padding: 0.55rem 0.4rem;
 		border-radius: 999px;
 		font-size: 0.82rem;
 		font-weight: 600;
