@@ -142,15 +142,15 @@
 				</label>
 				<label class="field column-nowrap gap-0-3">
 					<span class="field-label fw-600">Sažetak</span>
-					<textarea class="field-input field-textarea w-full br-xs" rows="3" bind:value={excerpt}></textarea>
+					<textarea class="field-input field-textarea custom-scrollbar w-full br-xs" rows="2" bind:value={excerpt}></textarea>
 				</label>
-				<label class="field column-nowrap gap-0-3 body-field">
+				<label class="field column-nowrap gap-0-3">
 					<span class="field-label fw-600">Tijelo članka <span class="field-hint">(Markdown)</span></span>
-					<textarea class="field-input field-textarea body-textarea w-full br-xs" bind:value={body}></textarea>
+					<textarea class="field-input field-textarea body-textarea custom-scrollbar w-full br-xs" bind:value={body}></textarea>
 				</label>
 			</div>
 
-			<!-- RIGHT: media + meta (uses the otherwise-empty right side of the page). -->
+			<!-- MIDDLE: media type + poster + video/external + archers + hidden flag. -->
 			<div class="col column-nowrap gap-1">
 				<div class="field column-nowrap gap-0-3">
 					<span class="field-label fw-600">Vrsta medija</span>
@@ -165,31 +165,6 @@
 						<input class="field-input w-full br-xs" type="text" bind:value={posterImageAlt} required />
 					</label>
 				</fieldset>
-
-				{#if showGallery}
-					<fieldset class="group">
-						<legend class="group-legend">Galerija <span class="field-hint">(do 10 slika)</span></legend>
-						{#each images as img, i (i)}
-							<div class="img-row">
-								<ImageUpload label={`Slika ${i + 1}`} bind:url={img.url} compact />
-								<div class="img-row-alt display-f gap-0-5 mt-0-6">
-									<label class="field column-nowrap gap-0-3 w-full">
-										<span class="field-label fw-600">Opis (alt) <span class="req">*</span></span>
-										<input class="field-input w-full br-xs" type="text" bind:value={img.alt} />
-									</label>
-									<button class="img-del cursor-pointer display-f" type="button" aria-label="Ukloni sliku" title="Ukloni" onclick={() => removeImage(i)}>
-										<TrashIcon size={18} />
-									</button>
-								</div>
-							</div>
-						{/each}
-						{#if images.length < 10}
-							<button class="btn-ghost-add cursor-pointer display-f align-items-center gap-0-4" type="button" onclick={addImage}>
-								<AddIcon size={16} /> Dodaj sliku
-							</button>
-						{/if}
-					</fieldset>
-				{/if}
 
 				{#if showVideo}
 					<fieldset class="group">
@@ -235,6 +210,37 @@
 					<span>Sakrij s javne stranice <span class="field-hint">(objavljeno, ali skriveno)</span></span>
 				</label>
 			</div>
+
+			<!-- RIGHT: gallery (its own column so a long gallery reflows into the unused
+			     right space instead of making the middle column overflow / scroll). -->
+			<div class="col column-nowrap gap-1">
+				{#if showGallery}
+					<fieldset class="group gallery-group">
+						<legend class="group-legend">Galerija <span class="field-hint">(do 10 slika)</span></legend>
+						<div class="gallery-scroll custom-scrollbar">
+							{#each images as img, i (i)}
+								<div class="img-row">
+									<ImageUpload label={`Slika ${i + 1}`} bind:url={img.url} compact />
+									<div class="img-row-alt display-f gap-0-5 mt-0-6">
+										<label class="field column-nowrap gap-0-3 w-full">
+											<span class="field-label fw-600">Opis (alt) <span class="req">*</span></span>
+											<input class="field-input w-full br-xs" type="text" bind:value={img.alt} />
+										</label>
+										<button class="img-del cursor-pointer display-f" type="button" aria-label="Ukloni sliku" title="Ukloni" onclick={() => removeImage(i)}>
+											<TrashIcon size={18} />
+										</button>
+									</div>
+								</div>
+							{/each}
+						</div>
+						{#if images.length < 10}
+							<button class="btn-ghost-add cursor-pointer display-f align-items-center gap-0-4" type="button" onclick={addImage}>
+								<AddIcon size={16} /> Dodaj sliku
+							</button>
+						{/if}
+					</fieldset>
+				{/if}
+			</div>
 		</div>
 
 		<!-- Actions span the full width. -->
@@ -251,7 +257,10 @@
 
 <style>
 	.art-section {
-		max-width: 72rem; /* wider: two columns use the page's unused right side */
+		/* Full width: the 3-column form spreads across the whole content area so a long
+		   gallery / video + external fields reflow into the otherwise-unused right side
+		   instead of piling up and overflowing (the panel scrolls inside if still tall). */
+		width: 100%;
 	}
 	.mgmt-head {
 		margin-bottom: 1.25rem;
@@ -285,23 +294,32 @@
 		min-height: 0;
 		overflow-y: auto;
 	}
-	/* Two columns: text left, media/meta right. The left body textarea grows to keep
-	   both columns roughly the same height so the whole form fits without page scroll. */
+	/* Three columns (text / media+meta / gallery) so the fields spread horizontally into
+	   the unused right space and the form stays short — matches the edit page. */
 	.form-grid {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 1.5rem;
+		grid-template-columns: 1fr 1fr 1fr;
+		gap: 1.25rem 1.5rem;
 		align-items: start;
 	}
 	.col {
 		min-width: 0;
 	}
-	.body-field {
-		flex: 1 1 auto;
-	}
 	.body-textarea {
-		min-height: 16rem;
-		height: 100%;
+		/* Tijelo is the long field (matches the edit page); no longer stretched to the
+		   gallery column's height. */
+		min-height: 18rem;
+	}
+	/* Galerija: URL+opis rows scroll inside .gallery-scroll while "Dodaj sliku" stays
+	   pinned at the bottom of the fieldset (matches the edit page). */
+	.gallery-group {
+		display: flex;
+		flex-direction: column;
+	}
+	.gallery-scroll {
+		max-height: 22rem;
+		overflow-y: auto;
+		padding-right: 0.75rem;
 	}
 	.mt-0-6 {
 		margin-top: 0.6rem;
@@ -410,8 +428,13 @@
 	.btn--ghost:hover:not(:disabled) {
 		background: #eef1f3;
 	}
-	/* Collapse to one column on narrow screens (scroll is acceptable there). */
-	@media (max-width: 900px) {
+	/* Collapse 3 → 2 → 1 columns as the screen narrows (matches the edit page). */
+	@media (max-width: 1200px) {
+		.form-grid {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+	@media (max-width: 760px) {
 		.form-grid {
 			grid-template-columns: 1fr;
 		}
