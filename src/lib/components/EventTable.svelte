@@ -208,7 +208,11 @@
 	}
 	.ev-badge {
 		display: inline-block;
-		padding: 0.2rem 0.6rem;
+		/* Match the Stanje (.ev-state) pill exactly: same min-width + centred text +
+		   padding, so Disciplina and Stanje pills read as one uniform pill size. */
+		min-width: 6.5rem;
+		text-align: center;
+		padding: 0.55rem 0.4rem;
 		border-radius: 999px;
 		background: #eef2fb;
 		color: #1b3a7a;
