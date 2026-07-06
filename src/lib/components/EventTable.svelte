@@ -117,7 +117,9 @@
 						{/if}
 					</td>
 					<td class="ev-att text-jet-grey">
-						{e.attendeeCount}{e.hasUnlistedClubAttendee ? '+' : ''}
+						<!-- The "+" (unlisted club attendee) only reads sensibly next to a real
+						     count; with 0 listed archers just show a plain 0. -->
+						{e.attendeeCount}{e.attendeeCount > 0 && e.hasUnlistedClubAttendee ? '+' : ''}
 					</td>
 					<td class="ev-flags">
 						<!-- Always a state WORD: Otkazano (cancelled) / Nacrt (draft) /
