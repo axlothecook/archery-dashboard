@@ -8,6 +8,7 @@
 	// slot (the parent loops for the gallery).
 	import { uploadImage, AuthError } from '$lib/auth';
 	import AddIcon from '$lib/components/icons/AddIcon.svelte';
+	import TrashIcon from '$lib/components/icons/TrashIcon.svelte';
 
 	let {
 		url = $bindable(''),
@@ -64,7 +65,7 @@
 			</span>
 		{/if}
 
-		<div class="img-upload-actions column-nowrap gap-0-3">
+		<div class="img-upload-actions display-f align-items-center gap-0-5">
 			<button
 				class="img-upload-btn cursor-pointer display-f align-items-center gap-0-4"
 				type="button"
@@ -78,7 +79,9 @@
 				{/if}
 			</button>
 			{#if url}
-				<button class="img-clear cursor-pointer" type="button" onclick={clear}>Ukloni</button>
+				<button class="img-clear cursor-pointer display-f align-items-center gap-0-4" type="button" onclick={clear}>
+					<TrashIcon size={16} /> Ukloni
+				</button>
 			{/if}
 		</div>
 
@@ -135,17 +138,20 @@
 		opacity: 0.7;
 		cursor: default;
 	}
+	/* Same shape as .img-upload-btn, but a red border matching its red text. */
 	.img-clear {
-		border: 0;
-		background: none;
-		padding: 0;
-		color: #a4133c;
-		font-size: 0.78rem;
+		padding: 0.45rem 0.8rem;
+		border: 1px solid #d32752;
+		border-radius: 8px;
+		background: #fff;
+		color: #d32752;
+		font-size: 0.85rem;
+		font-weight: 600;
 		font-family: inherit;
-		text-align: left;
+		white-space: nowrap;
 	}
 	.img-clear:hover {
-		text-decoration: underline;
+		background: #fdeef2;
 	}
 	.img-upload-error {
 		margin: 0;
