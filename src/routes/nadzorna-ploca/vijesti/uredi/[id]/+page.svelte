@@ -4,6 +4,7 @@
 	// hide/unhide eye toggle in the header flips the article's `hidden` state; the
 	// eye icon reflects the CURRENT state (eye = visible, eye-off = hidden) and stays
 	// in sync with the "Stanje" it will show in the list.
+	import { tick } from 'svelte';
 	import { goto, beforeNavigate } from '$app/navigation';
 	import {
 		updateArticle,
@@ -17,6 +18,7 @@
 	import ImageUpload from '$lib/components/ImageUpload.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import ErrorPopup from '$lib/components/ErrorPopup.svelte';
+	import LinkInserter from '$lib/components/LinkInserter.svelte';
 	import AddIcon from '$lib/components/icons/AddIcon.svelte';
 	import TrashIcon from '$lib/components/icons/TrashIcon.svelte';
 	import NewsIcon from '$lib/components/icons/NewsIcon.svelte';
@@ -118,9 +120,14 @@
 	const showExternal = $derived(mediaType === 'external-link');
 	const showGallery = $derived(mediaType === 'gallery' || mediaType === 'event');
 
-	function addImage() {
+	// Ref to the gallery scroll container so a newly-added image row is scrolled into
+	// view (focus lands on the new row rather than staying wherever the user was).
+	let galleryScrollEl = $state<HTMLDivElement | null>(null);
+	async function addImage() {
 		if (images.length >= 10) return;
 		images = [...images, { url: '', alt: '', order: images.length }];
+		await tick(); // let the new row render before scrolling to it
+		galleryScrollEl?.scrollTo({ top: galleryScrollEl.scrollHeight, behavior: 'smooth' });
 	}
 	function removeImage(i: number) {
 		images = images.filter((_, idx) => idx !== i).map((img, idx) => ({ ...img, order: idx }));
@@ -234,18 +241,18 @@
 			<!-- LEFT: the article text. -->
 			<div class="col column-nowrap gap-1">
 				<label class="field column-nowrap gap-title">
-					<span class="field-title">Naslov</span>
+					<span class="field-title">Naslov <span class="req">*</span></span>
 					<input class="field-input w-full br-xs" type="text" bind:value={title} required />
 				</label>
 				<label class="field column-nowrap gap-title">
 					<span class="field-title sazetak-head display-f align-items-baseline gap-0-5">
-						Sažetak
+						<span>Sažetak <span class="req">*</span></span>
 						<span class="char-count" class:over={excerptOver}>{excerptRemaining}</span>
 					</span>
 					<textarea class="field-input field-textarea sazetak-textarea w-full br-xs" bind:value={excerpt}></textarea>
 				</label>
 				<label class="field column-nowrap gap-title body-field">
-					<span class="field-title">Tijelo članka</span>
+					<span class="field-title">Tijelo članka <span class="req">*</span></span>
 					<textarea class="field-input field-textarea body-textarea custom-scrollbar w-full br-xs" bind:value={body}></textarea>
 				</label>
 			</div>
@@ -258,7 +265,7 @@
 				</div>
 
 				<fieldset class="group">
-					<legend class="group-legend">Naslovna slika</legend>
+					<legend class="group-legend">Naslovna slika <span class="req">*</span></legend>
 					<ImageUpload label="Slika" bind:url={posterImageUrl} />
 					<label class="field column-nowrap gap-0-3 mt-0-6">
 						<span class="field-label fw-600">Opis slike (alt) <span class="req">*</span></span>
@@ -311,7 +318,7 @@
 				{#if showGallery}
 					<fieldset class="group gallery-group">
 						<legend class="group-legend">Galerija <span class="field-hint">(do 10 slika)</span></legend>
-						<div class="gallery-scroll custom-scrollbar">
+						<div class="gallery-scroll custom-scrollbar" bind:this={galleryScrollEl}>
 							{#each images as img, i (i)}
 								<div class="img-row">
 									<ImageUpload label={`Slika ${i + 1}`} bind:url={img.url} compact />
@@ -334,6 +341,11 @@
 						{/if}
 					</fieldset>
 				{/if}
+
+				<!-- Optional: add an inline markdown link to the body (e.g. the club's
+				     original post) — appends [text](url) to the Tijelo field. Below the
+				     gallery so the middle column's archer picker has more room. -->
+				<LinkInserter bind:body />
 			</div>
 		</div>
 
@@ -519,7 +531,10 @@
 		flex-direction: column;
 	}
 	.gallery-scroll {
-		max-height: 30rem;
+		/* Height = 2 image rows with a little headroom so 2 images show WITHOUT a
+		   scrollbar; a 3rd image overflows → the gallery scrolls. Keeps the gallery +
+		   Poveznica fieldset below it clear of the action buttons. */
+		max-height: 17.5rem;
 		overflow-y: auto;
 		/* Gap between the rows and the scrollbar (matches the other scroll panels). */
 		padding-right: 0.75rem;
