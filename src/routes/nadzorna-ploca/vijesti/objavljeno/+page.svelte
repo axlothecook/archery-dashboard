@@ -12,6 +12,7 @@
 	import AddIcon from '$lib/components/icons/AddIcon.svelte';
 	import NewsIcon from '$lib/components/icons/NewsIcon.svelte';
 	import FilterIcon from '$lib/components/icons/FilterIcon.svelte';
+	import CheckIcon from '$lib/components/icons/CheckIcon.svelte';
 
 	let { data } = $props();
 	// Local mutable copy (ArticleTable removes rows on delete); re-synced on load change.
@@ -23,6 +24,9 @@
 	// ── Filters ────────────────────────────────────────────────────────────────
 	let monthFilter = $state('all'); // 'all' | 'YYYY-MM'
 	let typeFilter = $state('all'); // 'all' | ArticleMediaType
+	// Stanje: this page loads only PUBLISHED articles, which are either visible
+	// (Objavljeno) or hidden (Skriveno) — drafts live on the Nacrti page.
+	let statusFilter = $state('all'); // 'all' | 'visible' | 'hidden'
 
 	const HR_MONTHS = [
 		'siječanj', 'veljača', 'ožujak', 'travanj', 'svibanj', 'lipanj',
@@ -48,9 +52,17 @@
 		...(Object.keys(MEDIA_TYPE_LABEL) as ArticleMediaType[]).map((v) => ({ value: v, label: MEDIA_TYPE_LABEL[v] }))
 	];
 
+	const statusOptions = [
+		{ value: 'all', label: 'Sve' },
+		{ value: 'visible', label: 'Objavljeno' },
+		{ value: 'hidden', label: 'Skriveno' }
+	];
+
 	const filtered = $derived(
 		articles.filter((a) => {
 			if (typeFilter !== 'all' && a.mediaType !== typeFilter) return false;
+			if (statusFilter === 'visible' && a.hidden) return false;
+			if (statusFilter === 'hidden' && !a.hidden) return false;
 			if (monthFilter !== 'all') {
 				if (!a.publishedAt) return false;
 				const d = new Date(a.publishedAt);
@@ -100,7 +112,43 @@
 			</div>
 			<div class="filter-item column-nowrap gap-0-3">
 				<span class="filter-label">Vrsta</span>
-				<DashSelect options={typeOptions} bind:value={typeFilter} ariaLabel="Filtriraj po vrsti" />
+				<!-- Flat single-select list (not a dropdown): all options shown; the chosen
+				     one gets a filled square + white tick. Default = Sve vrste. -->
+				<div class="vrsta-list column-nowrap" role="radiogroup" aria-label="Filtriraj po vrsti">
+					{#each typeOptions as opt (opt.value)}
+						<button
+							type="button"
+							class="vrsta-opt display-f align-items-center gap-0-6 cursor-pointer"
+							role="radio"
+							aria-checked={typeFilter === opt.value}
+							onclick={() => (typeFilter = opt.value)}
+						>
+							<span class="vrsta-box display-f align-items-center justify-content-center" class:checked={typeFilter === opt.value} aria-hidden="true">
+								{#if typeFilter === opt.value}<CheckIcon size={13} />{/if}
+							</span>
+							{opt.label}
+						</button>
+					{/each}
+				</div>
+			</div>
+			<div class="filter-item column-nowrap gap-0-3">
+				<span class="filter-label">Stanje</span>
+				<div class="vrsta-list column-nowrap" role="radiogroup" aria-label="Filtriraj po stanju">
+					{#each statusOptions as opt (opt.value)}
+						<button
+							type="button"
+							class="vrsta-opt display-f align-items-center gap-0-6 cursor-pointer"
+							role="radio"
+							aria-checked={statusFilter === opt.value}
+							onclick={() => (statusFilter = opt.value)}
+						>
+							<span class="vrsta-box display-f align-items-center justify-content-center" class:checked={statusFilter === opt.value} aria-hidden="true">
+								{#if statusFilter === opt.value}<CheckIcon size={13} />{/if}
+							</span>
+							{opt.label}
+						</button>
+					{/each}
+				</div>
 			</div>
 		</aside>
 
@@ -170,6 +218,9 @@
 	.filter-panel {
 		position: sticky;
 		top: 1rem;
+		/* Wider breathing room between the three filter groups (overrides the
+		   `gap-1` utility on the aside). */
+		gap: 1.75rem;
 	}
 	.filter-heading {
 		margin: 0;
@@ -189,9 +240,42 @@
 		font-size: 0.92rem;
 	}
 	.filter-label {
-		font-size: 0.8rem;
+		font-size: 0.95rem;
 		font-weight: 600;
 		color: #5b6577;
+	}
+	/* Vrsta: flat single-select list (radio-style). */
+	.vrsta-list {
+		gap: 0.15rem;
+	}
+	.vrsta-opt {
+		gap: 0.55rem;
+		padding: 0.35rem 0.3rem;
+		border: 0;
+		background: none;
+		text-align: left;
+		font-size: 0.9rem;
+		font-family: inherit;
+		color: #102e66;
+		border-radius: 6px;
+	}
+	.vrsta-opt:hover {
+		background: #f1f4fa;
+	}
+	/* The square: empty by default, filled with the Filteri navy + a white tick when
+	   selected. */
+	.vrsta-box {
+		width: 16px;
+		height: 16px;
+		flex: 0 0 auto;
+		border: 1.5px solid #b9c3d3;
+		border-radius: 4px;
+		background: #fff;
+		color: #fff; /* the tick's currentColor */
+	}
+	.vrsta-box.checked {
+		border-color: #102e66;
+		background: #102e66; /* same as the Filteri heading text colour */
 	}
 	.filter-count {
 		font-size: 0.85rem;
