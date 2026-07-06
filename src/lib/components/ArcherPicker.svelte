@@ -65,18 +65,43 @@
 	<div class="arp-empty">Nema objavljenih streličara za označavanje.</div>
 {:else}
 	<div class="arp">
-		<button
-			class="arp-trigger w-full display-f align-items-center justify-content-space-between br-xs cursor-pointer"
-			type="button"
-			aria-haspopup="listbox"
-			aria-expanded={open}
-			onclick={() => (open = !open)}
-		>
-			<span class="arp-trigger-text">
-				{selected.length ? `Odabrano: ${selected.length}` : 'Odaberite streličare'}
-			</span>
-			<span class="arp-chev" class:open aria-hidden="true"><ChevronIcon size={16} direction="down" /></span>
-		</button>
+		<!-- Trigger + dropdown share a relative wrapper so the list anchors UNDER the
+		     trigger, not under the chips (which grow the component). The dropdown stays
+		     put like a normal select regardless of how many chips are chosen. -->
+		<div class="arp-control">
+			<button
+				class="arp-trigger w-full display-f align-items-center justify-content-space-between br-xs cursor-pointer"
+				type="button"
+				aria-haspopup="listbox"
+				aria-expanded={open}
+				onclick={() => (open = !open)}
+			>
+				<span class="arp-trigger-text">
+					{selected.length ? `Odabrano: ${selected.length}` : 'Odaberite streličare'}
+				</span>
+				<span class="arp-chev" class:open aria-hidden="true"><ChevronIcon size={16} direction="down" /></span>
+			</button>
+
+			{#if open}
+				<ul class="arp-list column-nowrap br-xs custom-scrollbar" role="listbox" aria-multiselectable="true" transition:slide={{ duration: 150, easing: cubicOut }}>
+					{#each options as o (o.id)}
+						<li>
+							<button
+								class="arp-opt w-full display-f align-items-center gap-0-6 cursor-pointer"
+								class:selected={selected.includes(o.id)}
+								type="button"
+								role="option"
+								aria-selected={selected.includes(o.id)}
+								onclick={() => toggle(o.id)}
+							>
+								<span class="arp-box" class:checked={selected.includes(o.id)} aria-hidden="true"></span>
+								{o.name}
+							</button>
+						</li>
+					{/each}
+				</ul>
+			{/if}
+		</div>
 
 		{#if selectedOptions.length}
 			<div class="arp-chips display-f align-items-center">
@@ -90,31 +115,16 @@
 				{/each}
 			</div>
 		{/if}
-
-		{#if open}
-			<ul class="arp-list column-nowrap br-xs" role="listbox" aria-multiselectable="true" transition:slide={{ duration: 150, easing: cubicOut }}>
-				{#each options as o (o.id)}
-					<li>
-						<button
-							class="arp-opt w-full display-f align-items-center gap-0-6 cursor-pointer"
-							class:selected={selected.includes(o.id)}
-							type="button"
-							role="option"
-							aria-selected={selected.includes(o.id)}
-							onclick={() => toggle(o.id)}
-						>
-							<span class="arp-box" class:checked={selected.includes(o.id)} aria-hidden="true"></span>
-							{o.name}
-						</button>
-					</li>
-				{/each}
-			</ul>
-		{/if}
 	</div>
 {/if}
 
 <style>
 	.arp {
+		position: relative;
+	}
+	/* The trigger + dropdown live here; the dropdown is absolute to THIS (the trigger),
+	   so it stays anchored under the trigger no matter how many chips are added below. */
+	.arp-control {
 		position: relative;
 	}
 	.arp-trigger {
