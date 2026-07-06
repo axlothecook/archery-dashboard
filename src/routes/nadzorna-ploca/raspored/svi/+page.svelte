@@ -105,7 +105,7 @@
 			<span class="filter-count text-jet-grey">{filtered.length} od {events.length}</span>
 		</div>
 
-		<div class="ev-scroll">
+		<div class="ev-scroll custom-scrollbar">
 			<EventTable events={filtered} emptyText="Nema događaja za odabrane filtere." {onDeleted} />
 		</div>
 	</div>
@@ -178,24 +178,6 @@
 		max-height: calc(100vh - 24rem);
 		min-height: 8rem;
 		overflow-y: auto;
-	}
-	.ev-scroll::-webkit-scrollbar {
-		width: 8px;
-		height: 8px;
-	}
-	.ev-scroll::-webkit-scrollbar-track {
-		background: transparent;
-	}
-	.ev-scroll::-webkit-scrollbar-thumb {
-		background: #102e66;
-		border-radius: 4px;
-	}
-	.ev-scroll::-webkit-scrollbar-corner {
-		background: transparent;
-	}
-	.ev-scroll::-webkit-scrollbar-button {
-		display: none;
-		width: 0;
-		height: 0;
+		/* Scrollbar styling comes from the shared `.custom-scrollbar` class. */
 	}
 </style>
