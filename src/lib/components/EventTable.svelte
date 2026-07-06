@@ -98,6 +98,7 @@
 					<span class="th-in display-f align-items-center gap-0-4"><EyeIcon size={18} />Stanje</span>
 				</th>
 				<th class="ev-th-actions"></th>
+				<th class="ev-col-spacer"></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -158,6 +159,7 @@
 							</button>
 						</div>
 					</td>
+					<td class="ev-col-spacer"></td>
 				</tr>
 			{/each}
 		</tbody>
@@ -182,6 +184,9 @@
 	.ev-table {
 		border-collapse: collapse;
 		font-size: 1rem;
+		/* Fixed layout: column widths come from the rules below (not content), so the
+		   name column truncates cleanly and the table never overflows the panel. */
+		table-layout: fixed;
 	}
 	.ev-table th {
 		text-align: left;
@@ -202,8 +207,25 @@
 		text-decoration: line-through;
 		color: #9aa3b2;
 	}
+	/* The name column takes ALL leftover width (the trailing spacer is 0) so the title
+	   shows as much as possible; every other column is a fixed width. table-layout:fixed
+	   (on .ev-table) makes these widths authoritative so the name truncates cleanly
+	   instead of the table overflowing the panel. */
+	.ev-table :is(th, td):first-child {
+		width: auto;
+	}
+	.ev-table :is(th, td):nth-child(2) { width: 8rem; } /* Disciplina */
+	.ev-table :is(th, td):nth-child(3) { width: 12rem; } /* Datum */
+	.ev-table :is(th, td):nth-child(4) { width: 11rem; } /* Razina */
+	.ev-table :is(th, td):nth-child(5) { width: 7rem; } /* Sudionici */
+	.ev-table :is(th, td):nth-child(6) { width: 8rem; } /* Stanje */
+	.ev-table :is(th, td):nth-child(7) { width: 7.5rem; } /* actions */
+	.ev-table :is(th, td).ev-col-spacer {
+		width: 1.25rem;
+		padding: 0;
+		border-bottom: 0;
+	}
 	.ev-name {
-		max-width: 20rem;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -223,6 +245,11 @@
 		white-space: nowrap;
 	}
 	.ev-date {
+		white-space: nowrap;
+	}
+	/* Keep the level name on one line (the name column absorbs the slack, so this
+	   column shouldn't wrap when it tightens). */
+	.ev-level {
 		white-space: nowrap;
 	}
 	.ev-dot {
@@ -270,7 +297,7 @@
 		width: 1%;
 	}
 	.ev-actions {
-		gap: 0.75rem;
+		gap: 0.4rem;
 	}
 	.ev-act {
 		align-items: center;
