@@ -241,8 +241,10 @@
 	/* Top gap = the content area's 2rem top padding + this small margin (a touch more
 	   breathing room below the topbar); bottom gap = 2rem down to the cards. */
 	.greeting {
-		margin-top: 0.6rem;
-		margin-bottom: 2rem;
+		/* Tightened (mt 0.6→0.3, mb 2→1) so the whole dashboard fits the shared content
+		   frame and its bottom lands on the same 2rem line as the other pages. */
+		margin-top: 0.3rem;
+		margin-bottom: 0.75rem;
 	}
 	.greeting-date {
 		margin: 0 0 0.45rem;
@@ -253,8 +255,12 @@
 		line-height: 1.2;
 	}
 
-	/* Layout (grid gap-2 align-items-start) via utility classes; only the
-	   asymmetric fractional track (content ~75% / Hitno-Tim ~25%) stays scoped. */
+	/* Layout (grid gap-2 align-items-stretch) via utility classes; only the
+	   asymmetric fractional track (content ~75% / Hitno-Tim ~25%) stays scoped.
+	   Fill the shared content frame so the dashboard's bottom lands on the SAME
+	   shared 2rem line as every other page (objavljeno, edit, …) — the columns
+	   stretch to this height and the last panels (Administracija / Dolazna posta)
+	   sit at the frame bottom, matching their bottom gap. */
 	.dash {
 		grid-template-columns: 3fr 1fr;
 	}
@@ -296,7 +302,7 @@
 	   the same height, so the title→panel gap is equal across panels. */
 	.dash-heading-row {
 		min-height: 2rem;
-		margin-bottom: 1rem;
+		margin-bottom: 0.6rem;
 	}
 	.dash-heading-row .dash-heading {
 		margin-bottom: 0;
@@ -345,10 +351,11 @@
 		pointer-events: none;
 	}
 
-	/* Lower row: schedule + mail side by side, each half the tasks width. Extra top
-	   gap separates it from the tasks panel above. */
+	/* Lower row: schedule + mail side by side, each half the tasks width. Top gap
+	   separates it from the tasks panel above (tightened 2.5→0.9rem so the dashboard
+	   fits the shared frame). */
 	.lower-row {
-		margin-top: 2.5rem;
+		margin-top: 0.9rem;
 		align-items: start;
 	}
 
