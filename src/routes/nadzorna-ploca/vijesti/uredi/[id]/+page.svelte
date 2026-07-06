@@ -14,6 +14,7 @@
 	} from '$lib/articles';
 	import DashSelect from '$lib/components/DashSelect.svelte';
 	import ArcherPicker from '$lib/components/ArcherPicker.svelte';
+	import ImageUpload from '$lib/components/ImageUpload.svelte';
 	import AddIcon from '$lib/components/icons/AddIcon.svelte';
 	import TrashIcon from '$lib/components/icons/TrashIcon.svelte';
 	import NewsIcon from '$lib/components/icons/NewsIcon.svelte';
@@ -90,8 +91,13 @@
 		if (!title.trim()) return 'Naslov je obavezan.';
 		if (!excerpt.trim()) return 'Sažetak je obavezan.';
 		if (!body.trim()) return 'Tijelo članka je obavezno.';
-		if (!posterImageUrl.trim()) return 'URL naslovne slike je obavezan.';
+		if (!posterImageUrl.trim()) return 'Naslovna slika je obavezna.';
 		if (!posterImageAlt.trim()) return 'Opis (alt) naslovne slike je obavezan.';
+		// Every gallery image that has been uploaded must have an alt (alt is required).
+		if (showGallery) {
+			const missingAlt = images.some((i) => i.url.trim() && !i.alt.trim());
+			if (missingAlt) return 'Svaka slika u galeriji mora imati opis (alt).';
+		}
 		return null;
 	}
 
@@ -181,12 +187,9 @@
 
 				<fieldset class="group">
 					<legend class="group-legend">Naslovna slika</legend>
-					<label class="field column-nowrap gap-0-3">
-						<span class="field-label fw-600">URL slike</span>
-						<input class="field-input w-full br-xs" type="url" bind:value={posterImageUrl} required />
-					</label>
+					<ImageUpload label="Slika" bind:url={posterImageUrl} />
 					<label class="field column-nowrap gap-0-3 mt-0-6">
-						<span class="field-label fw-600">Opis slike (alt)</span>
+						<span class="field-label fw-600">Opis slike (alt) <span class="req">*</span></span>
 						<input class="field-input w-full br-xs" type="text" bind:value={posterImageAlt} required />
 					</label>
 				</fieldset>
@@ -198,10 +201,9 @@
 							<span class="field-label fw-600">URL videa</span>
 							<input class="field-input w-full br-xs" type="url" bind:value={videoUrl} />
 						</label>
-						<label class="field column-nowrap gap-0-3 mt-0-6">
-							<span class="field-label fw-600">URL naslovne sličice videa</span>
-							<input class="field-input w-full br-xs" type="url" bind:value={videoPosterUrl} />
-						</label>
+						<div class="mt-0-6">
+							<ImageUpload label="Naslovna sličica videa" bind:url={videoPosterUrl} />
+						</div>
 					</fieldset>
 				{/if}
 
@@ -240,13 +242,10 @@
 						<div class="gallery-scroll custom-scrollbar">
 							{#each images as img, i (i)}
 								<div class="img-row">
-									<label class="field column-nowrap gap-0-3">
-										<span class="field-label fw-600">URL slike {i + 1}</span>
-										<input class="field-input w-full br-xs" type="url" bind:value={img.url} />
-									</label>
+									<ImageUpload label={`Slika ${i + 1}`} bind:url={img.url} compact />
 									<div class="img-row-alt display-f gap-0-5 mt-0-6">
 										<label class="field column-nowrap gap-0-3 w-full">
-											<span class="field-label fw-600">Opis (alt)</span>
+											<span class="field-label fw-600">Opis (alt) <span class="req">*</span></span>
 											<input class="field-input w-full br-xs" type="text" bind:value={img.alt} />
 										</label>
 										<button class="img-del cursor-pointer display-f" type="button" aria-label="Ukloni sliku" title="Ukloni" onclick={() => removeImage(i)}>
@@ -357,6 +356,11 @@
 	.field-hint {
 		font-weight: 400;
 		color: #9aa3b2;
+	}
+	/* Required-field marker: a red star after the label. */
+	.req {
+		color: #d32752;
+		font-weight: 700;
 	}
 	.field-input {
 		box-sizing: border-box;
