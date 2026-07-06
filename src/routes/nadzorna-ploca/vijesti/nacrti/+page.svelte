@@ -27,13 +27,20 @@
 		{#if data.loadError}
 			<p class="art-load-error" role="alert">Učitavanje nacrta nije uspjelo. Osvježite stranicu ili pokušajte kasnije.</p>
 		{/if}
-		<ArticleTable bind:articles emptyText="Nema nacrta." />
+		<div class="art-scroll custom-scrollbar">
+			<ArticleTable bind:articles emptyText="Nema nacrta." />
+		</div>
 	</div>
 </section>
 
 <style>
 	.art-section {
-		max-width: 64rem;
+		/* Full width, matching the Raspored Nacrti page. */
+		width: 100%;
+	}
+	.art-scroll {
+		overflow-x: auto;
+		/* Scrollbar styling comes from the shared `.custom-scrollbar` class (library). */
 	}
 	.mgmt-head {
 		margin-bottom: 1.5rem;
