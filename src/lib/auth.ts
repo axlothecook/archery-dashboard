@@ -80,6 +80,43 @@ export async function adminRequest<T>(path: string, opts: RequestOptions = {}): 
 	return (await res.json()) as T;
 }
 
+// POST /admin/upload — multipart file upload to R2. Cannot use adminRequest (which
+// forces application/json); FormData needs the browser to set its own multipart
+// boundary. Field `file` + text field `entityType` (must be an allowed entity, e.g.
+// 'article'). Returns the permanent hosted image URL. Credentialed (session cookie).
+// Throws AuthError with the backend's message on failure (bad type / too large / not
+// configured), so the UI can surface it inline.
+export async function uploadImage(
+	file: File,
+	entityType: string = 'article',
+	fetch?: typeof globalThis.fetch
+): Promise<string> {
+	const f = fetch ?? globalThis.fetch;
+	const form = new FormData();
+	form.append('file', file);
+	form.append('entityType', entityType);
+
+	let res: Response;
+	try {
+		// NB: do NOT set Content-Type — the browser adds the multipart boundary.
+		res = await f(buildUrl('/admin/upload'), { method: 'POST', body: form, credentials: 'include' });
+	} catch {
+		throw new AuthError(0, 'Mrežna pogreška pri prijenosu slike.');
+	}
+	if (!res.ok) {
+		let message = `${res.status} ${res.statusText}`;
+		try {
+			const errBody = (await res.json()) as { error?: { message?: string }; message?: string };
+			message = errBody?.error?.message ?? errBody?.message ?? message;
+		} catch {
+			// keep the status line
+		}
+		throw new AuthError(res.status, message);
+	}
+	const data = (await res.json()) as { url: string };
+	return data.url;
+}
+
 // POST /auth/login { email, password } → the admin on success; throws AuthError
 // (401) on bad credentials. Sets the session cookie as a side effect.
 export function login(
