@@ -84,7 +84,7 @@
 	</div>
 
 	{#key listKey}
-		<ul class="sched-list column-nowrap gap-0-6" in:fly={{ x: dir * 24, duration: 180, easing: cubicOut }}>
+		<ul class="sched-list column-nowrap gap-0-6 custom-scrollbar" in:fly={{ x: dir * 24, duration: 180, easing: cubicOut }}>
 			{#each selectedItems as item (item.id)}
 				<ScheduleItem {item} />
 			{:else}
@@ -109,33 +109,14 @@
 		margin-bottom: 1rem;
 		flex: 0 0 auto;
 	}
-	/* Day-item list fills the remaining height and scrolls (Hitno-style scrollbar,
-	   no OS arrows) when the day has more items than fit. */
+	/* Day-item list fills the remaining height and scrolls when the day has more items
+	   than fit. Scrollbar styling comes from the shared `.custom-scrollbar` class. */
 	.sched-list {
 		margin: 0;
 		padding: 0;
 		list-style: none;
 		flex: 1 1 auto;
 		overflow-y: auto;
-	}
-	.sched-list::-webkit-scrollbar {
-		width: 8px;
-		height: 8px;
-	}
-	.sched-list::-webkit-scrollbar-track {
-		background: transparent;
-	}
-	.sched-list::-webkit-scrollbar-thumb {
-		background: #102e66;
-		border-radius: 4px;
-	}
-	.sched-list::-webkit-scrollbar-corner {
-		background: transparent;
-	}
-	.sched-list::-webkit-scrollbar-button {
-		display: none;
-		width: 0;
-		height: 0;
 	}
 	.sched-empty {
 		list-style: none;
