@@ -78,6 +78,14 @@ export function createEvent(
 	return adminRequest('/admin/events', { method: 'POST', body: input, fetch });
 }
 
+export function updateEvent(
+	id: string,
+	patch: Partial<CreateEventInput>,
+	fetch?: typeof globalThis.fetch
+): Promise<{ ok: true }> {
+	return adminRequest(`/admin/events/${id}`, { method: 'PATCH', body: patch, fetch });
+}
+
 export function deleteEvent(id: string, fetch?: typeof globalThis.fetch): Promise<{ ok: true }> {
 	return adminRequest(`/admin/events/${id}`, { method: 'DELETE', fetch });
 }
