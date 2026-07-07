@@ -215,9 +215,21 @@
 					<span class="field-title">Format <span class="req">*</span> <span class="field-hint">(npr. WA 720)</span></span>
 					<input class="field-input w-full br-xs" type="text" bind:value={format} />
 				</label>
+
+				<fieldset class="group">
+					<legend class="group-legend">Poster fotografija <span class="req">*</span></legend>
+					<label class="field column-nowrap gap-title">
+						<span class="field-title">URL slike</span>
+						<input class="field-input w-full br-xs" type="url" bind:value={imageUrl} />
+					</label>
+					<label class="field column-nowrap gap-title mt-0-6">
+						<span class="field-title">Opis slike (alt)</span>
+						<input class="field-input w-full br-xs" type="text" bind:value={imageAlt} />
+					</label>
+				</fieldset>
 			</div>
 
-			<!-- RIGHT: level, attendees, media, flags. -->
+			<!-- RIGHT: level, attendees, flags. -->
 			<div class="col column-nowrap gap-1-5">
 				<div class="field column-nowrap gap-title">
 					<span class="field-title">Razina (kategorija) <span class="req">*</span></span>
@@ -241,18 +253,6 @@
 					<input type="checkbox" bind:checked={hasUnlistedClubAttendee} />
 					<span>Sudjelovali i drugi članovi kluba <span class="field-hint">(nisu na popisu)</span></span>
 				</label>
-
-				<fieldset class="group">
-					<legend class="group-legend">Poster fotografija <span class="req">*</span></legend>
-					<label class="field column-nowrap gap-title">
-						<span class="field-title">URL slike</span>
-						<input class="field-input w-full br-xs" type="url" bind:value={imageUrl} />
-					</label>
-					<label class="field column-nowrap gap-title mt-0-6">
-						<span class="field-title">Opis slike (alt)</span>
-						<input class="field-input w-full br-xs" type="text" bind:value={imageAlt} />
-					</label>
-				</fieldset>
 
 				<label class="field column-nowrap gap-title">
 					<span class="field-title">Poveznica na izvor <span class="field-hint">(nije obavezno)</span></span>
