@@ -322,7 +322,11 @@
 		display: flex;
 		flex-direction: column;
 	}
+	/* Fill the list panel and scroll INSIDE it when the mail count exceeds the panel
+	   height (min-height:0 + flex lets it bound to the panel instead of growing it). */
 	.in-list {
+		flex: 1 1 auto;
+		min-height: 0;
 		overflow-y: auto;
 		display: flex;
 		flex-direction: column;
@@ -357,9 +361,13 @@
 	.in-row:hover {
 		filter: brightness(0.98);
 	}
-	/* Selected row: keep its read/unread tint but show a clear navy ring. */
-	.in-row.active {
-		border-color: $navy;
+	/* Selected row: keep its read/unread tint and mirror it in the border — a darker
+	   shade of the SAME hue (yellow for unread, green for read) rather than a blue ring. */
+	.in-row.active.unread {
+		border-color: #c9ad4a;
+	}
+	.in-row.active.read {
+		border-color: #7cc79a;
 	}
 	.in-row-name {
 		font-size: 0.95rem;
@@ -438,6 +446,10 @@
 	}
 	.in-message {
 		margin-bottom: 1.25rem;
+		/* Don't let a long Poruka shove the reply area off-screen: the message box caps
+		   its own height and scrolls internally (flex-shrink:0 so it isn't squeezed to
+		   nothing, but its inner text scrolls past the cap). */
+		flex: 0 0 auto;
 	}
 	.in-message-text {
 		margin: 0.3rem 0 0;
@@ -448,6 +460,10 @@
 		font-size: 0.92rem;
 		line-height: 1.5;
 		white-space: pre-wrap;
+		/* A very long message scrolls inside this box (max ~10 lines) instead of pushing
+		   the reply form below the panel / screen. */
+		max-height: 15rem;
+		overflow-y: auto;
 	}
 	/* Fills the remaining detail height so the textarea can stretch to the panel's bottom
 	   (the Subject + label + actions are fixed; the textarea takes the slack). */
@@ -474,11 +490,14 @@
 		border-color: $blue;
 	}
 	/* Grow to fill the reply area down to the panel bottom; never exceed the panel width
-	   (box-sizing:border-box on .field-input keeps it within padding). */
+	   (box-sizing:border-box on .field-input keeps it within padding). When the space is
+	   tight (a long Poruka shrank the reply area), the textarea compresses and scrolls its
+	   own content (overflow-y:auto) instead of forcing the panel below the screen. */
 	.in-reply-text {
 		flex: 1 1 auto;
-		min-height: 7rem;
+		min-height: 4rem;
 		resize: none;
+		overflow-y: auto;
 		line-height: 1.4;
 	}
 	.in-reply-actions {
