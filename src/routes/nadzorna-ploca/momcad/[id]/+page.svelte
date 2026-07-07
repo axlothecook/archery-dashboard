@@ -292,7 +292,8 @@
 		margin: 0;
 		display: grid;
 		gap: 0.6rem;
-		align-content: start;
+		/* Centre the data list vertically against the (taller) photo box. */
+		align-self: center;
 	}
 	.field-row {
 		display: grid;
@@ -301,7 +302,9 @@
 		font-size: 0.95rem;
 	}
 	.field-row dt {
-		color: #9aa3b2;
+		/* Darker, more legible label colour (was a faint grey). */
+		color: #5b6577;
+		font-weight: 600;
 	}
 	.field-row dd {
 		margin: 0;
@@ -312,12 +315,14 @@
 	.block + .block {
 		margin-top: 1.75rem;
 	}
+	/* Section titles (Biografija / Statistika karijere / Nastupi): deep-sapphire like the
+	   form field titles, but a larger heading size so they read as section headers. */
 	.block-label {
 		display: block;
-		margin-bottom: 0.4rem;
-		font-size: 0.85rem;
+		margin-bottom: 0.6rem;
+		font-size: 1.15rem;
 		font-weight: 700;
-		color: #5b6577;
+		color: $navy;
 	}
 	.bio-text {
 		margin: 0;
@@ -342,7 +347,7 @@
 	.mini-tbl {
 		width: 100%;
 		border-collapse: collapse;
-		font-size: 0.88rem;
+		font-size: 1rem;
 	}
 	.mini-tbl th {
 		text-align: left;
