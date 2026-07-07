@@ -175,13 +175,27 @@
 		page.url.pathname === href ||
 		(href !== '/nadzorna-ploca' && page.url.pathname.startsWith(href + '/'));
 
+	// A group's SECTION ROOT is the folder its child pages live in, e.g. the Postignuća
+	// children (/nadzorna-ploca/postignuca/sva, …/novo) share /nadzorna-ploca/postignuca.
+	// Deriving it from the first child (drop the last segment) lets us recognise routes
+	// that belong to the section but aren't one of the listed sub-options — most notably
+	// the edit pages (/nadzorna-ploca/postignuca/uredi/[id]).
+	const groupSectionRoot = (item: (typeof NAV)[number]): string | null => {
+		const first = item.children?.[0]?.href;
+		if (!first) return null;
+		return first.slice(0, first.lastIndexOf('/'));
+	};
+
 	// Accordion state for the expandable groups. Multiple groups may be open at once;
 	// `openGroups` is the set of open group labels. Which group contains the ACTIVE
-	// route (the one that owns the current page):
+	// route (the one that owns the current page) — matched on the section root so an
+	// edit page (…/uredi/[id]) keeps its parent submenu open even though it isn't one
+	// of the listed sub-options.
 	const activeGroupLabel = $derived(
-		NAV.find(
-			(item) => item.children?.some((c) => page.url.pathname.startsWith(c.href))
-		)?.label ?? null
+		NAV.find((item) => {
+			const root = groupSectionRoot(item);
+			return root ? page.url.pathname.startsWith(root + '/') : false;
+		})?.label ?? null
 	);
 	let openGroups = $state<Set<string>>(new Set());
 	// On an ACTUAL route change (a navigating item was clicked — a sub-option or a
