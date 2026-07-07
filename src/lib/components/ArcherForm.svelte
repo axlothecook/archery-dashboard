@@ -282,10 +282,10 @@
 
 			<div class="field column-nowrap gap-title">
 				<span class="field-title">Uloga <span class="req">*</span></span>
-				<div class="chips display-f gap-0-5">
+				<div class="checks display-f gap-1">
 					{#each ROLE_KEYS as r (r)}
-						<button type="button" class="chip cursor-pointer display-f align-items-center gap-0-4" class:on={roles.includes(r)} onclick={() => toggleRole(r)}>
-							<span class="chip-box display-f align-items-center justify-content-center" class:checked={roles.includes(r)} aria-hidden="true">
+						<button type="button" class="check-opt cursor-pointer display-f align-items-center gap-0-4" onclick={() => toggleRole(r)}>
+							<span class="check-box display-f align-items-center justify-content-center" class:checked={roles.includes(r)} aria-hidden="true">
 								{#if roles.includes(r)}<CheckIcon size={12} />{/if}
 							</span>
 							{ROLE_LABEL[r]}
@@ -296,10 +296,10 @@
 
 			<div class="field column-nowrap gap-title">
 				<span class="field-title">Luk</span>
-				<div class="chips display-f gap-0-5">
+				<div class="checks display-f gap-1">
 					{#each BOW_KEYS as b (b)}
-						<button type="button" class="chip cursor-pointer display-f align-items-center gap-0-4" class:on={bowType.includes(b)} onclick={() => toggleBow(b)}>
-							<span class="chip-box display-f align-items-center justify-content-center" class:checked={bowType.includes(b)} aria-hidden="true">
+						<button type="button" class="check-opt cursor-pointer display-f align-items-center gap-0-4" onclick={() => toggleBow(b)}>
+							<span class="check-box display-f align-items-center justify-content-center" class:checked={bowType.includes(b)} aria-hidden="true">
 								{#if bowType.includes(b)}<CheckIcon size={12} />{/if}
 							</span>
 							{BOW_LABEL[b]}
@@ -345,10 +345,10 @@
 		<!-- RIGHT: photos + coaches + visibility + row editors. -->
 		<div class="col column-nowrap gap-1-5">
 			<fieldset class="group">
-				<legend class="group-legend">Kartična slika</legend>
-				<ImageUpload label="Kartična slika" entityType="archer" fit="cover" bind:url={cardPhotoUrl} />
+				<legend class="group-legend">Slika za malu karticu</legend>
+				<ImageUpload label="Slika za malu karticu" entityType="archer" fit="cover" bind:url={cardPhotoUrl} />
 				<label class="field column-nowrap gap-title mt-1">
-					<span class="field-title">Opis kartične slike (alt)</span>
+					<span class="field-title">Opis slike za malu karticu (alt)</span>
 					<input class="field-input w-full br-xs" type="text" bind:value={cardPhotoAlt} />
 				</label>
 			</fieldset>
@@ -363,13 +363,13 @@
 			</fieldset>
 
 			<div class="field column-nowrap gap-title">
-				<span class="field-title">Treneri</span>
+				<span class="field-title">Treneri <span class="req">*</span></span>
 				<ArcherPicker options={coachOptions} loadError={coachLoadError} errorDetail={coachErrorDetail} bind:selected={coachIds} />
 			</div>
 
 			<div class="two-col">
 				<div class="field column-nowrap gap-title">
-					<span class="field-title">Stanje</span>
+					<span class="field-title">Stanje <span class="req">*</span></span>
 					<DashSelect options={statusOptions} bind:value={status} ariaLabel="Stanje" />
 				</div>
 				<label class="field checkbox-field display-f align-items-center gap-0-5">
@@ -380,10 +380,10 @@
 
 			<div class="field column-nowrap gap-title">
 				<span class="field-title">Skrivene sekcije</span>
-				<div class="chips display-f gap-0-5">
+				<div class="checks display-f gap-1">
 					{#each HIDDEN_KEYS as s (s)}
-						<button type="button" class="chip cursor-pointer display-f align-items-center gap-0-4" class:on={hiddenSections.includes(s)} onclick={() => toggleHidden(s)}>
-							<span class="chip-box display-f align-items-center justify-content-center" class:checked={hiddenSections.includes(s)} aria-hidden="true">
+						<button type="button" class="check-opt cursor-pointer display-f align-items-center gap-0-4" onclick={() => toggleHidden(s)}>
+							<span class="check-box display-f align-items-center justify-content-center" class:checked={hiddenSections.includes(s)} aria-hidden="true">
 								{#if hiddenSections.includes(s)}<CheckIcon size={12} />{/if}
 							</span>
 							{HIDDEN_SECTION_LABEL[s]}
@@ -397,7 +397,7 @@
 
 	<!-- Career stats row editor -->
 	<div class="rows-block">
-		<div class="rows-head display-f align-items-center justify-content-space-between">
+		<div class="rows-head display-f align-items-center gap-1-5">
 			<span class="rows-title">Statistika karijere</span>
 			<button type="button" class="btn-row-add cursor-pointer display-f align-items-center gap-0-4" onclick={addStat}>
 				<AddIcon size={16} /> Dodaj red
@@ -431,7 +431,7 @@
 
 	<!-- Performance row editor -->
 	<div class="rows-block">
-		<div class="rows-head display-f align-items-center justify-content-space-between">
+		<div class="rows-head display-f align-items-center gap-1-5">
 			<span class="rows-title">Nastupi</span>
 			<button type="button" class="btn-row-add cursor-pointer display-f align-items-center gap-0-4" onclick={addPerf}>
 				<AddIcon size={16} /> Dodaj red
@@ -491,6 +491,12 @@
 		border-radius: 14px;
 		padding: 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
+		/* Fill the content frame and scroll the (tall) form INSIDE the white div, so the
+		   lower sections (Statistika karijere / Nastupi) come into view instead of running
+		   off the bottom of the screen. The page itself never scrolls. */
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow-y: auto;
 	}
 	.form-grid {
 		display: grid;
@@ -560,34 +566,30 @@
 		font-weight: 700;
 		color: $navy;
 	}
-	/* Multi-select chips (roles / bow / hidden sections). */
-	.chips {
+	/* Multi-select checkboxes (roles / bow / hidden sections) — a plain check box + label,
+	   no pill/chip shape. */
+	.checks {
 		flex-wrap: wrap;
 	}
-	.chip {
+	.check-opt {
 		gap: 0.4rem;
-		padding: 0.45rem 0.7rem;
-		border: 1px solid #d7dee8;
-		border-radius: 999px;
-		background: #fff;
+		padding: 0;
+		border: 0;
+		background: none;
 		color: $navy;
-		font-size: 0.85rem;
+		font-size: 0.9rem;
 		font-family: inherit;
 	}
-	.chip.on {
-		border-color: $navy;
-		background: #eef2fb;
-	}
-	.chip-box {
-		width: 15px;
-		height: 15px;
+	.check-box {
+		width: 16px;
+		height: 16px;
 		flex: 0 0 auto;
 		border: 1.5px solid #b9c3d3;
 		border-radius: 4px;
 		background: #fff;
 		color: #fff;
 	}
-	.chip-box.checked {
+	.check-box.checked {
 		border-color: $navy;
 		background: $navy;
 	}
@@ -596,7 +598,9 @@
 		margin-top: 1.75rem;
 	}
 	.rows-head {
-		margin-bottom: 0.6rem;
+		/* Tight gap so the empty-state subtext / table sits close under the title (like the
+		   page title → subtitle spacing). */
+		margin-bottom: 0.35rem;
 	}
 	.rows-title {
 		font-size: 1rem;
@@ -617,8 +621,9 @@
 		background: #eef1f3;
 	}
 	.rows-empty {
+		/* Sits close under the title (no big top gap). */
 		margin: 0;
-		padding: 0.75rem 0;
+		padding: 0.1rem 0 0;
 		color: #9aa3b2;
 		font-size: 0.9rem;
 	}

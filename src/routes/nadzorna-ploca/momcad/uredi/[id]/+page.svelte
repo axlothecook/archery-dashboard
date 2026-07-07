@@ -48,7 +48,13 @@
 	$navy: map.get(lib.$colors, 'deep-sapphire');
 
 	.ar-section {
+		/* Fill the content frame as a flex column so the form panel bounds to it and
+		   scrolls the (tall) form inside the white div. */
 		width: 100%;
+		display: flex;
+		flex-direction: column;
+		flex: 1 1 auto;
+		min-height: 0;
 	}
 	.mgmt-head {
 		margin-bottom: 1.25rem;
