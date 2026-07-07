@@ -135,7 +135,7 @@
 			children: [
 				{ label: 'Svi događaji', href: '/nadzorna-ploca/raspored/svi' },
 				{ label: 'Nacrti', href: '/nadzorna-ploca/raspored/nacrti' },
-				{ label: 'Kategorije razina', href: '/nadzorna-ploca/raspored/kategorije' },
+				{ label: 'Razina', href: '/nadzorna-ploca/raspored/kategorije' },
 				{ label: 'Novi događaj', href: '/nadzorna-ploca/raspored/novi' }
 			]
 		},
