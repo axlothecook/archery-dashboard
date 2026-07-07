@@ -640,10 +640,9 @@
 		font-size: 1rem;
 		font-weight: 700;
 		color: $navy;
-		/* Reserve the width of the longest title ("Statistika karijere") so the "Dodaj red"
-		   button starts at the SAME x on both blocks — the gap looks equal even though
-		   "Nastupi" is a shorter word. */
-		min-width: 9rem;
+		/* Reserve a fixed width (≥ the longest title "Statistika karijere") so the "Dodaj red"
+		   button starts at the SAME x on both blocks with a clear gap after the title. */
+		min-width: 12.5rem;
 	}
 	.btn-row-add {
 		padding: 0.2rem 0.8rem;
@@ -735,8 +734,17 @@
 		color: $red;
 	}
 	.form-actions {
-		/* Clear separation between the action buttons and the last section above. */
-		margin-top: 4rem;
+		/* Sticky action bar: stays pinned FLUSH to the panel's bottom edge while the (tall)
+		   form scrolls under it, so Odustani/Spremi are always reachable — on any screen.
+		   `bottom: -1.5rem` cancels the panel's 1.5rem bottom padding so the bar sits on the
+		   panel's border (no content peeking below it); the negative margins span the bar
+		   edge-to-edge and pull it into that padding. Opaque white bg + a top divider. */
+		position: sticky;
+		bottom: -1.5rem;
+		margin: 4rem -1.5rem -1.5rem;
+		padding: 1rem 1.5rem;
+		background: #eef1f3;
+		border-top: 1px solid $border;
 	}
 	.btn {
 		padding: 0.6rem 1.3rem;

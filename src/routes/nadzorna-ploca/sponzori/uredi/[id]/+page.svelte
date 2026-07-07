@@ -187,9 +187,11 @@
 		border-radius: 14px;
 		padding: 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
-		/* Same white div as Novi sponzor (matches the Novi događaj panel height).
-		   Flex column so the action row pins to the panel's bottom-right. */
-		min-height: 52rem;
+		/* Fill the frame + scroll the form inside so the sticky action bar stays in view on
+		   any screen size. Flex column so the bar is the last, sticky child. */
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow-y: auto;
 		display: flex;
 		flex-direction: column;
 	}
@@ -250,9 +252,17 @@
 		color: $navy;
 	}
 	.form-actions {
-		/* Pin to the panel's bottom (flex-column panel) so the buttons sit bottom-right. */
+		/* Sticky action bar flush to the panel's bottom edge (off-white bg for visibility),
+		   so the buttons stay in view while the form scrolls under it on any screen size. */
 		margin-top: auto;
-		padding-top: 2.5rem;
+		position: sticky;
+		bottom: -1.5rem;
+		margin-left: -1.5rem;
+		margin-right: -1.5rem;
+		margin-bottom: -1.5rem;
+		padding: 1rem 1.5rem;
+		background: #eef1f3;
+		border-top: 1px solid $border;
 	}
 	.btn {
 		padding: 0.6rem 1.3rem;

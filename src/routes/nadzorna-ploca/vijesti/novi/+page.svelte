@@ -517,7 +517,14 @@
 		color: #102e66;
 	}
 	.form-actions {
-		margin-top: 0.5rem;
+		/* Sticky action bar flush to the panel's bottom edge (off-white bg), always in view
+		   while the (tall) form scrolls under it on any screen size. */
+		position: sticky;
+		bottom: -1.5rem;
+		margin: 0.5rem -1.5rem -1.5rem;
+		padding: 1rem 1.5rem;
+		background: #eef1f3;
+		border-top: 1px solid #dfe4ea;
 	}
 	.btn {
 		padding: 0.6rem 1.3rem;
