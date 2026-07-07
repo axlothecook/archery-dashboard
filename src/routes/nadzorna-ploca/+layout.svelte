@@ -61,12 +61,18 @@
 
 	let { data, children } = $props();
 
-	// Top-bar search query; the × clear button shows only when there's text.
+	// Top-bar search query; the × clear button shows only when there's text. Submitting
+	// the search takes the admin to the Pomoć (help / Q&A) page, pre-filtered by the query.
 	let searchQuery = $state('');
 	let searchInput = $state<HTMLInputElement | null>(null);
 	function clearSearch() {
 		searchQuery = '';
 		searchInput?.focus();
+	}
+	function submitSearch(e: SubmitEvent) {
+		e.preventDefault();
+		const q = searchQuery.trim();
+		goto(`/nadzorna-ploca/pomoc${q ? `?q=${encodeURIComponent(q)}` : ''}`);
 	}
 
 	// ── Notifications ("Novo") ──────────────────────────────────────────────────
@@ -324,7 +330,7 @@
 	<div class="admin-body column-nowrap">
 		<!-- Top bar: search pill + notifications + user -->
 		<header class="admin-topbar display-f align-items-center justify-content-space-between gap-1-5">
-			<form class="search-pill display-f align-items-stretch" role="search" onsubmit={(e) => e.preventDefault()}>
+			<form class="search-pill display-f align-items-stretch" role="search" onsubmit={submitSearch}>
 				<input
 					class="search-input"
 					type="search"
