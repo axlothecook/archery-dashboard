@@ -20,8 +20,8 @@
 
 {#if messages.length > 0}
 	<ul class="persistent-error-popup-wrapper" aria-live="assertive">
-		{#each messages as msg, i (msg + i)}
-			<li transition:fly={{ y: -12, duration: 180, easing: cubicOut }}>
+		{#each messages as msg, i (msg)}
+			<li in:fly={{ y: -12, duration: 180, easing: cubicOut }}>
 				<span class="msg">{msg}</span>
 				<button class="close" type="button" aria-label="Zatvori upozorenje" onclick={() => dismiss(i)}>
 					<CloseIcon size={18} />
