@@ -113,7 +113,7 @@
 						>
 							<span class="faq-q">{item.q}</span>
 							<span class="faq-chevron display-f" class:open={open.has(item.q)} aria-hidden="true">
-								<ChevronIcon direction="right" size={38} />
+								<ChevronIcon direction="right" size={44} />
 							</span>
 						</button>
 						<!-- Answer = on the grey page background (no white card), slides open/closed. -->
@@ -143,7 +143,7 @@
 		min-height: 0;
 	}
 	.mgmt-head {
-		margin-bottom: 1.25rem;
+		margin-bottom: 2.5rem;
 	}
 	.mgmt-title {
 		margin: 0;
@@ -225,7 +225,7 @@
 		margin: 0;
 		font-size: 1.15rem;
 		line-height: 1.65;
-		color: #3d4c66;
+		color: #000;
 	}
 	.help-empty {
 		margin: 0;

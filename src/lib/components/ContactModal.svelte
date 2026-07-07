@@ -30,14 +30,14 @@
 
 	// Which developer to send to. Only one for now; the empty first option forces a pick.
 	const recipientOptions = [
-		{ value: '', label: 'Odaberite programera…' },
+		{ value: '', label: 'Odaberite programera' },
 		{ value: 'axlothecook', label: 'axlothecook' }
 	];
 
 	const placeholder = $derived(
 		kind === 'issue'
-			? 'Opišite problem: što ste radili i što se dogodilo…'
-			: 'Opišite svoju ideju: što biste htjeli i kako bi to pomoglo.'
+			? 'Opišite problem: što ste radili i što se dogodilo'
+			: 'Opišite svoju ideju: što biste htjeli i kako bi to pomoglo'
 	);
 
 	function close() {
@@ -136,7 +136,7 @@
 	}
 	.cm-title {
 		margin: 0;
-		font-size: 1.15rem;
+		font-size: 1.5rem;
 		font-weight: 700;
 		color: $navy;
 	}
