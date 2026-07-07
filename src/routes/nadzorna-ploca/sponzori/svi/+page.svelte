@@ -46,7 +46,13 @@
 
 <style>
 	.sp-section {
+		/* Fill the shared content frame as a flex column so the table panel bounds to it
+		   and scrolls INSIDE (the page itself never grows past the viewport). */
 		width: 100%;
+		display: flex;
+		flex-direction: column;
+		flex: 1 1 auto;
+		min-height: 0;
 	}
 	.mgmt-head {
 		margin-bottom: 1.5rem;
@@ -81,6 +87,11 @@
 		border-radius: 14px;
 		padding: 1.25rem 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
+		/* Fill the section height + be a flex column so the scroll area bounds to it. */
+		flex: 1 1 auto;
+		min-height: 0;
+		display: flex;
+		flex-direction: column;
 	}
 	.sp-load-error {
 		margin: 0 0 1rem;
@@ -88,7 +99,11 @@
 		font-size: 0.92rem;
 	}
 	.sp-scroll {
-		overflow-x: auto;
+		/* Fill the panel + scroll the table INSIDE it (both axes) so a long list never
+		   runs off the bottom of the viewport. */
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow: auto;
 		/* Scrollbar styling comes from the shared `.custom-scrollbar` class (library). */
 	}
 </style>
