@@ -391,8 +391,8 @@
 		color: #102e66;
 	}
 	.form-actions {
-		/* Wider gap so the action buttons sit clearly apart from the form fields. */
-		margin-top: 2.5rem;
+		/* Wide gap so the action buttons sit clearly apart from the form fields. */
+		margin-top: 4.5rem;
 	}
 	.btn {
 		padding: 0.6rem 1.3rem;
