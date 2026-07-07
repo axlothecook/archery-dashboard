@@ -15,6 +15,7 @@
 	import DashSelect from '$lib/components/DashSelect.svelte';
 	import ArcherPicker from '$lib/components/ArcherPicker.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
+	import ErrorPopup from '$lib/components/ErrorPopup.svelte';
 	import CalendarIcon from '$lib/components/icons/CalendarIcon.svelte';
 
 	let { data } = $props();
@@ -41,7 +42,7 @@
 	let hidden = $state(false);
 
 	let saving = $state(false);
-	let error = $state('');
+	let errors = $state<string[]>([]);
 
 	const disciplineOptions = (Object.keys(DISCIPLINE_LABEL) as Discipline[]).map((v) => ({
 		value: v,
@@ -118,41 +119,42 @@
 		};
 	}
 
-	// Everything is mandatory except Poveznica na izvor. Sudionici is satisfied by either
-	// at least one archer or the "other club members" flag. For a one-day event, enter the
-	// same date in both fields (the list then shows it once).
-	function validate(): string | null {
-		if (!name.trim()) return 'Naziv događaja je obavezan.';
-		if (!dateFrom) return 'Datum početka je obavezan.';
-		if (!dateTo) return 'Datum završetka je obavezan.';
-		if (dateTo < dateFrom) return 'Datum završetka ne može biti prije početka.';
-		if (!location.trim()) return 'Lokacija je obavezna.';
-		if (!organizer.trim()) return 'Organizator je obavezan.';
-		if (!format.trim()) return 'Format je obavezan.';
-		if (!levelId) return 'Razina (kategorija) je obavezna.';
+	// Mandatory: Naziv, dates, Lokacija, Razina, Sudionici, Slika + alt. Optional: Format,
+	// Organizator, Poveznica (some real events genuinely have no organizer/format). Sudionici
+	// is satisfied by either at least one archer or the "other club members" flag. For a
+	// one-day event, enter the same date in both fields (the list then shows it once).
+	// Collect EVERY error so they all show at once (dismissible popups).
+	function validate(): string[] {
+		const errs: string[] = [];
+		if (!name.trim()) errs.push('Naziv događaja je obavezan.');
+		if (!dateFrom) errs.push('Datum početka je obavezan.');
+		if (!dateTo) errs.push('Datum završetka je obavezan.');
+		else if (dateFrom && dateTo < dateFrom) errs.push('Datum završetka ne može biti prije početka.');
+		if (!location.trim()) errs.push('Lokacija je obavezna.');
+		if (!levelId) errs.push('Razina (kategorija) je obavezna.');
 		if (attendingArcherIds.length === 0 && !hasUnlistedClubAttendee) {
-			return 'Sudionici su obavezni (odaberite streličare ili označite druge članove kluba).';
+			errs.push('Sudionici su obavezni (odaberite streličare ili označite druge članove kluba).');
 		}
-		if (!imageUrl.trim()) return 'Slika je obavezna.';
-		if (!imageAlt.trim()) return 'Opis slike (alt) je obavezan.';
-		return null;
+		if (!imageUrl.trim()) errs.push('Slika je obavezna.');
+		if (!imageAlt.trim()) errs.push('Opis slike (alt) je obavezan.');
+		return errs;
 	}
 
 	async function submit(status: 'draft' | 'published') {
 		if (saving) return;
-		const v = validate();
-		if (v) {
-			error = v;
+		const errs = validate();
+		if (errs.length > 0) {
+			errors = errs;
 			return;
 		}
-		error = '';
+		errors = [];
 		saving = true;
 		try {
 			await createEvent(buildInput(status));
 			saved = true; // our own redirect — don't trigger the unsaved-changes guard
 			await goto(status === 'published' ? '/nadzorna-ploca/raspored/svi' : '/nadzorna-ploca/raspored/nacrti');
 		} catch (e) {
-			error = e instanceof Error ? e.message : 'Spremanje nije uspjelo.';
+			errors = [e instanceof Error ? e.message : 'Spremanje nije uspjelo.'];
 			saving = false;
 		}
 	}
@@ -176,10 +178,6 @@
 			<p class="mgmt-sub">Dodajte natjecanje ili događaj i spremite kao nacrt ili odmah objavite.</p>
 		</div>
 	</div>
-
-	{#if error}
-		<p class="form-error" role="alert">{error}</p>
-	{/if}
 
 	<form class="panel bg-white" onsubmit={(e) => e.preventDefault()}>
 		<div class="form-grid">
@@ -208,11 +206,11 @@
 					<input class="field-input w-full br-xs" type="text" bind:value={location} />
 				</label>
 				<label class="field column-nowrap gap-title">
-					<span class="field-title">Organizator <span class="req">*</span></span>
+					<span class="field-title">Organizator <span class="field-hint">(nije obavezno)</span></span>
 					<input class="field-input w-full br-xs" type="text" bind:value={organizer} />
 				</label>
 				<label class="field column-nowrap gap-title">
-					<span class="field-title">Format <span class="req">*</span> <span class="field-hint">(npr. WA 720)</span></span>
+					<span class="field-title">Format <span class="field-hint">(nije obavezno, npr. WA 720)</span></span>
 					<input class="field-input w-full br-xs" type="text" bind:value={format} />
 				</label>
 
@@ -284,6 +282,9 @@
 	</form>
 </section>
 
+<!-- Validation warnings: top-centre dismissible stack (matches the article forms). -->
+<ErrorPopup bind:messages={errors} />
+
 <!-- Abandon-changes popup (animated) — shown by the beforeNavigate guard + Odustani. -->
 <ConfirmDialog bind:this={leaveDlg} confirmLabel="Napusti" cancelLabel="Ostani" />
 
@@ -304,14 +305,6 @@
 		margin: 0.35rem 0 0;
 		font-size: 0.95rem;
 		color: #5b6577;
-	}
-	.form-error {
-		margin: 0 0 1rem;
-		padding: 0.6rem 0.9rem;
-		border-radius: 8px;
-		background: #fde7ec;
-		color: #a4133c;
-		font-size: 0.92rem;
 	}
 	.panel {
 		border-radius: 14px;
