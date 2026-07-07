@@ -157,7 +157,7 @@
 				<label class="field column-nowrap gap-0-3">
 					<span class="field-label fw-600">Boja</span>
 					<span class="color-row display-f align-items-center gap-0-5">
-						<input class="color-swatch" type="color" bind:value={fColor} aria-label="Boja" />
+						<input class="color-swatch w-2-5 h-2-5 br-sm border-width-1 border-heather flex-grow-0 cursor-pointer" type="color" bind:value={fColor} aria-label="Boja" />
 						<input class="field-input color-hex br-xs" type="text" bind:value={fColor} />
 					</span>
 				</label>
@@ -323,15 +323,29 @@
 		outline: none;
 		border-color: #187ff5;
 	}
+	/* Frame sizing/border/radius are utility classes on the element (w-2-5 h-2-5 br-sm
+	   border-width-1 border-heather). Only the native-swatch chrome reset stays here:
+	   the inner colour area of <input type="color"> is drawn by the browser with its
+	   own padding + rounded/elliptic border, which no utility class can reach (same
+	   category as ::-webkit-scrollbar). Stripping it leaves a clean colour box. */
 	.color-swatch {
-		width: 2.6rem;
-		height: 2.6rem;
 		padding: 0;
-		border: 1px solid #d7dee8;
-		border-radius: 8px;
 		background: none;
-		cursor: pointer;
-		flex: 0 0 auto;
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+		overflow: hidden;
+	}
+	.color-swatch::-webkit-color-swatch-wrapper {
+		padding: 0;
+	}
+	.color-swatch::-webkit-color-swatch {
+		border: 0;
+		border-radius: 0;
+	}
+	.color-swatch::-moz-color-swatch {
+		border: 0;
+		border-radius: 0;
 	}
 	.color-hex {
 		flex: 1 1 auto;
