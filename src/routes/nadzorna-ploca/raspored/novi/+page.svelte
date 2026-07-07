@@ -237,7 +237,7 @@
 						bind:selected={attendingArcherIds}
 					/>
 				</div>
-				<label class="check-row display-f align-items-center gap-0-5">
+				<label class="check-row check-row--attach display-f align-items-center gap-0-5">
 					<input type="checkbox" bind:checked={hasUnlistedClubAttendee} />
 					<span>Sudjelovali i drugi članovi kluba <span class="field-hint">(nisu na popisu)</span></span>
 				</label>
@@ -391,6 +391,12 @@
 	.check-row {
 		font-size: 0.95rem;
 		color: #102e66;
+	}
+	/* The "other club members" checkbox belongs to the Sudionici field above it, so pull
+	   it up close (counteract most of the column's 1.5rem gap) rather than sitting a full
+	   field-gap away. */
+	.check-row--attach {
+		margin-top: -1rem;
 	}
 	.form-actions {
 		/* Wide gap so the action buttons sit clearly apart from the form fields. */
