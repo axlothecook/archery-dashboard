@@ -7,15 +7,12 @@
 	import {
 		updateInquiryStatus,
 		replyToInquiry,
-		STATUS_LABEL,
 		KIND_LABEL,
 		type InquiryKind,
-		type InquiryStatus,
 		type MembershipSubmission,
 		type SponsorInquiry,
 		type DonationInquiry
 	} from '$lib/inquiries';
-	import DashSelect from '$lib/components/DashSelect.svelte';
 	import { showToast } from '$lib/toasts';
 	import InquiryIcon from '$lib/components/icons/InquiryIcon.svelte';
 
@@ -57,43 +54,21 @@
 		return `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}.`;
 	}
 
-	const statusOptions = (Object.keys(STATUS_LABEL) as InquiryStatus[]).map((v) => ({
-		value: v,
-		label: STATUS_LABEL[v]
-	}));
+	// Read/unread is binary: an inquiry is UNREAD only while its status is 'new'.
+	const isUnread = (i: AnyInquiry) => i.status === 'new';
 
-	// ── Status change ─────────────────────────────────────────────────────────
-	// DashSelect binds a value; mirror the selected inquiry's status into a local draft
-	// and PATCH when the admin changes it (skip the initial sync + no-op reselects).
 	let busy = $state(false);
-	let statusDraft = $state<InquiryStatus>('new');
-	let statusSyncedFor = $state<string | null>(null);
-	$effect(() => {
-		// When a different inquiry is opened, sync the draft to its status (not a change).
-		if (selected && selected.id !== statusSyncedFor) {
-			statusSyncedFor = selected.id;
-			statusDraft = selected.status;
-		}
-	});
-	// PATCH when the admin picks a different status (the draft diverges from the row and
-	// it's already synced to this inquiry — so this isn't the initial sync).
-	$effect(() => {
-		if (selected && statusSyncedFor === selected.id && statusDraft !== selected.status) {
-			void setStatus(statusDraft);
-		}
-	});
-	async function setStatus(next: InquiryStatus) {
-		if (!selected || busy || next === selected.status) return;
-		busy = true;
+
+	// Open an inquiry: select it and, if it was unread ('new'), mark it read (PATCH →
+	// 'read'). Clicking an email is the "read" signal — no manual status control.
+	async function openInquiry(i: AnyInquiry) {
+		selectedId = i.id;
+		if (i.status !== 'new') return;
 		try {
-			await updateInquiryStatus(kind, selected.id, next);
-			showToast('success', 'Status ažuriran.');
+			await updateInquiryStatus(kind, i.id, 'read');
 			await invalidateAll();
-		} catch (e) {
-			showToast('error', e instanceof Error ? e.message : 'Promjena statusa nije uspjela.');
-			statusDraft = selected.status; // revert the draft on failure
-		} finally {
-			busy = false;
+		} catch {
+			// Non-fatal: the detail still opens; the row just stays marked unread.
 		}
 	}
 
@@ -187,17 +162,18 @@
 						<button
 							class="in-row cursor-pointer display-f column-nowrap gap-0-2"
 							class:active={selectedId === i.id}
-							class:unread={i.status === 'new'}
+							class:unread={isUnread(i)}
+							class:read={!isUnread(i)}
 							type="button"
-							onclick={() => (selectedId = i.id)}
+							onclick={() => openInquiry(i)}
 						>
 							<div class="in-row-top display-f align-items-center justify-content-space-between gap-0-5">
 								<span class="in-row-name fw-600">{senderName(i)}</span>
-								<span class="in-status in-status--{i.status}">{STATUS_LABEL[i.status]}</span>
+								<span class="in-row-flag">{isUnread(i) ? 'Nepročitano' : 'Pročitano'}</span>
 							</div>
 							<div class="in-row-meta display-f align-items-center justify-content-space-between gap-0-5">
-								<span class="in-row-msg text-jet-grey">{i.message ?? '(bez poruke)'}</span>
-								<span class="in-row-date text-jet-grey">{fmtDate(i.submittedAt)}</span>
+								<span class="in-row-msg">{i.message ?? '(bez poruke)'}</span>
+								<span class="in-row-date">{fmtDate(i.submittedAt)}</span>
 							</div>
 						</button>
 					{/each}
@@ -211,16 +187,8 @@
 				<p class="in-placeholder">Odaberite upit s popisa za pregled i odgovor.</p>
 			{:else}
 				<div class="in-detail custom-scrollbar">
-					<div class="in-detail-head display-f align-items-center justify-content-space-between gap-1">
+					<div class="in-detail-head display-f align-items-center gap-1">
 						<h3 class="in-detail-name">{senderName(selected)}</h3>
-						<div class="in-status-control display-f align-items-center gap-0-5">
-							<span class="in-status-label">Status</span>
-							<DashSelect
-								options={statusOptions}
-								bind:value={statusDraft}
-								ariaLabel="Status upita"
-							/>
-						</div>
 					</div>
 
 					<dl class="in-fields">
@@ -320,7 +288,8 @@
 	}
 	.in-layout {
 		display: grid;
-		grid-template-columns: 22rem 1fr;
+		/* Wider list (left), narrower detail (right). */
+		grid-template-columns: 30rem 1fr;
 		gap: 1.25rem;
 		align-items: start;
 		flex: 1 1 auto;
@@ -337,6 +306,13 @@
 		min-height: 0;
 		max-height: calc(100vh - 16rem);
 	}
+	/* Detail (right) panel: more inner padding + a flex column so the reply area can
+	   grow the textarea down to the panel's bottom. */
+	.in-detail-panel {
+		padding: 1.6rem;
+		display: flex;
+		flex-direction: column;
+	}
 	.in-list {
 		overflow-y: auto;
 		display: flex;
@@ -351,62 +327,71 @@
 		color: #9aa3b2;
 		font-size: 0.95rem;
 	}
+	/* The WHOLE row is tinted by read state (no pill): yellow = unread, green = read.
+	   The border mirrors that background (a darker shade of the same hue), and there is
+	   no curved left border. */
 	.in-row {
 		text-align: left;
-		border: 1px solid #eef1f3;
+		border: 1px solid transparent;
 		border-radius: 10px;
-		background: #fff;
 		padding: 0.7rem 0.8rem;
 		font-family: inherit;
 	}
-	.in-row:hover {
-		background: #f7f9fc;
-	}
-	.in-row.active {
-		border-color: #187ff5;
-		background: #f2f7ff;
-	}
 	.in-row.unread {
-		border-left: 3px solid #187ff5;
+		background: #fdf6d8; /* yellow — unread */
+		border-color: #ecdb92;
+	}
+	.in-row.read {
+		background: #e3f6ea; /* green — read */
+		border-color: #b7e3c6;
+	}
+	.in-row:hover {
+		filter: brightness(0.98);
+	}
+	/* Selected row: keep its read/unread tint but show a clear navy ring. */
+	.in-row.active {
+		border-color: #102e66;
 	}
 	.in-row-name {
 		font-size: 0.95rem;
 		color: #102e66;
 	}
+	/* Plain read/unread label (no pill). */
+	.in-row-flag {
+		flex: 0 0 auto;
+		font-size: 0.72rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		white-space: nowrap;
+	}
+	.in-row.unread .in-row-flag {
+		color: #8a6d00;
+	}
+	.in-row.read .in-row-flag {
+		color: #10683a;
+	}
 	.in-row-msg {
 		font-size: 0.82rem;
-		max-width: 13rem;
+		max-width: 17rem;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		color: #5b6577;
 	}
 	.in-row-date {
 		font-size: 0.8rem;
 		white-space: nowrap;
-	}
-	.in-status {
-		flex: 0 0 auto;
-		padding: 0.15rem 0.5rem;
-		border-radius: 999px;
-		font-size: 0.72rem;
-		font-weight: 700;
-		white-space: nowrap;
-	}
-	.in-status--new {
-		background: #d4f3df;
-		color: #10683a;
-	}
-	.in-status--read {
-		background: #eef2fb;
-		color: #1b3a7a;
-	}
-	.in-status--archived {
-		background: #f1f3f7;
 		color: #5b6577;
 	}
+	/* Fills the detail panel as a flex column so the reply textarea can grow down to the
+	   panel's bottom padding. Its own scrollbar handles overflow if the detail is tall. */
 	.in-detail {
+		flex: 1 1 auto;
+		min-height: 0;
 		overflow-y: auto;
-		padding-right: 0.5rem;
+		display: flex;
+		flex-direction: column;
 	}
 	.in-detail-head {
 		margin-bottom: 1rem;
@@ -417,7 +402,6 @@
 		font-weight: 700;
 		color: #102e66;
 	}
-	.in-status-label,
 	.in-reply-label,
 	.in-message-label {
 		font-size: 0.8rem;
@@ -456,7 +440,11 @@
 		line-height: 1.5;
 		white-space: pre-wrap;
 	}
+	/* Fills the remaining detail height so the textarea can stretch to the panel's bottom
+	   (the Subject + label + actions are fixed; the textarea takes the slack). */
 	.in-reply {
+		flex: 1 1 auto;
+		min-height: 0;
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
@@ -476,12 +464,16 @@
 		outline: none;
 		border-color: #187ff5;
 	}
+	/* Grow to fill the reply area down to the panel bottom; never exceed the panel width
+	   (box-sizing:border-box on .field-input keeps it within padding). */
 	.in-reply-text {
-		resize: vertical;
+		flex: 1 1 auto;
 		min-height: 7rem;
+		resize: none;
 		line-height: 1.4;
 	}
 	.in-reply-actions {
+		flex: 0 0 auto;
 		margin-top: 0.25rem;
 	}
 	.btn {
