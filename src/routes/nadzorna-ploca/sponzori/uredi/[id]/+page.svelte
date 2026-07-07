@@ -166,7 +166,8 @@
 	$border: map.get(lib.$colors, 'seashell'); // $border
 
 	.sp-section {
-		max-width: 72rem;
+		/* Full-width white div, matching the Novi članak form for consistency. */
+		width: 100%;
 	}
 	.mgmt-head {
 		margin-bottom: 1.25rem;
@@ -186,6 +187,8 @@
 		border-radius: 14px;
 		padding: 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
+		/* Same white div as Novi sponzor (matches the Novi događaj panel height). */
+		min-height: 52rem;
 	}
 	.form-grid {
 		display: grid;

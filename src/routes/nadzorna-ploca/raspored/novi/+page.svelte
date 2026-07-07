@@ -290,7 +290,8 @@
 
 <style>
 	.ev-section {
-		max-width: 72rem;
+		/* Full-width white div, matching the Novi članak form for consistency. */
+		width: 100%;
 	}
 	.mgmt-head {
 		margin-bottom: 1.25rem;

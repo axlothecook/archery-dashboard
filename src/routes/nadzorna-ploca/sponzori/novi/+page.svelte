@@ -162,7 +162,8 @@
 	$border: map.get(lib.$colors, 'seashell'); // $border
 
 	.sp-section {
-		max-width: 60rem;
+		/* Full-width white div, matching the Novi članak form for consistency. */
+		width: 100%;
 	}
 	.mgmt-head {
 		margin-bottom: 1.25rem;
