@@ -104,7 +104,7 @@
 		</div>
 
 		{#if selectedOptions.length}
-			<div class="arp-chips display-f align-items-center">
+			<div class="arp-chips display-f custom-scrollbar">
 				{#each selectedOptions as o (o.id)}
 					<span class="arp-chip display-f align-items-center gap-0-3">
 						{o.name}
@@ -152,8 +152,16 @@
 	}
 	.arp-chips {
 		flex-wrap: wrap;
+		/* Align to the top so wrapped chip rows stack from the top when scrolling. */
+		align-items: flex-start;
 		gap: 0.4rem;
 		margin-top: 0.5rem;
+		/* Cap the height (~ up to 10 chips) and scroll internally beyond that, so a long
+		   selection never grows the picker (and never pushes the form panel taller).
+		   Scrollbar styling comes from the shared `.custom-scrollbar` class. */
+		max-height: 8.5rem;
+		overflow-y: auto;
+		padding-right: 0.25rem;
 	}
 	.arp-chip {
 		padding: 0.25rem 0.35rem 0.25rem 0.6rem;
