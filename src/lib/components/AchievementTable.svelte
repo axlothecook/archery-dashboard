@@ -41,6 +41,20 @@
 	let confirmDlg = $state<ConfirmDialog>();
 	let error = $state('');
 
+	// Add `.faded` when a (single-line, capped) cell overflows, so the right edge fades to
+	// transparent (→ the white panel) instead of showing a "…". Re-checks on the text + on
+	// resize. Mirrors ArticleTable/EventTable's title fade — used for Naslov + Strijelci.
+	function fadeIfOverflow(node: HTMLElement, _text: string) {
+		const check = () => node.classList.toggle('faded', node.scrollWidth > node.clientWidth + 1);
+		check();
+		const ro = new ResizeObserver(check);
+		ro.observe(node);
+		return {
+			update: () => check(),
+			destroy: () => ro.disconnect()
+		};
+	}
+
 	function edit(a: AchievementAdminRow) {
 		goto(`/nadzorna-ploca/postignuca/uredi/${a.id}`);
 	}
@@ -89,7 +103,7 @@
 							<span class="ac-img ac-img--empty" aria-hidden="true"></span>
 						{/if}
 					</td>
-					<td class="ac-title fw-600">{a.title}</td>
+					<td class="ac-title fw-600" use:fadeIfOverflow={a.title}>{a.title}</td>
 					<td class="ac-year text-jet-grey">{a.year}.</td>
 					<td><span class="ac-badge ac-badge--{a.type}">{TYPE_LABEL[a.type]}</span></td>
 					<td>
@@ -98,7 +112,7 @@
 							{LEVEL_LABEL[a.level]}
 						</span>
 					</td>
-					<td class="ac-archers text-jet-grey">{a.archerNames.length ? a.archerNames.join(', ') : '—'}</td>
+					<td class="ac-archers text-jet-grey" use:fadeIfOverflow={a.archerNames.join(', ')}>{a.archerNames.length ? a.archerNames.join(', ') : '—'}</td>
 					<td class="ac-actions-cell">
 						<div class="ac-actions display-f align-items-center">
 							<button class="ac-act cursor-pointer display-f" type="button" aria-label="Uredi" title="Uredi" onclick={() => edit(a)}>
@@ -183,7 +197,6 @@
 	.ac-title {
 		white-space: nowrap;
 		overflow: hidden;
-		text-overflow: ellipsis;
 		max-width: 34rem;
 	}
 	/* Slightly wider, EQUAL gap between the right-side columns (Godina … actions): each
@@ -198,7 +211,15 @@
 	.ac-archers {
 		max-width: 16rem;
 		overflow: hidden;
-		text-overflow: ellipsis;
+	}
+	/* When Naslov / Strijelci overflow (the `faded` class is added imperatively by
+	   use:fadeIfOverflow), fade the right edge to transparent → the white panel shows
+	   through, instead of a "…" ellipsis. :global on the class since it's toggled in JS.
+	   Mirrors ArticleTable/EventTable. */
+	.ac-title:global(.faded),
+	.ac-archers:global(.faded) {
+		-webkit-mask-image: linear-gradient(to right, #000 82%, transparent 100%);
+		mask-image: linear-gradient(to right, #000 82%, transparent 100%);
 	}
 	/* Trailing spacer: a small fixed gap between the actions and the scrollbar (the title
 	   column now eats the slack, so this just keeps the last column off the scrollbar). */
