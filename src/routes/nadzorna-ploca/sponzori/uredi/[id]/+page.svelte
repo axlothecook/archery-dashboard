@@ -133,7 +133,7 @@
 				<fieldset class="group">
 					<legend class="group-legend">Logotip <span class="req">*</span></legend>
 					<ImageUpload label="Logotip" entityType="sponsor" bind:url={logoUrl} />
-					<label class="field column-nowrap gap-title mt-0-6">
+					<label class="field column-nowrap gap-title mt-logo">
 						<span class="field-title">Opis logotipa (alt) <span class="req">*</span></span>
 						<input class="field-input w-full br-xs" type="text" bind:value={logoAlt} required />
 					</label>
@@ -166,7 +166,7 @@
 	$border: map.get(lib.$colors, 'seashell'); // $border
 
 	.sp-section {
-		max-width: 60rem;
+		max-width: 72rem;
 	}
 	.mgmt-head {
 		margin-bottom: 1.25rem;
@@ -196,8 +196,9 @@
 	.col {
 		min-width: 0;
 	}
-	.mt-0-6 {
-		margin-top: 0.6rem;
+	/* Wider gap between the Logotip upload and the Opis logotipa row. */
+	.mt-logo {
+		margin-top: 1.5rem;
 	}
 	.field-title {
 		font-size: 0.9rem;
@@ -227,7 +228,7 @@
 	.field-textarea {
 		resize: vertical;
 		line-height: 1.4;
-		min-height: 14rem;
+		min-height: 20rem;
 		margin-top: 0;
 	}
 	.group {

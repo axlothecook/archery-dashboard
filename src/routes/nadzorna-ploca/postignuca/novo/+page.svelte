@@ -249,7 +249,7 @@
 		   archer is picked) so the panel doesn't grow/jump when chips appear. Flex column
 		   so the action row can pin to the panel's bottom (margin-top:auto) regardless of
 		   whether the chips box is present — the buttons never move. */
-		min-height: 37rem;
+		min-height: 52rem;
 		display: flex;
 		flex-direction: column;
 	}

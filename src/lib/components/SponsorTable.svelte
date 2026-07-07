@@ -1,13 +1,11 @@
 <script lang="ts">
-	// Sponsors list table for Sponzori → Svi sponzori. Columns: logo, name, website,
-	// description (truncated), edit + delete. Real data from GET /admin/sponsors.
-	// Mirrors ArticleTable/EventTable.
+	// Sponsors list table for Sponzori → Svi sponzori. Columns: logo, name, edit +
+	// delete. Real data from GET /admin/sponsors. Mirrors ArticleTable/EventTable.
 	import { goto } from '$app/navigation';
 	import { deleteSponsor, type SponsorAdminRow } from '$lib/sponsors';
 	import EditIcon from '$lib/components/icons/EditIcon.svelte';
 	import TrashIcon from '$lib/components/icons/TrashIcon.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
-	import TextSizeIcon from '$lib/components/icons/TextSizeIcon.svelte';
 	import HandshakeIcon from '$lib/components/icons/HandshakeIcon.svelte';
 
 	let {
@@ -53,9 +51,6 @@
 				<th class="sp-col-logo-head" colspan="2">
 					<span class="th-in display-f align-items-center gap-0-4"><HandshakeIcon size={18} />Sponzor</span>
 				</th>
-				<th>
-					<span class="th-in display-f align-items-center gap-0-4"><TextSizeIcon size={18} />Opis</span>
-				</th>
 				<th class="sp-th-actions"></th>
 			</tr>
 		</thead>
@@ -71,11 +66,7 @@
 					</td>
 					<td class="sp-name-cell">
 						<span class="sp-name fw-600">{s.name}</span>
-						{#if s.website}
-							<a class="sp-web" href={s.website} target="_blank" rel="noopener">{s.website}</a>
-						{/if}
 					</td>
-					<td class="sp-desc text-jet-grey">{s.description}</td>
 					<td class="sp-actions-cell">
 						<div class="sp-actions display-f align-items-center">
 							<button class="sp-act cursor-pointer display-f" type="button" aria-label="Uredi" title="Uredi" onclick={() => edit(s)}>
@@ -152,34 +143,13 @@
 		width: 3.6rem;
 		height: 2.4rem;
 	}
+	/* Name column takes the slack so the actions sit at the far right. */
 	.sp-name-cell {
 		white-space: nowrap;
+		width: 100%;
 	}
 	.sp-name {
 		display: block;
-	}
-	.sp-web {
-		display: block;
-		margin-top: 0.15rem;
-		font-size: 0.82rem;
-		color: $blue;
-		text-decoration: none;
-		max-width: 18rem;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-	.sp-web:hover {
-		text-decoration: underline;
-	}
-	/* Description fills the remaining width; a single line that ellipsises. */
-	.sp-table :is(th, td):nth-child(3) {
-		width: 100%;
-	}
-	.sp-desc {
-		max-width: 40rem;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
 	}
 	.sp-actions-cell {
 		width: 1%;

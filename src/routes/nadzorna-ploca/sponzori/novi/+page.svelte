@@ -182,6 +182,8 @@
 		border-radius: 14px;
 		padding: 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
+		/* Match the Novi događaj panel height so the create forms read consistently. */
+		min-height: 52rem;
 	}
 	.form-grid {
 		display: grid;
