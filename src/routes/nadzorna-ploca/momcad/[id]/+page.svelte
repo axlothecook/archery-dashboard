@@ -311,9 +311,9 @@
 		color: $navy;
 		word-break: break-word;
 	}
-	/* Full-width sections stacked below the top row. */
+	/* Full-width sections stacked below the top row, with clear separation between them. */
 	.block + .block {
-		margin-top: 1.75rem;
+		margin-top: 3rem;
 	}
 	/* Section titles (Biografija / Statistika karijere / Nastupi): deep-sapphire like the
 	   form field titles, but a larger heading size so they read as section headers. */
@@ -375,13 +375,14 @@
 	.mini-tbl tbody tr:last-child td {
 		border-bottom: 0;
 	}
+	/* Match the Početno status pills (Zadaci): same padding + font size. */
 	.state {
 		display: inline-block;
 		min-width: 6.5rem;
 		text-align: center;
-		padding: 0.4rem 0.4rem;
+		padding: 0.55rem 0.4rem;
 		border-radius: 999px;
-		font-size: 0.78rem;
+		font-size: 0.82rem;
 		font-weight: 600;
 	}
 	.state--published {
