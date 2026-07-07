@@ -163,10 +163,12 @@
 		border: 1px solid #d7dee8;
 		border-radius: 8px;
 		background: #fbfcfe;
-		/* Cap the height (~ up to 10 chips) and scroll internally beyond that, so a long
-		   selection never grows the picker (and never pushes the form panel taller).
+		/* Fixed height of exactly 5 chip rows: reserved even with a single row, and a 6th
+		   row overflows → the box scrolls internally instead of growing (so the form panel
+		   never moves). 5 rows = 5*chip + 4*row-gap + top/bottom padding (chip + gap are
+		   rem-sized, so this rem value scales with them under the root-font breakpoints).
 		   Scrollbar styling comes from the shared `.custom-scrollbar` class. */
-		max-height: 9rem;
+		height: 11.3rem;
 		overflow-y: auto;
 	}
 	.arp-chip {
