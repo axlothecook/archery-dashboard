@@ -206,11 +206,11 @@
 					<input class="field-input w-full br-xs" type="text" bind:value={location} />
 				</label>
 				<label class="field column-nowrap gap-title">
-					<span class="field-title">Organizator <span class="field-hint">(nije obavezno)</span></span>
+					<span class="field-title">Organizator</span>
 					<input class="field-input w-full br-xs" type="text" bind:value={organizer} />
 				</label>
 				<label class="field column-nowrap gap-title">
-					<span class="field-title">Format <span class="field-hint">(nije obavezno, npr. WA 720)</span></span>
+					<span class="field-title">Format <span class="field-hint">(npr. WA 720)</span></span>
 					<input class="field-input w-full br-xs" type="text" bind:value={format} />
 				</label>
 
@@ -253,7 +253,7 @@
 				</label>
 
 				<label class="field column-nowrap gap-title">
-					<span class="field-title">Poveznica na izvor <span class="field-hint">(nije obavezno)</span></span>
+					<span class="field-title">Poveznica na izvor</span>
 					<input class="field-input w-full br-xs" type="url" bind:value={sourceUrl} />
 				</label>
 

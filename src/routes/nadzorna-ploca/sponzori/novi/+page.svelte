@@ -115,7 +115,7 @@
 					<input class="field-input w-full br-xs" type="text" bind:value={name} required />
 				</label>
 				<label class="field column-nowrap gap-title">
-					<span class="field-title">Web stranica <span class="field-hint">(nije obavezno)</span></span>
+					<span class="field-title">Web stranica</span>
 					<input class="field-input w-full br-xs" type="url" bind:value={website} placeholder="https://…" />
 				</label>
 				<label class="field column-nowrap gap-title">
@@ -198,10 +198,6 @@
 		color: #d32752;
 		font-weight: 700;
 	}
-	.field-hint {
-		font-weight: 400;
-		color: #9aa3b2;
-	}
 	.field-input {
 		box-sizing: border-box;
 		padding: 0.6rem 0.8rem;
@@ -218,7 +214,7 @@
 	.field-textarea {
 		resize: vertical;
 		line-height: 1.4;
-		min-height: 8rem;
+		min-height: 14rem;
 		margin-top: 0;
 	}
 	.group {
