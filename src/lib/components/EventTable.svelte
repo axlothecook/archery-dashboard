@@ -238,7 +238,9 @@
 		width: auto;
 	}
 	.ev-table :is(th, td):nth-child(2) { width: 8rem; } /* Disciplina */
-	.ev-table :is(th, td):nth-child(3) { width: 12rem; } /* Datum */
+	.ev-table :is(th, td):nth-child(3) { width: 10.75rem; } /* Datum — snug to its content
+		(widest date incl. a cross-year range ≈ 10.6rem) so Razina sits close, not across a
+		wide empty box; text stays left-aligned. */
 	.ev-table :is(th, td):nth-child(4) { width: 11rem; } /* Razina */
 	.ev-table :is(th, td):nth-child(5) { width: 7rem; } /* Sudionici */
 	.ev-table :is(th, td):nth-child(6) { width: 8rem; } /* Stanje */

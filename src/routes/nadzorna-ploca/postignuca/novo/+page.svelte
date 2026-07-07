@@ -182,7 +182,7 @@
 				<fieldset class="group">
 					<legend class="group-legend">Slika <span class="req">*</span></legend>
 					<ImageUpload label="Slika" entityType="achievement" bind:url={imageUrl} />
-					<label class="field column-nowrap gap-title mt-0-6">
+					<label class="field column-nowrap gap-title mt-slika">
 						<span class="field-title">Opis slike (alt) <span class="req">*</span></span>
 						<input class="field-input w-full br-xs" type="text" bind:value={imageAlt} required />
 					</label>
@@ -267,8 +267,9 @@
 		grid-template-columns: 1fr 1fr;
 		gap: 0.9rem;
 	}
-	.mt-0-6 {
-		margin-top: 0.6rem;
+	.mt-slika {
+		/* Bigger breathing room between the Slika upload and the Opis slike field. */
+		margin-top: 1.5rem;
 	}
 	.field-title {
 		font-size: 0.9rem;
