@@ -44,7 +44,16 @@
 	</div>
 </section>
 
-<style>
+<style lang="scss">
+	@use 'axlothecook-sass-library/sass-library/variables' as lib;
+	@use 'sass:map';
+
+	// Library palette colours (exact matches).
+	$navy: map.get(lib.$colors, 'deep-sapphire'); // $navy
+	$blue: map.get(lib.$colors, 'blue-dress'); // $blue
+	$red: map.get(lib.$colors, 'error-secondary'); // $red
+	$border: map.get(lib.$colors, 'seashell'); // $border
+
 	.ac-section {
 		/* Fill the shared content frame as a flex column so the table panel bounds to it
 		   and scrolls INSIDE (the page itself never grows past the viewport). */
@@ -61,7 +70,7 @@
 		margin: 0;
 		font-size: 1.6rem;
 		font-weight: 700;
-		color: #102e66;
+		color: $navy;
 	}
 	.mgmt-sub {
 		margin: 0.35rem 0 0;
@@ -72,7 +81,7 @@
 		padding: 0.5rem 0.9rem;
 		border: 0;
 		border-radius: 8px;
-		background: #102e66;
+		background: $navy;
 		color: #fff;
 		font-size: 0.88rem;
 		font-weight: 600;

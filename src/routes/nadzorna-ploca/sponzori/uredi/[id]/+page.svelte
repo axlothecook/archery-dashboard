@@ -155,7 +155,16 @@
 <ErrorPopup bind:messages={errors} />
 <ConfirmDialog bind:this={leaveDlg} confirmLabel="Napusti" cancelLabel="Ostani" />
 
-<style>
+<style lang="scss">
+	@use 'axlothecook-sass-library/sass-library/variables' as lib;
+	@use 'sass:map';
+
+	// Library palette colours (exact matches).
+	$navy: map.get(lib.$colors, 'deep-sapphire'); // $navy
+	$blue: map.get(lib.$colors, 'blue-dress'); // $blue
+	$red: map.get(lib.$colors, 'error-secondary'); // $red
+	$border: map.get(lib.$colors, 'seashell'); // $border
+
 	.sp-section {
 		max-width: 60rem;
 	}
@@ -166,7 +175,7 @@
 		margin: 0;
 		font-size: 1.6rem;
 		font-weight: 700;
-		color: #102e66;
+		color: $navy;
 	}
 	.mgmt-sub {
 		margin: 0.35rem 0 0;
@@ -193,13 +202,13 @@
 	.field-title {
 		font-size: 0.9rem;
 		font-weight: 700;
-		color: #102e66;
+		color: $navy;
 	}
 	.gap-title {
 		gap: 0.3rem;
 	}
 	.req {
-		color: #d32752;
+		color: $red;
 		font-weight: 700;
 	}
 	.field-input {
@@ -208,12 +217,12 @@
 		border: 1px solid #d7dee8;
 		font-size: 0.95rem;
 		font-family: inherit;
-		color: #102e66;
+		color: $navy;
 		background: #fff;
 	}
 	.field-input:focus {
 		outline: none;
-		border-color: #187ff5;
+		border-color: $blue;
 	}
 	.field-textarea {
 		resize: vertical;
@@ -224,14 +233,14 @@
 	.group {
 		margin: 0;
 		padding: 1rem 1.1rem;
-		border: 1px solid #eef1f3;
+		border: 1px solid $border;
 		border-radius: 10px;
 	}
 	.group-legend {
 		padding: 0 0.4rem;
 		font-size: 0.9rem;
 		font-weight: 700;
-		color: #102e66;
+		color: $navy;
 	}
 	.form-actions {
 		margin-top: 2.5rem;
@@ -247,7 +256,7 @@
 		cursor: default;
 	}
 	.btn--primary {
-		background: #102e66;
+		background: $navy;
 		color: #fff;
 	}
 	.btn--primary:hover:not(:disabled) {
@@ -255,8 +264,8 @@
 	}
 	.btn--cancel {
 		background: #fff;
-		color: #d32752;
-		border-color: #d32752;
+		color: $red;
+		border-color: $red;
 	}
 	.btn--cancel:hover:not(:disabled) {
 		background: #fdeef2;
