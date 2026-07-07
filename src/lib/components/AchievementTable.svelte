@@ -175,17 +175,16 @@
 		width: 2.6rem;
 		height: 2.6rem;
 	}
-	/* Title is a FIXED width; the trailing spacer (below) absorbs all leftover width, so
-	   the right-side columns stay TIGHT to the title instead of spreading to the far right
-	   (and a gap is kept before the scrollbar — mirrors Svi događaji). */
+	/* Title takes ALL the slack (100% width) so the right-side columns are pushed RIGHT,
+	   sitting close to the actions (pen/trash) instead of tight to the title. */
 	.ac-table :is(th, td).ac-title {
-		width: 26rem;
-		max-width: 26rem;
+		width: 100%;
 	}
 	.ac-title {
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		max-width: 34rem;
 	}
 	/* Slightly wider, EQUAL gap between the right-side columns (Godina … actions): each
 	   carries the same left padding = the gap before it. Columns 3–7 (after img+title). */
@@ -201,10 +200,10 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
-	/* Trailing spacer: eats all slack so the real columns sit LEFT (tight to the title),
-	   and keeps a gap between the last column and the scrollbar (matches Svi događaji). */
+	/* Trailing spacer: a small fixed gap between the actions and the scrollbar (the title
+	   column now eats the slack, so this just keeps the last column off the scrollbar). */
 	.ac-table :is(th, td).ac-col-spacer {
-		width: auto;
+		width: 1.25rem;
 		min-width: 1.25rem;
 		padding: 0;
 		border-bottom: 0;
