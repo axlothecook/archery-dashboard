@@ -107,6 +107,10 @@
 				</button>
 			</form>
 
+			<p class="login-forgot">
+				<a href="/zaboravljena-lozinka">{t(locale, 'auth.forgotLink')}</a>
+			</p>
+
 			<p class="login-help">
 				{t(locale, 'auth.help')}
 				<a href="https://archery.axlothecook.com/kontakt">{t(locale, 'auth.helpLink')}</a>
@@ -290,8 +294,24 @@
 		}
 	}
 
+	.login-forgot {
+		margin: ($sp * 0.9) 0 0;
+		text-align: center;
+		font-size: 0.98rem;
+
+		a {
+			color: $link;
+			font-weight: 500;
+			text-decoration: none;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+	}
+
 	.login-help {
-		margin: ($sp * 1.25) 0 0;
+		margin: ($sp * 0.75) 0 0;
 		text-align: center;
 		font-size: 1rem;
 		font-weight: 400;

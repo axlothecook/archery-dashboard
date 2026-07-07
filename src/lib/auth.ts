@@ -132,6 +132,35 @@ export function logout(fetch?: typeof globalThis.fetch): Promise<{ ok: true }> {
 	return adminRequest('/auth/logout', { method: 'POST', fetch });
 }
 
+// POST /auth/accept-invite { token, password } — set the password from an invite
+// token (activates a pending admin). Throws AuthError on an invalid/expired/used token.
+export function acceptInvite(
+	token: string,
+	password: string,
+	fetch?: typeof globalThis.fetch
+): Promise<{ ok: true }> {
+	return adminRequest('/auth/accept-invite', { method: 'POST', body: { token, password }, fetch });
+}
+
+// POST /auth/forgot-password { email } — request a reset link. ALWAYS resolves ok
+// (the backend never reveals whether the account exists — no enumeration).
+export function forgotPassword(
+	email: string,
+	fetch?: typeof globalThis.fetch
+): Promise<{ ok: true }> {
+	return adminRequest('/auth/forgot-password', { method: 'POST', body: { email }, fetch });
+}
+
+// POST /auth/reset-password { token, password } — set a new password from a reset
+// token (also revokes all sessions). Throws AuthError on an invalid/expired token.
+export function resetPassword(
+	token: string,
+	password: string,
+	fetch?: typeof globalThis.fetch
+): Promise<{ ok: true }> {
+	return adminRequest('/auth/reset-password', { method: 'POST', body: { token, password }, fetch });
+}
+
 // GET /auth/me — the current admin, or null if we can't confirm a valid session.
 // Used by the /nadzorna-ploca guard. `headers` lets the SSR load forward the browser's
 // Cookie. Returns null (→ guard redirects to /prijava) for BOTH a 401 (no/expired

@@ -1,0 +1,136 @@
+/* Shared form styling for the auth pages (login / invite / reset / forgot). Plain
+   global CSS (imported per page) so the floating-label field + button + helper text
+   look identical everywhere without duplicating the SCSS. Colours are the resolved
+   library palette hexes (navy #102e66, etc.) — the auth pages are the only consumers. */
+
+.af-form {
+	display: flex;
+	flex-direction: column;
+	gap: 1.15rem;
+}
+
+.af-intro {
+	margin: 0 0 1.25rem;
+	text-align: center;
+	font-size: 1.02rem;
+	line-height: 1.5;
+	color: #3d4c66;
+}
+
+/* Floating-label field (mirrors /prijava). */
+.af-field {
+	position: relative;
+	display: block;
+	--field-bg: #ffffff;
+}
+.af-field input {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0.9rem 1.1rem;
+	border: 2px solid #bec2d0;
+	border-radius: 10px;
+	font-size: 1.05rem;
+	font-family: inherit;
+	color: #1b2733;
+	background: transparent;
+	transition: border-color 0.18s ease;
+}
+.af-field input:focus {
+	outline: none;
+	border-color: #102e66;
+}
+.af-field input:disabled {
+	opacity: 0.6;
+}
+.af-field input:-webkit-autofill,
+.af-field input:-webkit-autofill:hover,
+.af-field input:-webkit-autofill:focus {
+	-webkit-text-fill-color: #1b2733;
+	caret-color: #1b2733;
+	box-shadow: 0 0 0 1000px var(--field-bg) inset;
+	transition: background-color 9999s ease 0s;
+}
+.af-field label {
+	position: absolute;
+	left: 0.9rem;
+	top: 50%;
+	transform: translateY(-50%);
+	padding: 0 0.3rem;
+	font-size: 1.25rem;
+	font-weight: 500;
+	color: #607480;
+	background: transparent;
+	pointer-events: none;
+	transition:
+		top 0.18s ease,
+		transform 0.18s ease,
+		font-size 0.18s ease,
+		color 0.18s ease;
+}
+.af-field input:focus + label,
+.af-field input:not(:placeholder-shown) + label {
+	top: 0;
+	transform: translateY(-50%);
+	font-size: 0.92rem;
+	background: var(--field-bg);
+}
+.af-field input:focus + label {
+	color: #102e66;
+}
+
+.af-error {
+	margin: 0;
+	color: #d32752;
+	font-size: 0.9rem;
+	font-weight: 500;
+}
+.af-success {
+	margin: 0;
+	color: #10683a;
+	font-size: 1rem;
+	line-height: 1.5;
+	text-align: center;
+}
+
+.af-btn {
+	margin-top: 0.5rem;
+	border: none;
+	border-radius: 10px;
+	padding: 0.95rem;
+	font-size: 1.05rem;
+	font-weight: 600;
+	font-family: inherit;
+	color: #fff;
+	background-color: #102e66;
+	cursor: pointer;
+	transition:
+		background-color 0.18s ease,
+		transform 0.05s ease;
+}
+.af-btn:hover:not(:disabled) {
+	background-color: #0c2350;
+}
+.af-btn:active:not(:disabled) {
+	transform: translateY(1px);
+}
+.af-btn:disabled {
+	opacity: 0.7;
+	cursor: default;
+}
+
+.af-help {
+	margin: 1.25rem 0 0;
+	text-align: center;
+	font-size: 1rem;
+	color: #3d4c66;
+}
+.af-help a,
+.af-link {
+	color: #187ff5;
+	font-weight: 500;
+	text-decoration: none;
+}
+.af-help a:hover,
+.af-link:hover {
+	text-decoration: underline;
+}
