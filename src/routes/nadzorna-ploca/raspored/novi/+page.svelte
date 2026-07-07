@@ -4,7 +4,8 @@
 	// level (single-select), attending archers (multi-select) + unlisted-club flag,
 	// image, source URL, cancelled, hidden, draft/publish. Two-column so it fits
 	// without page scroll. POSTs to POST /admin/events.
-	import { goto } from '$app/navigation';
+	import { untrack } from 'svelte';
+	import { goto, beforeNavigate } from '$app/navigation';
 	import {
 		createEvent,
 		DISCIPLINE_LABEL,
@@ -13,6 +14,7 @@
 	} from '$lib/events';
 	import DashSelect from '$lib/components/DashSelect.svelte';
 	import ArcherPicker from '$lib/components/ArcherPicker.svelte';
+	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import CalendarIcon from '$lib/components/icons/CalendarIcon.svelte';
 
 	let { data } = $props();
@@ -25,7 +27,11 @@
 	let location = $state('');
 	let organizer = $state('');
 	let format = $state('');
-	let levelId = $state<string>(''); // '' = no level
+	// Razina must be chosen (no "Bez razine"); default to the first level so the form
+	// starts with a valid selection, like Vrsta medija starting on "Događaj". untrack so
+	// this one-time snapshot of the loaded levels doesn't read as reactive state.
+	const firstLevelId = untrack(() => data.levels[0]?.id ?? '');
+	let levelId = $state<string>(firstLevelId); // required — starts on the first level
 	let attendingArcherIds = $state<string[]>([]);
 	let hasUnlistedClubAttendee = $state(false);
 	let imageUrl = $state('');
@@ -41,11 +47,49 @@
 		value: v,
 		label: DISCIPLINE_LABEL[v]
 	}));
-	// Level select: a "no level" option + one per level (dot shown via label text).
-	const levelOptions = $derived([
-		{ value: '', label: 'Bez razine' },
-		...data.levels.map((l) => ({ value: l.id, label: l.name }))
-	]);
+	// Level select: one option per level (no "no level" — a razina is required).
+	const levelOptions = $derived(data.levels.map((l) => ({ value: l.id, label: l.name })));
+
+	// ── Unsaved-changes guard ────────────────────────────────────────────────────
+	// On the CREATE form, "dirty" means the user changed anything from the initial
+	// state (levelId starts on the first level, so compare against that). Warns before
+	// leaving (Odustani, a sidebar nav, or closing the tab). `saved` is set before our
+	// own post-create redirect so the guard doesn't fire on it.
+	let saved = $state(false);
+	const dirty = $derived(
+		!saved &&
+			(name !== '' || dateFrom !== '' || dateTo !== '' || location !== '' ||
+				organizer !== '' || format !== '' || levelId !== firstLevelId ||
+				attendingArcherIds.length > 0 || hasUnlistedClubAttendee ||
+				imageUrl !== '' || imageAlt !== '' || sourceUrl !== '' ||
+				discipline !== 'outdoor' || isCancelled || hidden)
+	);
+	let leaveDlg = $state<ConfirmDialog>();
+	let confirmedLeaveTo = $state<string | null>(null);
+	beforeNavigate((nav) => {
+		if (!dirty) return;
+		// Tab close / leaving the app is handled by the native beforeunload prompt below;
+		// don't also show our modal (would double-prompt after cancelling the native one).
+		if (nav.willUnload) return;
+		const to = nav.to?.url.pathname ?? null;
+		if (to && to === confirmedLeaveTo) {
+			confirmedLeaveTo = null;
+			return;
+		}
+		nav.cancel();
+		void (async () => {
+			if (await leaveDlg?.ask('Napustiti bez spremanja promjena?', 'Napusti')) {
+				confirmedLeaveTo = to;
+				if (to) await goto(to);
+			}
+		})();
+	});
+	function onBeforeUnload(e: BeforeUnloadEvent) {
+		if (dirty) {
+			e.preventDefault();
+			e.returnValue = '';
+		}
+	}
 
 	// yyyy-mm-dd (date input) → ISO at midnight UTC, or null.
 	function toIso(d: string): string | null {
@@ -74,11 +118,21 @@
 		};
 	}
 
+	// Everything is mandatory except Datum završetka and Poveznica na izvor. Sudionici
+	// is satisfied by either at least one archer or the "other club members" flag.
 	function validate(): string | null {
 		if (!name.trim()) return 'Naziv događaja je obavezan.';
 		if (!dateFrom) return 'Datum početka je obavezan.';
 		if (dateTo && dateTo < dateFrom) return 'Datum završetka ne može biti prije početka.';
-		if (imageUrl.trim() && !imageAlt.trim()) return 'Ako je slika navedena, opis (alt) je obavezan.';
+		if (!location.trim()) return 'Lokacija je obavezna.';
+		if (!organizer.trim()) return 'Organizator je obavezan.';
+		if (!format.trim()) return 'Format je obavezan.';
+		if (!levelId) return 'Razina (kategorija) je obavezna.';
+		if (attendingArcherIds.length === 0 && !hasUnlistedClubAttendee) {
+			return 'Sudionici su obavezni (odaberite streličare ili označite druge članove kluba).';
+		}
+		if (!imageUrl.trim()) return 'Slika je obavezna.';
+		if (!imageAlt.trim()) return 'Opis slike (alt) je obavezan.';
 		return null;
 	}
 
@@ -93,13 +147,22 @@
 		saving = true;
 		try {
 			await createEvent(buildInput(status));
-			await goto('/nadzorna-ploca/raspored/svi');
+			saved = true; // our own redirect — don't trigger the unsaved-changes guard
+			await goto(status === 'published' ? '/nadzorna-ploca/raspored/svi' : '/nadzorna-ploca/raspored/nacrti');
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Spremanje nije uspjelo.';
 			saving = false;
 		}
 	}
+
+	// Odustani (Cancel): go back to the events list. If there are unsaved edits, the
+	// beforeNavigate guard shows the abandon-changes dialog first.
+	async function cancel() {
+		await goto('/nadzorna-ploca/raspored/svi');
+	}
 </script>
+
+<svelte:window onbeforeunload={onBeforeUnload} />
 
 <svelte:head><title>Novi događaj · VSK</title></svelte:head>
 
@@ -120,42 +183,42 @@
 		<div class="form-grid">
 			<!-- LEFT: the core details. -->
 			<div class="col column-nowrap gap-1">
-				<label class="field column-nowrap gap-0-3">
-					<span class="field-label fw-600">Naziv događaja</span>
+				<label class="field column-nowrap gap-title">
+					<span class="field-title">Naziv događaja <span class="req">*</span></span>
 					<input class="field-input w-full br-xs" type="text" bind:value={name} required />
 				</label>
-				<div class="field column-nowrap gap-0-3">
-					<span class="field-label fw-600">Disciplina</span>
+				<div class="field column-nowrap gap-title">
+					<span class="field-title">Disciplina <span class="req">*</span></span>
 					<DashSelect options={disciplineOptions} bind:value={discipline} ariaLabel="Disciplina" />
 				</div>
 				<div class="two-col">
-					<label class="field column-nowrap gap-0-3">
-						<span class="field-label fw-600">Datum početka</span>
+					<label class="field column-nowrap gap-title">
+						<span class="field-title">Datum početka <span class="req">*</span></span>
 						<input class="field-input w-full br-xs" type="date" bind:value={dateFrom} required />
 					</label>
-					<label class="field column-nowrap gap-0-3">
-						<span class="field-label fw-600">Datum završetka <span class="field-hint">(nije obavezno)</span></span>
+					<label class="field column-nowrap gap-title">
+						<span class="field-title">Datum završetka <span class="field-hint">(nije obavezno)</span></span>
 						<input class="field-input w-full br-xs" type="date" bind:value={dateTo} />
 					</label>
 				</div>
-				<label class="field column-nowrap gap-0-3">
-					<span class="field-label fw-600">Lokacija</span>
+				<label class="field column-nowrap gap-title">
+					<span class="field-title">Lokacija <span class="req">*</span></span>
 					<input class="field-input w-full br-xs" type="text" bind:value={location} />
 				</label>
-				<label class="field column-nowrap gap-0-3">
-					<span class="field-label fw-600">Organizator</span>
+				<label class="field column-nowrap gap-title">
+					<span class="field-title">Organizator <span class="req">*</span></span>
 					<input class="field-input w-full br-xs" type="text" bind:value={organizer} />
 				</label>
-				<label class="field column-nowrap gap-0-3">
-					<span class="field-label fw-600">Format <span class="field-hint">(npr. WA 720)</span></span>
+				<label class="field column-nowrap gap-title">
+					<span class="field-title">Format <span class="req">*</span> <span class="field-hint">(npr. WA 720)</span></span>
 					<input class="field-input w-full br-xs" type="text" bind:value={format} />
 				</label>
 			</div>
 
 			<!-- RIGHT: level, attendees, media, flags. -->
 			<div class="col column-nowrap gap-1">
-				<div class="field column-nowrap gap-0-3">
-					<span class="field-label fw-600">Razina (kategorija)</span>
+				<div class="field column-nowrap gap-title">
+					<span class="field-title">Razina (kategorija) <span class="req">*</span></span>
 					{#if data.levelLoadError}
 						<div class="soft-warn">Učitavanje kategorija nije uspjelo.</div>
 					{:else}
@@ -163,8 +226,8 @@
 					{/if}
 				</div>
 
-				<div class="field column-nowrap gap-0-3">
-					<span class="field-label fw-600">Sudionici (streličari)</span>
+				<div class="field column-nowrap gap-title">
+					<span class="field-title">Sudionici (streličari) <span class="req">*</span></span>
 					<ArcherPicker
 						options={data.archerOptions}
 						loadError={data.archerLoadError}
@@ -178,19 +241,19 @@
 				</label>
 
 				<fieldset class="group">
-					<legend class="group-legend">Slika <span class="field-hint">(nije obavezno)</span></legend>
-					<label class="field column-nowrap gap-0-3">
-						<span class="field-label fw-600">URL slike</span>
+					<legend class="group-legend">Slika <span class="req">*</span></legend>
+					<label class="field column-nowrap gap-title">
+						<span class="field-title">URL slike <span class="req">*</span></span>
 						<input class="field-input w-full br-xs" type="url" bind:value={imageUrl} />
 					</label>
-					<label class="field column-nowrap gap-0-3 mt-0-6">
-						<span class="field-label fw-600">Opis slike (alt)</span>
+					<label class="field column-nowrap gap-title mt-0-6">
+						<span class="field-title">Opis slike (alt) <span class="req">*</span></span>
 						<input class="field-input w-full br-xs" type="text" bind:value={imageAlt} />
 					</label>
 				</fieldset>
 
-				<label class="field column-nowrap gap-0-3">
-					<span class="field-label fw-600">Poveznica na izvor <span class="field-hint">(nije obavezno)</span></span>
+				<label class="field column-nowrap gap-title">
+					<span class="field-title">Poveznica na izvor <span class="field-hint">(nije obavezno)</span></span>
 					<input class="field-input w-full br-xs" type="url" bind:value={sourceUrl} />
 				</label>
 
@@ -206,6 +269,9 @@
 		</div>
 
 		<div class="form-actions display-f justify-content-flex-end gap-0-5">
+			<button class="btn btn--cancel cursor-pointer br-xs fw-600" type="button" disabled={saving} onclick={cancel}>
+				Odustani
+			</button>
 			<button class="btn btn--ghost cursor-pointer br-xs fw-600" type="button" disabled={saving} onclick={() => submit('draft')}>
 				Spremi kao nacrt
 			</button>
@@ -215,6 +281,9 @@
 		</div>
 	</form>
 </section>
+
+<!-- Abandon-changes popup (animated) — shown by the beforeNavigate guard + Odustani. -->
+<ConfirmDialog bind:this={leaveDlg} confirmLabel="Napusti" cancelLabel="Ostani" />
 
 <style>
 	.ev-section {
@@ -264,9 +333,21 @@
 	.mt-0-6 {
 		margin-top: 0.6rem;
 	}
-	.field-label {
-		font-size: 0.85rem;
-		color: #5b6577;
+	/* Section-field titles: match the Novi članak form (.field-title) — bigger, bold,
+	   deep-sapphire (same as the Slika legend). */
+	.field-title {
+		font-size: 0.9rem;
+		font-weight: 700;
+		color: #102e66;
+	}
+	/* Gap between a field title and its input (matches Novi članak). */
+	.gap-title {
+		gap: 0.3rem;
+	}
+	/* Required-field marker: a red star after the label. */
+	.req {
+		color: #d32752;
+		font-weight: 700;
 	}
 	.field-hint {
 		font-weight: 400;
@@ -310,7 +391,8 @@
 		color: #102e66;
 	}
 	.form-actions {
-		margin-top: 1.25rem;
+		/* Wider gap so the action buttons sit clearly apart from the form fields. */
+		margin-top: 2.5rem;
 	}
 	.btn {
 		padding: 0.6rem 1.3rem;
@@ -336,6 +418,16 @@
 	}
 	.btn--ghost:hover:not(:disabled) {
 		background: #eef1f3;
+	}
+	/* Odustani (cancel/discard): red outline so it reads as "leave without saving".
+	   Sits in the same right-aligned action row as Spremi/Objavi (matches Novi članak). */
+	.btn--cancel {
+		background: #fff;
+		color: #d32752;
+		border-color: #d32752;
+	}
+	.btn--cancel:hover:not(:disabled) {
+		background: #fdeef2;
 	}
 	@media (max-width: 900px) {
 		.form-grid {

@@ -260,7 +260,7 @@
 			<!-- MIDDLE: media type + poster + video/external. -->
 			<div class="col column-nowrap gap-1">
 				<div class="field column-nowrap gap-title">
-					<span class="field-title">Vrsta medija</span>
+					<span class="field-title">Vrsta medija <span class="req">*</span></span>
 					<DashSelect options={mediaOptions} bind:value={mediaType} ariaLabel="Vrsta medija" />
 				</div>
 
