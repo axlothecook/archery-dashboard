@@ -57,12 +57,12 @@
 	// Each notice links to the section it relates to (e.g. a Raspored notice opens
 	// the Raspored page) — so items are clickable.
 	const notifications: Notice[] = [
-		{ id: 'n1', title: 'Nova vijest objavljena', detail: 'Admin Dva objavio je članak "Pobjeda na Varaždin Openu".', when: 'prije 2 h', href: '/nadzorna-ploca/vijesti' },
+		{ id: 'n1', title: 'Nova vijest objavljena', detail: 'zekke87 objavio je članak "Pobjeda na Varaždin Openu".', when: 'prije 2 h', href: '/nadzorna-ploca/vijesti' },
 		{ id: 'n2', title: 'Novi događaj u rasporedu', detail: 'Dodano natjecanje "CEC 2. kolo" (4. srpnja).', when: 'prije 5 h', href: '/nadzorna-ploca/raspored' },
-		{ id: 'n3', title: 'Uređen profil streličara', detail: 'Admin Tri ažurirao je biografiju za Amandu Mlinarić.', when: 'jučer', href: '/nadzorna-ploca/momcad' },
+		{ id: 'n3', title: 'Uređen profil streličara', detail: 'axlothecook ažurirao je biografiju za Amandu Mlinarić.', when: 'jučer', href: '/nadzorna-ploca/momcad' },
 		{ id: 'n4', title: 'Novi upit za sponzorstvo', detail: 'Pristigao je upit od tvrtke Lasercopy.', when: 'jučer', href: '/nadzorna-ploca/upiti' },
 		{ id: 'n5', title: 'Dodano postignuće', detail: 'Novi naslov dodan u kategoriju "Svjetski naslovi".', when: 'prije 2 dana', href: '/nadzorna-ploca/postignuca' },
-		{ id: 'n6', title: 'Novi sponzor dodan', detail: 'Admin Dva dodao je partnera "KODRA" na popis sponzora.', when: 'prije 3 dana', href: '/nadzorna-ploca/sponzori' }
+		{ id: 'n6', title: 'Novi sponzor dodan', detail: 'zekke87 dodao je partnera "KODRA" na popis sponzora.', when: 'prije 3 dana', href: '/nadzorna-ploca/sponzori' }
 	];
 	let noticesOpen = $state(false);
 	const noticeCount = $derived(notifications.length);

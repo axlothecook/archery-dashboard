@@ -48,7 +48,7 @@ export const tasks = $state<Task[]>([
 	{
 		id: 't2',
 		title: 'Dovršiti nacrt članka "Najava sezone" i objaviti ga',
-		assignee: 'axlothecook',
+		assignee: 'zekko',
 		due: dueInDays(4), // upcoming
 		status: 'pending',
 		approved: false
