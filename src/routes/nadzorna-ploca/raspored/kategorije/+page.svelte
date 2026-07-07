@@ -179,8 +179,10 @@
 <style>
 	.lvl-section {
 		/* Wide enough that the header subtitle stays on ONE line with a comfortable gap
-		   before the "Nova kategorija" button (the right side is otherwise unused). */
-		max-width: 64rem;
+		   before the "Nova kategorija" button (the right side is otherwise unused).
+		   NB: the dashboard scales the root font down on laptop widths, so rem-based
+		   widths shrink too — hence the generous value. */
+		max-width: 80rem;
 	}
 	.mgmt-head {
 		margin-bottom: 1.5rem;
@@ -195,6 +197,8 @@
 		margin: 0.35rem 0 0;
 		font-size: 0.95rem;
 		color: #5b6577;
+		/* One line so the gap before the button is real horizontal space, not a wrap. */
+		white-space: nowrap;
 	}
 	.btn-add {
 		padding: 0.5rem 0.9rem;
