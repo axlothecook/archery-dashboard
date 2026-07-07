@@ -386,7 +386,7 @@
 			<div class="field column-nowrap">
 				<span class="field-title">Skrivene sekcije</span>
 				<span class="field-hint hint-under-title">Sakrij pojedine sekcije na javnom profilu.</span>
-				<div class="checks checks-spaced display-f gap-1">
+				<div class="checks checks-spaced checks-spaced--wide display-f gap-1">
 					{#each HIDDEN_KEYS as s (s)}
 						<button type="button" class="check-opt cursor-pointer display-f align-items-center gap-0-4" onclick={() => toggleHidden(s)}>
 							<span class="check-box display-f align-items-center justify-content-center" class:checked={hiddenSections.includes(s)} aria-hidden="true">
@@ -544,6 +544,11 @@
 	/* More breathing room between a title/hint and its checkbox row. */
 	.checks-spaced {
 		margin-top: 0.6rem;
+	}
+	/* Skrivene sekcije: its .field has no flex gap-title, so add that 0.3rem here too, so
+	   the hint→checkboxes gap matches the Luk title→checkboxes gap. */
+	.checks-spaced--wide {
+		margin-top: 0.9rem;
 	}
 	.field-input {
 		box-sizing: border-box;
