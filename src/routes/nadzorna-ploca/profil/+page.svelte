@@ -9,6 +9,14 @@
 	import { roleLabel } from '$lib/team';
 	import { showToast } from '$lib/toasts';
 	import Avatar from '$lib/components/Avatar.svelte';
+	import ContactModal from '$lib/components/ContactModal.svelte';
+	import AlertIcon from '$lib/components/icons/AlertIcon.svelte';
+
+	// Developer-contact modals (Prijavi problem / Predloži promjenu). Fake emergency number
+	// for now — swap for the real one on adoption.
+	let issueOpen = $state(false);
+	let ideaOpen = $state(false);
+	const EMERGENCY_PHONE = '+31 6 1234 5678';
 
 	// Live current-admin record from the shared store.
 	const currentAdmin = $derived(getCurrentAdmin());
@@ -107,7 +115,28 @@
 			</div>
 		</form>
 	</div>
+
+	<!-- Support / contact the developer -->
+	<div class="card support-card bg-white">
+		<h3 class="card-title">Podrška</h3>
+		<p class="support-sub">Naišli ste na problem ili imate ideju? Javite se razvojnom programeru.</p>
+
+		<div class="support-actions display-f gap-0-7">
+			<button class="btn btn--report cursor-pointer" type="button" onclick={() => (issueOpen = true)}>Prijavi problem</button>
+			<button class="btn btn--suggest cursor-pointer" type="button" onclick={() => (ideaOpen = true)}>Predloži promjenu</button>
+		</div>
+
+		<div class="emergency display-f align-items-center gap-0-5">
+			<span class="emergency-ico display-f"><AlertIcon size={18} /></span>
+			<span class="emergency-text">
+				Za hitne slučajeve javite se na <strong>{EMERGENCY_PHONE}</strong> putem WhatsAppa ili poziva.
+			</span>
+		</div>
+	</div>
 </section>
+
+<ContactModal bind:open={issueOpen} title="Prijavi problem" kind="issue" />
+<ContactModal bind:open={ideaOpen} title="Predloži promjenu" kind="idea" />
 
 <style>
 	.profile {
@@ -196,6 +225,55 @@
 	}
 	.btn--primary:hover {
 		background: #0c2350;
+	}
+
+	/* Support card (full-width below the two account cards). */
+	.support-card {
+		margin-top: 1.5rem;
+	}
+	/* Tighter gap between the "Podrška" title and its subtext. */
+	.support-card .card-title {
+		margin-bottom: 0.3rem;
+	}
+	.support-sub {
+		margin: 0 0 1.1rem;
+		font-size: 0.95rem;
+		color: #5b6577;
+	}
+	.support-actions {
+		flex-wrap: wrap;
+		margin-bottom: 1.1rem;
+	}
+	.btn--report {
+		background: #d32752;
+		color: #fff;
+	}
+	.btn--report:hover {
+		background: #b91d45;
+	}
+	.btn--suggest {
+		background: #fff;
+		color: #102e66;
+		border-color: #d7dee8;
+	}
+	.btn--suggest:hover {
+		background: #eef1f3;
+	}
+	/* Emergency note: red-tinted, under the buttons. */
+	.emergency {
+		padding: 0.7rem 0.9rem;
+		border: 1px solid #f2c4cf;
+		border-radius: 8px;
+		background: #fdeef2;
+	}
+	.emergency-ico {
+		flex: 0 0 auto;
+		color: #d32752;
+	}
+	.emergency-text {
+		font-size: 0.9rem;
+		line-height: 1.45;
+		color: #8a1f3a;
 	}
 
 	@media (max-width: 720px) {

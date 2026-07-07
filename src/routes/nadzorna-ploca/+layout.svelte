@@ -72,7 +72,9 @@
 	function submitSearch(e: SubmitEvent) {
 		e.preventDefault();
 		const q = searchQuery.trim();
-		goto(`/nadzorna-ploca/pomoc${q ? `?q=${encodeURIComponent(q)}` : ''}`);
+		// Standard search behaviour: an empty query does nothing (no navigation).
+		if (!q) return;
+		goto(`/nadzorna-ploca/pomoc?q=${encodeURIComponent(q)}`);
 	}
 
 	// ── Notifications ("Novo") ──────────────────────────────────────────────────
@@ -334,8 +336,8 @@
 				<input
 					class="search-input"
 					type="search"
-					placeholder="Pretraži…"
-					aria-label="Pretraži"
+					placeholder="Pretraži pomoć…"
+					aria-label="Pretraži pomoć"
 					bind:value={searchQuery}
 					bind:this={searchInput}
 				/>
