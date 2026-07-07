@@ -38,10 +38,15 @@
 	// red rather than the gaming-shop orange-on-darkred default). The mixin styles the
 	// <li> cards + the `.close` button.
 	.persistent-error-popup-wrapper {
+		// Fixed width so every error card is the SAME width and that width stays constant
+		// as cards are dismissed (a stable, professional stack) rather than each card sizing
+		// to its own text. Sized to hold the longest validation message on one line; clamps
+		// to the viewport on narrow screens.
 		@include popup.persistent-error-popup-wrapper(
 			$top: 1.5rem,
 			$text-color: #fff,
-			$bg-color: #d32752
+			$bg-color: #d32752,
+			$width: min(34rem, calc(100vw - 2rem))
 		);
 	}
 	.msg {
