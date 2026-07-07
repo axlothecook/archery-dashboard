@@ -12,7 +12,7 @@
 		BOW_LABEL,
 		type ArcherAdminRow
 	} from '$lib/archers';
-	import EyeIcon from '$lib/components/icons/EyeIcon.svelte';
+	import ViewIcon from '$lib/components/icons/ViewIcon.svelte';
 	import EditIcon from '$lib/components/icons/EditIcon.svelte';
 	import TrashIcon from '$lib/components/icons/TrashIcon.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
@@ -131,7 +131,7 @@
 								</button>
 							{:else}
 								<button class="ar-act cursor-pointer display-f" type="button" aria-label="Pregledaj" title="Pregledaj" onclick={() => view(a)}>
-									<EyeIcon size={20} />
+									<ViewIcon size={20} />
 								</button>
 							{/if}
 							<button class="ar-act ar-act--del cursor-pointer display-f" type="button" aria-label="Izbriši" title="Izbriši" onclick={() => remove(a)}>

@@ -265,7 +265,7 @@
 
 <svelte:window onbeforeunload={onBeforeUnload} />
 
-<form class="panel bg-white" onsubmit={(e) => e.preventDefault()}>
+<form class="panel bg-white custom-scrollbar" onsubmit={(e) => e.preventDefault()}>
 	<div class="form-grid">
 		<!-- LEFT: identity + classification + bio. -->
 		<div class="col column-nowrap gap-1-5">
@@ -282,7 +282,7 @@
 
 			<div class="field column-nowrap gap-title">
 				<span class="field-title">Uloga <span class="req">*</span></span>
-				<div class="checks display-f gap-1">
+				<div class="checks checks-spaced display-f gap-1">
 					{#each ROLE_KEYS as r (r)}
 						<button type="button" class="check-opt cursor-pointer display-f align-items-center gap-0-4" onclick={() => toggleRole(r)}>
 							<span class="check-box display-f align-items-center justify-content-center" class:checked={roles.includes(r)} aria-hidden="true">
@@ -296,7 +296,7 @@
 
 			<div class="field column-nowrap gap-title">
 				<span class="field-title">Luk</span>
-				<div class="checks display-f gap-1">
+				<div class="checks checks-spaced display-f gap-1">
 					{#each BOW_KEYS as b (b)}
 						<button type="button" class="check-opt cursor-pointer display-f align-items-center gap-0-4" onclick={() => toggleBow(b)}>
 							<span class="check-box display-f align-items-center justify-content-center" class:checked={bowType.includes(b)} aria-hidden="true">
@@ -378,9 +378,10 @@
 				</label>
 			</div>
 
-			<div class="field column-nowrap gap-title">
+			<div class="field column-nowrap">
 				<span class="field-title">Skrivene sekcije</span>
-				<div class="checks display-f gap-1">
+				<span class="field-hint hint-under-title">Sakrij pojedine sekcije na javnom profilu.</span>
+				<div class="checks checks-spaced display-f gap-1">
 					{#each HIDDEN_KEYS as s (s)}
 						<button type="button" class="check-opt cursor-pointer display-f align-items-center gap-0-4" onclick={() => toggleHidden(s)}>
 							<span class="check-box display-f align-items-center justify-content-center" class:checked={hiddenSections.includes(s)} aria-hidden="true">
@@ -390,7 +391,6 @@
 						</button>
 					{/each}
 				</div>
-				<span class="field-hint">Sakrij pojedine sekcije na javnom profilu.</span>
 			</div>
 		</div>
 	</div>
@@ -531,6 +531,14 @@
 		font-weight: 400;
 		font-size: 0.8rem;
 		color: #9aa3b2;
+	}
+	/* A hint that sits directly UNDER the title (small gap), before the control. */
+	.hint-under-title {
+		margin-top: 0.3rem;
+	}
+	/* More breathing room between a title/hint and its checkbox row. */
+	.checks-spaced {
+		margin-top: 0.6rem;
 	}
 	.field-input {
 		box-sizing: border-box;
@@ -688,7 +696,8 @@
 		color: $red;
 	}
 	.form-actions {
-		margin-top: 2rem;
+		/* Clear separation between the action buttons and the last section above. */
+		margin-top: 4rem;
 	}
 	.btn {
 		padding: 0.6rem 1.3rem;
