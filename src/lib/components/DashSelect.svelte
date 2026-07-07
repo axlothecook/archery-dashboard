@@ -53,7 +53,7 @@
 	</button>
 
 	{#if open}
-		<ul class="dash-select-list position-absolute w-full column-nowrap" role="listbox">
+		<ul class="dash-select-list position-absolute w-full column-nowrap custom-scrollbar" role="listbox">
 			{#each options as o (o.value)}
 				<li>
 					<button
@@ -105,8 +105,9 @@
 		transform: rotate(180deg);
 	}
 
-	/* Open list — height follows the option count (no fixed height / scroll).
-	   Dashboard colours; no tick on options. */
+	/* Open list — capped height (a long list like the year/month filters scrolls inside
+	   rather than running down the page); the inner padding is unchanged. Dashboard
+	   colours; no tick on options. */
 	.dash-select-list {
 		top: calc(100% + 0.35rem);
 		left: 0;
@@ -119,6 +120,8 @@
 		border: 1px solid #d7dee8;
 		border-radius: 8px;
 		box-shadow: 0 8px 24px rgba(16, 46, 102, 0.14);
+		max-height: 17rem;
+		overflow-y: auto;
 	}
 	.dash-select-opt {
 		box-sizing: border-box;
