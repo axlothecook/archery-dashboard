@@ -184,7 +184,7 @@
 	<form class="panel bg-white" onsubmit={(e) => e.preventDefault()}>
 		<div class="form-grid">
 			<!-- LEFT: the core details. -->
-			<div class="col column-nowrap gap-1">
+			<div class="col column-nowrap gap-1-5">
 				<label class="field column-nowrap gap-title">
 					<span class="field-title">Naziv događaja <span class="req">*</span></span>
 					<input class="field-input w-full br-xs" type="text" bind:value={name} required />
@@ -218,7 +218,7 @@
 			</div>
 
 			<!-- RIGHT: level, attendees, media, flags. -->
-			<div class="col column-nowrap gap-1">
+			<div class="col column-nowrap gap-1-5">
 				<div class="field column-nowrap gap-title">
 					<span class="field-title">Razina (kategorija) <span class="req">*</span></span>
 					{#if data.levelLoadError}
