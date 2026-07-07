@@ -211,15 +211,20 @@
 		};
 	}
 
-	// Mandatory (mirror the backend create body): first + last name, ≥1 role, bio. Photo
-	// URL requires an alt (backend rejects a min-1 alt when a URL is present).
+	// Mandatory: first + last name, ≥1 role, ≥1 bow, ≥1 competition category, bio, and
+	// BOTH images with their alt text. (The backend allows more to be empty, but the
+	// dashboard requires a complete archer profile.)
 	function validate(): string[] {
 		const errs: string[] = [];
 		if (!firstName.trim()) errs.push('Ime je obavezno.');
 		if (!lastName.trim()) errs.push('Prezime je obavezno.');
 		if (roles.length === 0) errs.push('Odaberite barem jednu ulogu.');
+		if (bowType.length === 0) errs.push('Odaberite barem jedan luk.');
+		if (parseCats(categoriesText).length === 0) errs.push('Kategorije natjecanja su obavezne.');
 		if (!bio.trim()) errs.push('Biografija je obavezna.');
-		if (cardPhotoUrl.trim() && !cardPhotoAlt.trim()) errs.push('Opis kartične slike (alt) je obavezan.');
+		if (!cardPhotoUrl.trim()) errs.push('Slika za malu karticu je obavezna.');
+		if (cardPhotoUrl.trim() && !cardPhotoAlt.trim()) errs.push('Opis slike za malu karticu (alt) je obavezan.');
+		if (!profilePhotoUrl.trim()) errs.push('Profilna slika je obavezna.');
 		if (profilePhotoUrl.trim() && !profilePhotoAlt.trim()) errs.push('Opis profilne slike (alt) je obavezan.');
 		for (const [i, s] of careerStats.entries()) {
 			if (!s.discipline.trim()) errs.push(`Statistika #${i + 1}: disciplina je obavezna.`);
@@ -295,7 +300,7 @@
 			</div>
 
 			<div class="field column-nowrap gap-title">
-				<span class="field-title">Luk</span>
+				<span class="field-title">Luk <span class="req">*</span></span>
 				<div class="checks checks-spaced display-f gap-1">
 					{#each BOW_KEYS as b (b)}
 						<button type="button" class="check-opt cursor-pointer display-f align-items-center gap-0-4" onclick={() => toggleBow(b)}>
@@ -320,7 +325,7 @@
 			</div>
 
 			<label class="field column-nowrap gap-title">
-				<span class="field-title">Kategorije natjecanja</span>
+				<span class="field-title">Kategorije natjecanja <span class="req">*</span></span>
 				<input class="field-input w-full br-xs" type="text" bind:value={categoriesText} placeholder="npr. RM, CW, RŽ" />
 				<span class="field-hint">Odvojite zarezom (World Archery kodovi).</span>
 			</label>
@@ -345,19 +350,19 @@
 		<!-- RIGHT: photos + coaches + visibility + row editors. -->
 		<div class="col column-nowrap gap-1-5">
 			<fieldset class="group">
-				<legend class="group-legend">Slika za malu karticu</legend>
-				<ImageUpload label="Slika za malu karticu" entityType="archer" fit="cover" bind:url={cardPhotoUrl} />
+				<legend class="group-legend">Slika za malu karticu <span class="req">*</span></legend>
+				<ImageUpload label="Slika" entityType="archer" fit="cover" bind:url={cardPhotoUrl} />
 				<label class="field column-nowrap gap-title mt-1">
-					<span class="field-title">Opis slike za malu karticu (alt)</span>
+					<span class="field-title">Opis slike za malu karticu (alt) <span class="req">*</span></span>
 					<input class="field-input w-full br-xs" type="text" bind:value={cardPhotoAlt} />
 				</label>
 			</fieldset>
 
 			<fieldset class="group">
-				<legend class="group-legend">Profilna slika</legend>
-				<ImageUpload label="Profilna slika" entityType="archer" fit="cover" bind:url={profilePhotoUrl} />
+				<legend class="group-legend">Profilna slika <span class="req">*</span></legend>
+				<ImageUpload label="Slika" entityType="archer" fit="cover" bind:url={profilePhotoUrl} />
 				<label class="field column-nowrap gap-title mt-1">
-					<span class="field-title">Opis profilne slike (alt)</span>
+					<span class="field-title">Opis profilne slike (alt) <span class="req">*</span></span>
 					<input class="field-input w-full br-xs" type="text" bind:value={profilePhotoAlt} />
 				</label>
 			</fieldset>
