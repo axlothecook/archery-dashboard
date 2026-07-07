@@ -186,7 +186,7 @@
 
 <section class="art-section">
 	<div class="mgmt-head display-f align-items-center gap-0-7">
-		<NewsIcon size={28} />
+		<NewsIcon size={40} />
 		<div>
 			<h2 class="mgmt-title">Novi članak</h2>
 			<p class="mgmt-sub">Napišite vijest, dodajte medije i spremite kao nacrt ili odmah objavite.</p>
