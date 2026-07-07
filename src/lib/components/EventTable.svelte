@@ -29,13 +29,36 @@
 	let confirmDlg = $state<ConfirmDialog>();
 	let error = $state('');
 
+	// Add `.faded` when the (single-line, capped) name overflows, so the right edge
+	// fades to transparent (→ the white panel) instead of showing a "…". Re-checks on
+	// the name text + on resize. Mirrors ArticleTable's title fade.
+	function fadeIfOverflow(node: HTMLElement, _name: string) {
+		const check = () => node.classList.toggle('faded', node.scrollWidth > node.clientWidth + 1);
+		check();
+		const ro = new ResizeObserver(check);
+		ro.observe(node);
+		return {
+			update: () => check(),
+			destroy: () => ro.disconnect()
+		};
+	}
+
 	function fmtDay(iso: string): string {
 		const d = new Date(iso);
 		return `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}.`;
 	}
-	// "4.7.2026." or "4.7.2026. – 5.7.2026." for a range.
+	// Day + month, no year ("28.5.") — used for the start of a same-year range so the
+	// year isn't repeated twice.
+	function fmtDayMonth(iso: string): string {
+		const d = new Date(iso);
+		return `${d.getDate()}.${d.getMonth() + 1}.`;
+	}
+	// "4.7.2026." (single day), "28.5. – 31.5.2027." (range within one year, year shown
+	// once at the end), or "30.12.2026. – 2.1.2027." (range crossing years, both full).
 	function fmtRange(from: string, to: string | null): string {
-		return to && to !== from ? `${fmtDay(from)} – ${fmtDay(to)}` : fmtDay(from);
+		if (!to || to === from) return fmtDay(from);
+		const sameYear = new Date(from).getFullYear() === new Date(to).getFullYear();
+		return `${sameYear ? fmtDayMonth(from) : fmtDay(from)} – ${fmtDay(to)}`;
 	}
 
 	function edit(e: EventAdminRow) {
@@ -104,7 +127,7 @@
 		<tbody>
 			{#each events as e (e.id)}
 				<tr class:cancelled={e.isCancelled}>
-					<td class="ev-name fw-600">{e.name}</td>
+					<td class="ev-name fw-600" use:fadeIfOverflow={e.name}>{e.name}</td>
 					<td><span class="ev-badge">{DISCIPLINE_LABEL[e.discipline]}</span></td>
 					<td class="ev-date text-jet-grey">{fmtRange(e.dateFrom, e.dateTo)}</td>
 					<td>
@@ -228,7 +251,14 @@
 	.ev-name {
 		white-space: nowrap;
 		overflow: hidden;
-		text-overflow: ellipsis;
+	}
+	/* When the name overflows (the `faded` class is added imperatively by
+	   use:fadeIfOverflow), fade the right edge to transparent → the white panel shows
+	   through, instead of a "…" ellipsis. :global on the class since it's toggled in JS
+	   (svelte-check can't see it statically). Mirrors ArticleTable's .art-title fade. */
+	.ev-name:global(.faded) {
+		-webkit-mask-image: linear-gradient(to right, #000 82%, transparent 100%);
+		mask-image: linear-gradient(to right, #000 82%, transparent 100%);
 	}
 	.ev-badge {
 		display: inline-block;
