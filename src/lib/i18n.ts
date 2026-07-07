@@ -17,7 +17,36 @@ const hr: Dict = {
 	'auth.helpLink': 'Kontaktirajte nas',
 	'auth.error': 'Pogrešan email ili lozinka.',
 	'auth.errorGeneric': 'Prijava nije uspjela. Pokušajte ponovno.',
-	'auth.imageAlt': 'Streličarstvo'
+	'auth.imageAlt': 'Streličarstvo',
+	'auth.forgotLink': 'Zaboravili ste lozinku?',
+	'auth.backToLogin': 'Natrag na prijavu',
+	// Forgot-password (request a reset link)
+	'forgot.title': 'Zaboravljena lozinka',
+	'forgot.intro': 'Unesite svoj email. Ako postoji račun, poslat ćemo vam poveznicu za postavljanje nove lozinke.',
+	'forgot.submit': 'Pošalji poveznicu',
+	'forgot.submitting': 'Slanje…',
+	'forgot.sent': 'Ako postoji račun s tom adresom, poslali smo poveznicu za oporavak lozinke. Provjerite email (i mapu neželjene pošte).',
+	// Reset password (set new password from a reset token)
+	'reset.title': 'Nova lozinka',
+	'reset.intro': 'Postavite novu lozinku za svoj račun.',
+	'reset.password': 'Nova lozinka',
+	'reset.confirm': 'Potvrdite lozinku',
+	'reset.submit': 'Spremi lozinku',
+	'reset.submitting': 'Spremanje…',
+	'reset.done': 'Lozinka je promijenjena. Sada se možete prijaviti.',
+	'reset.goLogin': 'Idi na prijavu',
+	// Accept invite (activate account by setting a password)
+	'invite.title': 'Aktivirajte račun',
+	'invite.intro': 'Pozvani ste u nadzornu ploču. Postavite lozinku da aktivirate svoj račun.',
+	'invite.submit': 'Aktiviraj račun',
+	'invite.submitting': 'Aktivacija…',
+	'invite.done': 'Račun je aktiviran. Sada se možete prijaviti.',
+	// Shared validation / errors for the reset+invite forms
+	'pw.tooShort': 'Lozinka mora imati najmanje 12 znakova.',
+	'pw.mismatch': 'Lozinke se ne podudaraju.',
+	'pw.badToken': 'Poveznica je nevažeća ili je istekla. Zatražite novu.',
+	'pw.noToken': 'Nedostaje token. Otvorite poveznicu iz emaila.',
+	'pw.genericError': 'Nešto je pošlo po zlu. Pokušajte ponovno.'
 };
 
 const en: Dict = {
@@ -31,7 +60,32 @@ const en: Dict = {
 	'auth.helpLink': 'Contact Us',
 	'auth.error': 'Incorrect email or password.',
 	'auth.errorGeneric': 'Login failed. Please try again.',
-	'auth.imageAlt': 'Archery'
+	'auth.imageAlt': 'Archery',
+	'auth.forgotLink': 'Forgot your password?',
+	'auth.backToLogin': 'Back to login',
+	'forgot.title': 'Forgot password',
+	'forgot.intro': 'Enter your email. If an account exists, we’ll send you a link to set a new password.',
+	'forgot.submit': 'Send reset link',
+	'forgot.submitting': 'Sending…',
+	'forgot.sent': 'If an account with that address exists, we’ve sent a password-recovery link. Check your email (and spam folder).',
+	'reset.title': 'New password',
+	'reset.intro': 'Set a new password for your account.',
+	'reset.password': 'New password',
+	'reset.confirm': 'Confirm password',
+	'reset.submit': 'Save password',
+	'reset.submitting': 'Saving…',
+	'reset.done': 'Your password has been changed. You can now log in.',
+	'reset.goLogin': 'Go to login',
+	'invite.title': 'Activate account',
+	'invite.intro': 'You’ve been invited to the dashboard. Set a password to activate your account.',
+	'invite.submit': 'Activate account',
+	'invite.submitting': 'Activating…',
+	'invite.done': 'Your account is active. You can now log in.',
+	'pw.tooShort': 'Password must be at least 12 characters.',
+	'pw.mismatch': 'Passwords do not match.',
+	'pw.badToken': 'This link is invalid or has expired. Request a new one.',
+	'pw.noToken': 'Missing token. Open the link from your email.',
+	'pw.genericError': 'Something went wrong. Please try again.'
 };
 
 const DICTS: Record<Locale, Dict> = { hr, en };
