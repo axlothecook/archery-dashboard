@@ -90,14 +90,14 @@
 </script>
 
 <svelte:window onkeydown={onKey} />
-<svelte:head><title>Kategorije razina · VSK</title></svelte:head>
+<svelte:head><title>Razina · VSK</title></svelte:head>
 
 <section class="lvl-section">
 	<div class="mgmt-head display-f align-items-center justify-content-space-between gap-2">
 		<div class="display-f align-items-center gap-0-7">
 			<TrophyIcon size={40} />
 			<div>
-				<h2 class="mgmt-title">Kategorije razina</h2>
+				<h2 class="mgmt-title">Razina</h2>
 				<p class="mgmt-sub">Kategorije natjecanja (legenda kalendara). Svaka ima naziv, boju i redoslijed.</p>
 			</div>
 		</div>
@@ -107,7 +107,7 @@
 		</button>
 	</div>
 
-	<div class="panel bg-white column-nowrap gap-0-3">
+	<div class="panel bg-white column-nowrap">
 		{#if data.loadError}
 			<p class="lvl-load-error" role="alert">Učitavanje kategorija nije uspjelo. Osvježite stranicu.</p>
 		{/if}
@@ -115,27 +115,29 @@
 			<p class="lvl-load-error" role="alert">{error}</p>
 		{/if}
 
-		{#if levels.length === 0}
-			<p class="lvl-empty">Još nema kategorija.</p>
-		{:else}
-			{#each levels as l (l.id)}
-				<div class="lvl-row display-f align-items-center gap-1">
-					<span class="lvl-dot" style="background:{l.color}"></span>
-					<div class="lvl-info column-nowrap">
-						<span class="lvl-name fw-600">{l.name}</span>
-						<span class="lvl-meta">Redoslijed {l.order} · {l.eventCount} događaja</span>
+		<div class="lvl-scroll custom-scrollbar column-nowrap gap-0-3">
+			{#if levels.length === 0}
+				<p class="lvl-empty">Još nema kategorija.</p>
+			{:else}
+				{#each levels as l (l.id)}
+					<div class="lvl-row display-f align-items-center gap-1">
+						<span class="lvl-dot" style="background:{l.color}"></span>
+						<div class="lvl-info column-nowrap">
+							<span class="lvl-name fw-600">{l.name}</span>
+							<span class="lvl-meta">Redoslijed {l.order} · {l.eventCount} događaja</span>
+						</div>
+						<div class="lvl-actions display-f align-items-center gap-1">
+							<button class="lvl-act cursor-pointer display-f" type="button" aria-label="Uredi" title="Uredi" onclick={() => openEdit(l)}>
+								<EditIcon size={18} />
+							</button>
+							<button class="lvl-act lvl-act--del cursor-pointer display-f" type="button" aria-label="Izbriši" title="Izbriši" onclick={() => del(l)}>
+								<TrashIcon size={18} />
+							</button>
+						</div>
 					</div>
-					<div class="lvl-actions display-f align-items-center gap-1">
-						<button class="lvl-act cursor-pointer display-f" type="button" aria-label="Uredi" title="Uredi" onclick={() => openEdit(l)}>
-							<EditIcon size={18} />
-						</button>
-						<button class="lvl-act lvl-act--del cursor-pointer display-f" type="button" aria-label="Izbriši" title="Izbriši" onclick={() => del(l)}>
-							<TrashIcon size={18} />
-						</button>
-					</div>
-				</div>
-			{/each}
-		{/if}
+				{/each}
+			{/if}
+		</div>
 	</div>
 </section>
 
@@ -178,11 +180,13 @@
 
 <style>
 	.lvl-section {
-		/* Wide enough that the header subtitle stays on ONE line with a comfortable gap
-		   before the "Nova kategorija" button (the right side is otherwise unused).
-		   NB: the dashboard scales the root font down on laptop widths, so rem-based
-		   widths shrink too — hence the generous value. */
-		max-width: 80rem;
+		/* Fill the shared content frame as a flex column (mirrors Svi sponzori) so the
+		   panel bounds to it and scrolls INSIDE — the white div is the same size. */
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		flex: 1 1 auto;
+		min-height: 0;
 	}
 	.mgmt-head {
 		margin-bottom: 1.5rem;
@@ -197,8 +201,6 @@
 		margin: 0.35rem 0 0;
 		font-size: 0.95rem;
 		color: #5b6577;
-		/* One line so the gap before the button is real horizontal space, not a wrap. */
-		white-space: nowrap;
 	}
 	.btn-add {
 		padding: 0.5rem 0.9rem;
@@ -210,8 +212,6 @@
 		font-weight: 600;
 		font-family: inherit;
 		white-space: nowrap;
-		/* Keep its size so the `gap-2` on .mgmt-head shows as real space between the
-		   title block and the button (the title block shrinks instead). */
 		flex-shrink: 0;
 	}
 	.btn-add:hover {
@@ -221,6 +221,17 @@
 		border-radius: 14px;
 		padding: 1.25rem 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
+		/* Fill the section height + be a flex column so the scroll area bounds to it
+		   (mirrors the Svi sponzori white div). */
+		flex: 1 1 auto;
+		min-height: 0;
+	}
+	.lvl-scroll {
+		/* Fill the panel + scroll the rows INSIDE it so a long list never runs off the
+		   bottom of the viewport (mirrors Svi sponzori's .sp-scroll). */
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow: auto;
 	}
 	.lvl-load-error {
 		margin: 0 0 0.5rem;

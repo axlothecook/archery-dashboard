@@ -153,9 +153,11 @@
 	}
 	.sp-actions-cell {
 		width: 1%;
+		/* Pull the pen/trash a little further left, off the panel edge. */
+		padding-right: 1.5rem;
 	}
 	.sp-actions {
-		gap: 0.75rem;
+		gap: 1.25rem;
 	}
 	.sp-act {
 		align-items: center;
