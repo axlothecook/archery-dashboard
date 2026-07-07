@@ -213,7 +213,7 @@
 <section class="art-section">
 	<div class="mgmt-head display-f align-items-center justify-content-space-between">
 		<div class="display-f align-items-center gap-0-7">
-			<NewsIcon size={28} />
+			<NewsIcon size={40} />
 			<div>
 				<h2 class="mgmt-title">Uredi članak</h2>
 				<p class="mgmt-sub">Uredite postojeći članak i spremite promjene.</p>

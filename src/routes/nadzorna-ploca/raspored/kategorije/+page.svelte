@@ -93,9 +93,9 @@
 <svelte:head><title>Kategorije razina · VSK</title></svelte:head>
 
 <section class="lvl-section">
-	<div class="mgmt-head display-f align-items-center justify-content-space-between">
+	<div class="mgmt-head display-f align-items-center justify-content-space-between gap-2">
 		<div class="display-f align-items-center gap-0-7">
-			<TrophyIcon size={28} />
+			<TrophyIcon size={40} />
 			<div>
 				<h2 class="mgmt-title">Kategorije razina</h2>
 				<p class="mgmt-sub">Kategorije natjecanja (legenda kalendara). Svaka ima naziv, boju i redoslijed.</p>
@@ -125,7 +125,7 @@
 						<span class="lvl-name fw-600">{l.name}</span>
 						<span class="lvl-meta">Redoslijed {l.order} · {l.eventCount} događaja</span>
 					</div>
-					<div class="lvl-actions display-f align-items-center gap-0-3">
+					<div class="lvl-actions display-f align-items-center gap-0-6">
 						<button class="lvl-act cursor-pointer display-f" type="button" aria-label="Uredi" title="Uredi" onclick={() => openEdit(l)}>
 							<EditIcon size={18} />
 						</button>
@@ -204,6 +204,9 @@
 		font-weight: 600;
 		font-family: inherit;
 		white-space: nowrap;
+		/* Keep its size so the `gap-2` on .mgmt-head shows as real space between the
+		   title block and the button (the title block shrinks instead). */
+		flex-shrink: 0;
 	}
 	.btn-add:hover {
 		background: #0c2350;

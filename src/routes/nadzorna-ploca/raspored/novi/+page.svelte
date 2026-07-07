@@ -105,7 +105,7 @@
 
 <section class="ev-section">
 	<div class="mgmt-head display-f align-items-center gap-0-7">
-		<CalendarIcon size={28} />
+		<CalendarIcon size={40} />
 		<div>
 			<h2 class="mgmt-title">Novi događaj</h2>
 			<p class="mgmt-sub">Dodajte natjecanje ili događaj i spremite kao nacrt ili odmah objavite.</p>
