@@ -343,7 +343,7 @@
 
 			<label class="field column-nowrap gap-title">
 				<span class="field-title">Biografija <span class="req">*</span></span>
-				<textarea class="field-input field-textarea w-full br-xs" bind:value={bio}></textarea>
+				<textarea class="field-input field-textarea custom-scrollbar w-full br-xs" bind:value={bio}></textarea>
 			</label>
 		</div>
 
@@ -567,6 +567,9 @@
 		resize: vertical;
 		line-height: 1.4;
 		min-height: 10rem;
+		/* Zero the library's default textarea top margin so the title→textarea gap matches
+		   the title→input gap on the other fields (e.g. Ime). */
+		margin-top: 0;
 	}
 	.checkbox-field {
 		align-self: end;
@@ -613,12 +616,13 @@
 	}
 	/* Row editors (career stats / performance). */
 	.rows-block {
-		margin-top: 1.75rem;
+		/* Clear separation above each row block (Statistika karijere / Nastupi). */
+		margin-top: 3.5rem;
 	}
 	.rows-head {
-		/* Small gap: the subtext sits close under the title, and this clears the (slightly
-		   taller) "Dodaj red" button so it isn't in the way. */
-		margin-bottom: 0.5rem;
+		/* Tight gap so the subtext sits close under the title (the button clears it via
+		   the button's reduced height). */
+		margin-bottom: 0.3rem;
 	}
 	.rows-title {
 		font-size: 1rem;
