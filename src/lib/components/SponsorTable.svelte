@@ -151,10 +151,11 @@
 	.sp-name {
 		display: block;
 	}
-	.sp-actions-cell {
+	/* Scoped under .sp-table so it outranks the base `.sp-table td` padding regardless of
+	   rule order — pulls the pen/trash well left, off the panel edge. */
+	.sp-table td.sp-actions-cell {
 		width: 1%;
-		/* Pull the pen/trash a little further left, off the panel edge. */
-		padding-right: 1.5rem;
+		padding-right: 4rem;
 	}
 	.sp-actions {
 		gap: 1.25rem;
