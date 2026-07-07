@@ -69,6 +69,7 @@
 				<th><span class="th-in display-f align-items-center gap-0-4"><TrophyIcon size={18} />Medalja</span></th>
 				<th><span class="th-in display-f align-items-center gap-0-4"><PeopleIcon size={18} />Strijelci</span></th>
 				<th class="ac-th-actions"></th>
+				<th class="ac-col-spacer"></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -103,6 +104,7 @@
 							</button>
 						</div>
 					</td>
+					<td class="ac-col-spacer"></td>
 				</tr>
 			{/each}
 		</tbody>
@@ -159,16 +161,22 @@
 		width: 2.6rem;
 		height: 2.6rem;
 	}
-	/* Title takes the slack; the other columns hug content on the right. */
+	/* Title is a FIXED width; the trailing spacer (below) absorbs all leftover width, so
+	   the right-side columns stay TIGHT to the title instead of spreading to the far right
+	   (and a gap is kept before the scrollbar — mirrors Svi događaji). */
 	.ac-table :is(th, td).ac-title {
-		width: 100%;
-		min-width: 12rem;
+		width: 26rem;
+		max-width: 26rem;
 	}
 	.ac-title {
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		max-width: 26rem;
+	}
+	/* Slightly wider, EQUAL gap between the right-side columns (Godina … actions): each
+	   carries the same left padding = the gap before it. Columns 3–8 (after img+title). */
+	.ac-table :is(th, td):nth-child(n + 3):nth-child(-n + 8) {
+		padding-left: 1.6rem;
 	}
 	.ac-year,
 	.ac-archers {
@@ -179,9 +187,21 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
+	/* Trailing spacer: eats all slack so the real columns sit LEFT (tight to the title),
+	   and keeps a gap between the last column and the scrollbar (matches Svi događaji). */
+	.ac-table :is(th, td).ac-col-spacer {
+		width: auto;
+		min-width: 1.25rem;
+		padding: 0;
+		border-bottom: 0;
+	}
+	/* Vrsta + Medalja pills: match the Svi događaji pills (same min-width, centred text,
+	   padding) so they read as one uniform pill size. */
 	.ac-badge {
 		display: inline-block;
-		padding: 0.3rem 0.6rem;
+		min-width: 6.5rem;
+		text-align: center;
+		padding: 0.55rem 0.4rem;
 		border-radius: 999px;
 		background: #eef2fb;
 		color: #1b3a7a;
@@ -191,12 +211,12 @@
 	}
 	.ac-medal {
 		display: inline-block;
-		min-width: 4.5rem;
+		min-width: 6.5rem;
 		text-align: center;
-		padding: 0.3rem 0.5rem;
+		padding: 0.55rem 0.4rem;
 		border-radius: 999px;
-		font-size: 0.8rem;
-		font-weight: 700;
+		font-size: 0.82rem;
+		font-weight: 600;
 		white-space: nowrap;
 	}
 	.ac-medal--gold {
@@ -211,11 +231,8 @@
 		background: #f6e2d2;
 		color: #8a4b1e;
 	}
-	.ac-actions-cell {
-		width: 1%;
-	}
 	.ac-actions {
-		gap: 0.75rem;
+		gap: 1rem;
 	}
 	.ac-act {
 		align-items: center;
