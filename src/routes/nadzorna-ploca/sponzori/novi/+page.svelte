@@ -183,8 +183,11 @@
 		border-radius: 14px;
 		padding: 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
-		/* Match the Novi događaj panel height so the create forms read consistently. */
+		/* Match the Novi događaj panel height so the create forms read consistently.
+		   Flex column so the action row pins to the panel's bottom-right. */
 		min-height: 52rem;
+		display: flex;
+		flex-direction: column;
 	}
 	.form-grid {
 		display: grid;
@@ -242,7 +245,9 @@
 		color: $navy;
 	}
 	.form-actions {
-		margin-top: 2.5rem;
+		/* Pin to the panel's bottom (flex-column panel) so the buttons sit bottom-right. */
+		margin-top: auto;
+		padding-top: 2.5rem;
 	}
 	.btn {
 		padding: 0.6rem 1.3rem;

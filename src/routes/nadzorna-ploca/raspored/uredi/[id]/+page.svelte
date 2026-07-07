@@ -363,6 +363,11 @@
 		border-radius: 14px;
 		padding: 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
+		/* Match the other forms' height + flex column so the action row pins to the panel's
+		   bottom-right. */
+		min-height: 52rem;
+		display: flex;
+		flex-direction: column;
 	}
 	.form-grid {
 		display: grid;
@@ -444,8 +449,9 @@
 		margin-top: -1rem;
 	}
 	.form-actions {
-		/* Wide gap so the action buttons sit clearly apart from the form fields. */
-		margin-top: 4.5rem;
+		/* Pin to the panel's bottom (flex-column panel) so the buttons sit bottom-right. */
+		margin-top: auto;
+		padding-top: 4.5rem;
 	}
 	.btn {
 		padding: 0.6rem 1.3rem;
