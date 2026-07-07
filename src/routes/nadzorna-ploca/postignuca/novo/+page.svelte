@@ -95,13 +95,14 @@
 		};
 	}
 
-	// Mandatory: Naslov, Godina, Scope, Razina, Vrsta. Optional: Medalja, Strijelci, Slika
-	// (a club-level achievement can have no credited archers; a title needs no medal).
+	// Mandatory: Naslov, Godina, Scope, Razina, Vrsta, Slika + alt. Optional: Medalja,
+	// Strijelci (a club-level achievement can have no credited archers; a title needs no medal).
 	function validate(): string[] {
 		const errs: string[] = [];
 		if (!title.trim()) errs.push('Naslov postignuća je obavezan.');
 		if (!year || Number.isNaN(Number(year))) errs.push('Godina je obavezna.');
-		if (imageUrl.trim() && !imageAlt.trim()) errs.push('Ako je slika navedena, opis (alt) je obavezan.');
+		if (!imageUrl.trim()) errs.push('Slika je obavezna.');
+		if (!imageAlt.trim()) errs.push('Opis slike (alt) je obavezan.');
 		return errs;
 	}
 
@@ -171,7 +172,7 @@
 					</div>
 				</div>
 				<div class="field column-nowrap gap-title">
-					<span class="field-title">Medalja <span class="field-hint">(nije obavezno)</span></span>
+					<span class="field-title">Medalja</span>
 					<DashSelect options={medalOptions} bind:value={medal} ariaLabel="Medalja" />
 				</div>
 			</div>
@@ -179,7 +180,7 @@
 			<!-- RIGHT: credited archers + image. -->
 			<div class="col column-nowrap gap-1-5">
 				<div class="field column-nowrap gap-title">
-					<span class="field-title">Strijelci <span class="field-hint">(nije obavezno — klupsko postignuće nema strijelce)</span></span>
+					<span class="field-title">Strijelci <span class="field-hint">(klupsko postignuće nema strijelce)</span></span>
 					<ArcherPicker
 						options={data.archerOptions}
 						loadError={data.archerLoadError}
@@ -189,11 +190,11 @@
 				</div>
 
 				<fieldset class="group">
-					<legend class="group-legend">Slika <span class="field-hint">(nije obavezno)</span></legend>
+					<legend class="group-legend">Slika <span class="req">*</span></legend>
 					<ImageUpload label="Slika" entityType="achievement" bind:url={imageUrl} />
 					<label class="field column-nowrap gap-title mt-0-6">
-						<span class="field-title">Opis slike (alt)</span>
-						<input class="field-input w-full br-xs" type="text" bind:value={imageAlt} />
+						<span class="field-title">Opis slike (alt) <span class="req">*</span></span>
+						<input class="field-input w-full br-xs" type="text" bind:value={imageAlt} required />
 					</label>
 				</fieldset>
 			</div>
@@ -235,6 +236,9 @@
 		border-radius: 14px;
 		padding: 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
+		/* Reserve the taller state (the Strijelci chips box adds ~11rem when the first
+		   archer is picked) so the panel doesn't grow/jump when chips appear. */
+		min-height: 37rem;
 	}
 	.form-grid {
 		display: grid;
