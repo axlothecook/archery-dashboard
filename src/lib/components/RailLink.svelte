@@ -76,10 +76,19 @@
 		font-weight: 600;
 	}
 
-	/* Gold "new content" dot at the far end of the row (opposite the label). Slow, smooth
-	   ease-in-out infinite pulse; stays until this admin opens the section. */
+	/* Anchor for the absolutely-positioned dot so it lines up in ONE column with the
+	   group items' dots (which sit before their chevron). */
+	.rail-link {
+		position: relative;
+	}
+	/* Gold "new content" dot: slow ease-in-out infinite pulse; stays until this admin
+	   opens the section. Positioned at a FIXED right offset (2.6rem) — the same column as
+	   the RailGroup dots — so plain links + group items align vertically. */
 	.rail-new-dot {
-		margin-left: auto;
+		position: absolute;
+		top: 50%;
+		right: 2.6rem;
+		transform: translateY(-50%);
 		flex: 0 0 auto;
 		width: 0.6rem;
 		height: 0.6rem;
@@ -88,16 +97,11 @@
 		box-shadow: 0 0 0 rgba(242, 201, 76, 0.6);
 		animation: rail-new-pulse 2.2s ease-in-out infinite;
 	}
-	/* On an active (white) row the gold still reads; keep it. In compact/icon-only mode the
-	   dot floats at the row's top-right corner instead of after the (hidden) label. */
+	/* Compact/icon-only mode: the dot floats at the row's top-right corner instead. */
 	.rail-new-dot.compact {
-		margin-left: 0;
-		position: absolute;
 		top: 0.45rem;
 		right: 0.45rem;
-	}
-	.rail-link.compact {
-		position: relative;
+		transform: none;
 	}
 	@keyframes rail-new-pulse {
 		0%,
