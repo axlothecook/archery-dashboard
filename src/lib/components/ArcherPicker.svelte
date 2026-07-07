@@ -152,7 +152,10 @@
 	}
 	.arp-chips {
 		flex-wrap: wrap;
-		/* Align to the top so wrapped chip rows stack from the top when scrolling. */
+		/* Pack the wrapped rows to the TOP (align-content), otherwise the fixed-height box
+		   spreads them apart to fill its height. align-items keeps chips top-aligned within
+		   a row. Together they keep rows tight with only the `gap` between them. */
+		align-content: flex-start;
 		align-items: flex-start;
 		gap: 0.4rem;
 		/* Clear gap from the trigger above and the checkbox below so the selected-tags
