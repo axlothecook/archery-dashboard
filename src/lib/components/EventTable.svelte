@@ -238,9 +238,16 @@
 		width: auto;
 	}
 	.ev-table :is(th, td):nth-child(2) { width: 8rem; } /* Disciplina */
-	.ev-table :is(th, td):nth-child(3) { width: 10.75rem; } /* Datum — snug to its content
+	.ev-table :is(th, td):nth-child(3) { width: 11.75rem; } /* Datum — snug to its content
 		(widest date incl. a cross-year range ≈ 10.6rem) so Razina sits close, not across a
-		wide empty box; text stays left-aligned. */
+		wide empty box; text stays left-aligned. The extra ~1rem over the content width is
+		spent as left padding below, so the Disciplina→Datum gap equals the Datum→Razina gap. */
+	/* Push the Datum text ~1rem further right so the gap before it (Disciplina→Datum) equals
+	   the gap after it (Datum→Razina); the column is widened by the same amount above so the
+	   date still fits and never clips. Applies to the header too, keeping it column-aligned. */
+	.ev-table :is(th, td):nth-child(3) {
+		padding-left: 1.75rem;
+	}
 	.ev-table :is(th, td):nth-child(4) { width: 11rem; } /* Razina */
 	.ev-table :is(th, td):nth-child(5) { width: 7rem; } /* Sudionici */
 	.ev-table :is(th, td):nth-child(6) { width: 8rem; } /* Stanje */
