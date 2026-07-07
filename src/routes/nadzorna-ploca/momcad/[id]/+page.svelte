@@ -234,7 +234,7 @@
 	}
 	.panel {
 		border-radius: 14px;
-		padding: 1.5rem;
+		padding: 2.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
 		flex: 1 1 auto;
 		min-height: 0;
