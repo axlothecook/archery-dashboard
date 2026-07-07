@@ -94,7 +94,17 @@
 
 <ConfirmDialog bind:this={confirmDlg} />
 
-<style>
+<style lang="scss">
+	@use 'axlothecook-sass-library/sass-library/variables' as lib;
+	@use 'sass:map';
+
+	// Library palette colours (exact matches) so the table sources its blues/reds from
+	// the shared library rather than hard-coded hexes.
+	$navy: map.get(lib.$colors, 'deep-sapphire'); // #102e66
+	$blue: map.get(lib.$colors, 'blue-dress'); // #187ff5
+	$red: map.get(lib.$colors, 'error-secondary'); // #d32752
+	$border: map.get(lib.$colors, 'seashell'); // #eef1f3
+
 	.sp-error {
 		margin: 0 0 1rem;
 		color: #a4133c;
@@ -117,12 +127,12 @@
 		font-size: 0.95rem;
 		font-weight: 700;
 		color: #1b1b1b;
-		border-bottom: 1px solid #eef1f3;
+		border-bottom: 1px solid $border;
 		white-space: nowrap;
 	}
 	.sp-table td {
 		padding: 0.7rem 0.75rem;
-		color: #102e66;
+		color: $navy;
 		border-bottom: 1px solid #f3f5f8;
 		vertical-align: middle;
 	}
@@ -152,7 +162,7 @@
 		display: block;
 		margin-top: 0.15rem;
 		font-size: 0.82rem;
-		color: #187ff5;
+		color: $blue;
 		text-decoration: none;
 		max-width: 18rem;
 		overflow: hidden;
@@ -186,9 +196,9 @@
 		transition: color 0.15s ease;
 	}
 	.sp-act:hover {
-		color: #187ff5;
+		color: $blue;
 	}
 	.sp-act--del:hover {
-		color: #d32752;
+		color: $red;
 	}
 </style>

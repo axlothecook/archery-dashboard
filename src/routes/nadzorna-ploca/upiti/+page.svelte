@@ -232,7 +232,16 @@
 	</div>
 </section>
 
-<style>
+<style lang="scss">
+	@use 'axlothecook-sass-library/sass-library/variables' as lib;
+	@use 'sass:map';
+
+	// Library palette colours (exact matches).
+	$navy: map.get(lib.$colors, 'deep-sapphire'); // $navy
+	$blue: map.get(lib.$colors, 'blue-dress'); // $blue
+	$red: map.get(lib.$colors, 'error-secondary'); // $red
+	$border: map.get(lib.$colors, 'seashell'); // $border
+
 	.in-section {
 		width: 100%;
 		display: flex;
@@ -247,7 +256,7 @@
 		margin: 0;
 		font-size: 1.6rem;
 		font-weight: 700;
-		color: #102e66;
+		color: $navy;
 	}
 	.mgmt-sub {
 		margin: 0.35rem 0 0;
@@ -277,8 +286,8 @@
 		background: #f1f4fa;
 	}
 	.in-tab.active {
-		background: #102e66;
-		border-color: #102e66;
+		background: $navy;
+		border-color: $navy;
 		color: #fff;
 	}
 	.in-tab-count {
@@ -350,11 +359,11 @@
 	}
 	/* Selected row: keep its read/unread tint but show a clear navy ring. */
 	.in-row.active {
-		border-color: #102e66;
+		border-color: $navy;
 	}
 	.in-row-name {
 		font-size: 0.95rem;
-		color: #102e66;
+		color: $navy;
 	}
 	/* Plain read/unread label (no pill). */
 	.in-row-flag {
@@ -400,7 +409,7 @@
 		margin: 0;
 		font-size: 1.2rem;
 		font-weight: 700;
-		color: #102e66;
+		color: $navy;
 	}
 	.in-reply-label,
 	.in-message-label {
@@ -424,7 +433,7 @@
 	}
 	.in-field-row dd {
 		margin: 0;
-		color: #102e66;
+		color: $navy;
 		word-break: break-word;
 	}
 	.in-message {
@@ -435,7 +444,7 @@
 		padding: 0.7rem 0.9rem;
 		background: #f7f8fa;
 		border-radius: 8px;
-		color: #102e66;
+		color: $navy;
 		font-size: 0.92rem;
 		line-height: 1.5;
 		white-space: pre-wrap;
@@ -448,7 +457,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
-		border-top: 1px solid #eef1f3;
+		border-top: 1px solid $border;
 		padding-top: 1rem;
 	}
 	.field-input {
@@ -457,12 +466,12 @@
 		border: 1px solid #d7dee8;
 		font-size: 0.95rem;
 		font-family: inherit;
-		color: #102e66;
+		color: $navy;
 		background: #fff;
 	}
 	.field-input:focus {
 		outline: none;
-		border-color: #187ff5;
+		border-color: $blue;
 	}
 	/* Grow to fill the reply area down to the panel bottom; never exceed the panel width
 	   (box-sizing:border-box on .field-input keeps it within padding). */
@@ -487,7 +496,7 @@
 		cursor: default;
 	}
 	.btn--primary {
-		background: #102e66;
+		background: $navy;
 		color: #fff;
 	}
 	.btn--primary:hover:not(:disabled) {
