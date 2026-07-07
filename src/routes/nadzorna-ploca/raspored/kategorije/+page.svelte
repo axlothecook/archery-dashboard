@@ -125,7 +125,7 @@
 						<span class="lvl-name fw-600">{l.name}</span>
 						<span class="lvl-meta">Redoslijed {l.order} · {l.eventCount} događaja</span>
 					</div>
-					<div class="lvl-actions display-f align-items-center gap-0-6">
+					<div class="lvl-actions display-f align-items-center gap-1">
 						<button class="lvl-act cursor-pointer display-f" type="button" aria-label="Uredi" title="Uredi" onclick={() => openEdit(l)}>
 							<EditIcon size={18} />
 						</button>
@@ -178,7 +178,9 @@
 
 <style>
 	.lvl-section {
-		max-width: 48rem;
+		/* Wide enough that the header subtitle stays on ONE line with a comfortable gap
+		   before the "Nova kategorija" button (the right side is otherwise unused). */
+		max-width: 64rem;
 	}
 	.mgmt-head {
 		margin-bottom: 1.5rem;
