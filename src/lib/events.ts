@@ -78,6 +78,18 @@ export function createEvent(
 	return adminRequest('/admin/events', { method: 'POST', body: input, fetch });
 }
 
+// The full editable event (GET /admin/events/:id) for the edit form — every createBody
+// field prefilled (incl. the attending archer IDs) + the id. Mirrors ArticleEditData.
+export type EventEditData = CreateEventInput & { id: string };
+
+export function fetchEvent(
+	id: string,
+	fetch?: typeof globalThis.fetch,
+	headers?: Record<string, string>
+): Promise<EventEditData> {
+	return adminRequest<EventEditData>(`/admin/events/${id}`, { fetch, headers });
+}
+
 export function updateEvent(
 	id: string,
 	patch: Partial<CreateEventInput>,
