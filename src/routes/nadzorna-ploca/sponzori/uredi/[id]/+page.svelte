@@ -132,7 +132,7 @@
 			<div class="col column-nowrap gap-1-5">
 				<fieldset class="group">
 					<legend class="group-legend">Logotip <span class="req">*</span></legend>
-					<ImageUpload label="Logotip" entityType="sponsor" bind:url={logoUrl} />
+					<ImageUpload label="Logotip" entityType="sponsor" fit="contain" bind:url={logoUrl} />
 					<label class="field column-nowrap gap-title mt-logo">
 						<span class="field-title">Opis logotipa (alt) <span class="req">*</span></span>
 						<input class="field-input w-full br-xs" type="text" bind:value={logoAlt} required />

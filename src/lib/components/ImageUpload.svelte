@@ -14,7 +14,8 @@
 		url = $bindable(''),
 		label,
 		entityType = 'article',
-		compact = false
+		compact = false,
+		fit = 'cover'
 	}: {
 		/** The hosted R2 URL — what the parent saves. Empty until an image is uploaded. */
 		url?: string;
@@ -24,6 +25,8 @@
 		entityType?: string;
 		/** Tighter layout for gallery rows. */
 		compact?: boolean;
+		/** Preview object-fit: 'cover' (photos — fill+crop) or 'contain' (logos — show whole). */
+		fit?: 'cover' | 'contain';
 	} = $props();
 
 	let inputEl = $state<HTMLInputElement | null>(null);
@@ -58,7 +61,7 @@
 	<div class="img-upload-row display-f align-items-center gap-0-8">
 		<!-- Preview (or empty placeholder). -->
 		{#if url}
-			<img class="img-preview" src={url} alt="Pregled" />
+			<img class="img-preview" class:contain={fit === 'contain'} src={url} alt="Pregled" />
 		{:else}
 			<span class="img-preview img-preview--empty display-f align-items-center justify-content-center" aria-hidden="true">
 				<AddIcon size={compact ? 18 : 22} />
@@ -112,6 +115,13 @@
 		background: #eef1f3;
 		border: 1px solid #d7dee8;
 		flex: 0 0 auto;
+	}
+	/* Logos: show the WHOLE image (never crop) inside the box, on a white pad so a
+	   transparent logo reads cleanly. */
+	.img-preview.contain {
+		object-fit: contain;
+		padding: 0.25rem;
+		background: #fff;
 	}
 	.img-preview--empty {
 		color: #9aa3b2;
