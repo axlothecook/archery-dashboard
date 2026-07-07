@@ -616,9 +616,9 @@
 		margin-top: 1.75rem;
 	}
 	.rows-head {
-		/* Tight gap so the empty-state subtext / table sits close under the title (like the
-		   page title → subtitle spacing). */
-		margin-bottom: 0.35rem;
+		/* Small gap: the subtext sits close under the title, and this clears the (slightly
+		   taller) "Dodaj red" button so it isn't in the way. */
+		margin-bottom: 0.5rem;
 	}
 	.rows-title {
 		font-size: 1rem;
@@ -626,7 +626,7 @@
 		color: $navy;
 	}
 	.btn-row-add {
-		padding: 0.4rem 0.8rem;
+		padding: 0.3rem 0.8rem;
 		border: 1px solid #d7dee8;
 		border-radius: 8px;
 		background: #fff;
@@ -639,9 +639,9 @@
 		background: #eef1f3;
 	}
 	.rows-empty {
-		/* Sits close under the title (no big top gap). */
+		/* Sits close under the title; the .rows-head margin already clears the button. */
 		margin: 0;
-		padding: 0.1rem 0 0;
+		padding: 0;
 		color: #9aa3b2;
 		font-size: 0.9rem;
 	}
