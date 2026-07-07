@@ -1,13 +1,13 @@
 <script lang="ts">
 	// Achievements list table for Postignuća → Sva postignuća. Columns: image, title,
-	// year, type, level, medal, credited archers, edit + delete. Real data from
-	// GET /admin/achievements. Mirrors ArticleTable/EventTable.
+	// year, type (coloured pill), level (colour dot + name), credited archers, edit +
+	// delete. Real data from GET /admin/achievements. Mirrors ArticleTable/EventTable.
 	import { goto } from '$app/navigation';
 	import {
 		deleteAchievement,
 		TYPE_LABEL,
 		LEVEL_LABEL,
-		MEDAL_LABEL,
+		type AchievementLevel,
 		type AchievementAdminRow
 	} from '$lib/achievements';
 	import EditIcon from '$lib/components/icons/EditIcon.svelte';
@@ -17,8 +17,16 @@
 	import ClockIcon from '$lib/components/icons/ClockIcon.svelte';
 	import CategoryIcon from '$lib/components/icons/CategoryIcon.svelte';
 	import LevelsIcon from '$lib/components/icons/LevelsIcon.svelte';
-	import TrophyIcon from '$lib/components/icons/TrophyIcon.svelte';
 	import PeopleIcon from '$lib/components/icons/PeopleIcon.svelte';
+
+	// Prestige-tier colour per level (mirrors the public site's world→european→state→other
+	// ordering) → a coloured dot next to Razina, like the Svi događaji level dot.
+	const LEVEL_COLOR: Record<AchievementLevel, string> = {
+		world: '#e0a400', // gold — global
+		european: '#187ff5', // blue — continental
+		state: '#d32752', // red — national
+		other: '#9aa3b2' // grey — other
+	};
 
 	let {
 		achievements = $bindable(),
@@ -66,7 +74,6 @@
 				<th><span class="th-in display-f align-items-center gap-0-4"><ClockIcon size={18} />Godina</span></th>
 				<th><span class="th-in display-f align-items-center gap-0-4"><CategoryIcon size={18} />Vrsta</span></th>
 				<th><span class="th-in display-f align-items-center gap-0-4"><LevelsIcon size={18} />Razina</span></th>
-				<th><span class="th-in display-f align-items-center gap-0-4"><TrophyIcon size={18} />Medalja</span></th>
 				<th><span class="th-in display-f align-items-center gap-0-4"><PeopleIcon size={18} />Strijelci</span></th>
 				<th class="ac-th-actions"></th>
 				<th class="ac-col-spacer"></th>
@@ -84,14 +91,12 @@
 					</td>
 					<td class="ac-title fw-600">{a.title}</td>
 					<td class="ac-year text-jet-grey">{a.year}.</td>
-					<td><span class="ac-badge">{TYPE_LABEL[a.type]}</span></td>
-					<td class="text-jet-grey">{LEVEL_LABEL[a.level]}</td>
+					<td><span class="ac-badge ac-badge--{a.type}">{TYPE_LABEL[a.type]}</span></td>
 					<td>
-						{#if a.medal}
-							<span class="ac-medal ac-medal--{a.medal}">{MEDAL_LABEL[a.medal]}</span>
-						{:else}
-							<span class="text-jet-grey">—</span>
-						{/if}
+						<span class="ac-level display-f align-items-center gap-0-4">
+							<span class="ac-dot" style="background:{LEVEL_COLOR[a.level]}"></span>
+							{LEVEL_LABEL[a.level]}
+						</span>
 					</td>
 					<td class="ac-archers text-jet-grey">{a.archerNames.length ? a.archerNames.join(', ') : '—'}</td>
 					<td class="ac-actions-cell">
@@ -183,8 +188,8 @@
 		text-overflow: ellipsis;
 	}
 	/* Slightly wider, EQUAL gap between the right-side columns (Godina … actions): each
-	   carries the same left padding = the gap before it. Columns 3–8 (after img+title). */
-	.ac-table :is(th, td):nth-child(n + 3):nth-child(-n + 8) {
+	   carries the same left padding = the gap before it. Columns 3–7 (after img+title). */
+	.ac-table :is(th, td):nth-child(n + 3):nth-child(-n + 7) {
 		padding-left: 1.6rem;
 	}
 	.ac-year,
@@ -204,41 +209,42 @@
 		padding: 0;
 		border-bottom: 0;
 	}
-	/* Vrsta + Medalja pills: match the Svi događaji pills (same min-width, centred text,
-	   padding) so they read as one uniform pill size. */
+	/* Vrsta pill: same size as the Svi događaji pills, coloured by type so Naslov / Rekord
+	   / Plasman read apart at a glance. */
 	.ac-badge {
 		display: inline-block;
 		min-width: 6.5rem;
 		text-align: center;
 		padding: 0.55rem 0.4rem;
 		border-radius: 999px;
-		background: #eef2fb;
+		font-size: 0.82rem;
+		font-weight: 600;
+		white-space: nowrap;
+		background: #eef2fb; /* fallback (Plasman): bluish */
 		color: #1b3a7a;
-		font-size: 0.82rem;
-		font-weight: 600;
-		white-space: nowrap;
 	}
-	.ac-medal {
-		display: inline-block;
-		min-width: 6.5rem;
-		text-align: center;
-		padding: 0.55rem 0.4rem;
-		border-radius: 999px;
-		font-size: 0.82rem;
-		font-weight: 600;
-		white-space: nowrap;
-	}
-	.ac-medal--gold {
-		background: #fbf0c9;
+	.ac-badge--title {
+		background: #fbf0c9; /* gold — a championship title */
 		color: #8a6d00;
 	}
-	.ac-medal--silver {
-		background: #eceef1;
-		color: #5b6577;
+	.ac-badge--record {
+		background: #efe6fb; /* purple — a record */
+		color: #5b2ea6;
 	}
-	.ac-medal--bronze {
-		background: #f6e2d2;
-		color: #8a4b1e;
+	.ac-badge--other {
+		background: #eef2fb; /* blue — a placement (Plasman) */
+		color: #1b3a7a;
+	}
+	/* Razina: a colour dot (prestige tier) + the level name, like the Svi događaji level. */
+	.ac-level {
+		white-space: nowrap;
+	}
+	.ac-dot {
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		flex: 0 0 auto;
+		display: inline-block;
 	}
 	.ac-actions {
 		gap: 1rem;
