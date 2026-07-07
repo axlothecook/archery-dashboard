@@ -640,6 +640,10 @@
 		font-size: 1rem;
 		font-weight: 700;
 		color: $navy;
+		/* Reserve the width of the longest title ("Statistika karijere") so the "Dodaj red"
+		   button starts at the SAME x on both blocks — the gap looks equal even though
+		   "Nastupi" is a shorter word. */
+		min-width: 9rem;
 	}
 	.btn-row-add {
 		padding: 0.2rem 0.8rem;
