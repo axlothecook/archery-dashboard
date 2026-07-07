@@ -178,6 +178,15 @@
 			</div>
 
 			<div class="col column-nowrap gap-1-5">
+				<fieldset class="group">
+					<legend class="group-legend">Slika <span class="req">*</span></legend>
+					<ImageUpload label="Slika" entityType="achievement" bind:url={imageUrl} />
+					<label class="field column-nowrap gap-title mt-0-6">
+						<span class="field-title">Opis slike (alt) <span class="req">*</span></span>
+						<input class="field-input w-full br-xs" type="text" bind:value={imageAlt} required />
+					</label>
+				</fieldset>
+
 				<div class="field column-nowrap gap-title">
 					<span class="field-title">Strijelci <span class="field-hint">(klupsko postignuće nema strijelce)</span></span>
 					<ArcherPicker
@@ -187,15 +196,6 @@
 						bind:selected={archerIds}
 					/>
 				</div>
-
-				<fieldset class="group">
-					<legend class="group-legend">Slika <span class="req">*</span></legend>
-					<ImageUpload label="Slika" entityType="achievement" bind:url={imageUrl} />
-					<label class="field column-nowrap gap-title mt-0-6">
-						<span class="field-title">Opis slike (alt) <span class="req">*</span></span>
-						<input class="field-input w-full br-xs" type="text" bind:value={imageAlt} required />
-					</label>
-				</fieldset>
 			</div>
 		</div>
 
@@ -236,8 +236,12 @@
 		padding: 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
 		/* Reserve the taller state (the Strijelci chips box adds ~11rem when the first
-		   archer is picked) so the panel doesn't grow/jump when chips appear. */
+		   archer is picked) so the panel doesn't grow/jump when chips appear. Flex column
+		   so the action row can pin to the panel's bottom (margin-top:auto) regardless of
+		   whether the chips box is present — the buttons never move. */
 		min-height: 37rem;
+		display: flex;
+		flex-direction: column;
 	}
 	.form-grid {
 		display: grid;
@@ -298,7 +302,10 @@
 		color: #102e66;
 	}
 	.form-actions {
-		margin-top: 2.5rem;
+		/* Pin to the bottom of the (fixed min-height) panel so the buttons stay put
+		   whether or not the Strijelci chips box is showing. */
+		margin-top: auto;
+		padding-top: 2.5rem;
 	}
 	.btn {
 		padding: 0.6rem 1.3rem;
