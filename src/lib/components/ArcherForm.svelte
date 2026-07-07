@@ -341,7 +341,7 @@
 				</label>
 			</div>
 
-			<label class="field column-nowrap gap-title">
+			<label class="field bio-field column-nowrap gap-title">
 				<span class="field-title">Biografija <span class="req">*</span></span>
 				<textarea class="field-input field-textarea custom-scrollbar w-full br-xs" bind:value={bio}></textarea>
 			</label>
@@ -384,8 +384,8 @@
 			</div>
 
 			<div class="field column-nowrap">
-				<span class="field-title">Skrivene sekcije</span>
-				<span class="field-hint hint-under-title">Sakrij pojedine sekcije na javnom profilu.</span>
+				<span class="field-title">Skrivene informacije</span>
+				<span class="field-hint hint-under-title">Sakrij pojedine informacije na javnom profilu.</span>
 				<div class="checks checks-spaced checks-spaced--wide display-f gap-1">
 					{#each HIDDEN_KEYS as s (s)}
 						<button type="button" class="check-opt cursor-pointer display-f align-items-center gap-0-4" onclick={() => toggleHidden(s)}>
@@ -507,10 +507,21 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 1.5rem;
-		align-items: start;
+		/* Stretch both columns to the taller one so the left column's Biografija textarea
+		   can grow down to the same bottom as the right column (its checkboxes). */
+		align-items: stretch;
 	}
 	.col {
 		min-width: 0;
+	}
+	/* Biografija fills the leftover height of the left column so its textarea reaches as
+	   low as the right column's Skrivene informacije checkboxes. */
+	.bio-field {
+		flex: 1 1 auto;
+		min-height: 0;
+	}
+	.bio-field .field-textarea {
+		flex: 1 1 auto;
 	}
 	.two-col {
 		display: grid;
@@ -620,9 +631,10 @@
 		margin-top: 3.5rem;
 	}
 	.rows-head {
-		/* Tight gap so the subtext sits close under the title (the button clears it via
-		   the button's reduced height). */
-		margin-bottom: 0.3rem;
+		/* Title + button on one row; the compact button keeps the row ~= the title height
+		   so the subtext below sits right under the title. */
+		align-items: center;
+		margin-bottom: 0.2rem;
 	}
 	.rows-title {
 		font-size: 1rem;
@@ -630,7 +642,7 @@
 		color: $navy;
 	}
 	.btn-row-add {
-		padding: 0.3rem 0.8rem;
+		padding: 0.2rem 0.8rem;
 		border: 1px solid #d7dee8;
 		border-radius: 8px;
 		background: #fff;
@@ -649,8 +661,11 @@
 		color: #9aa3b2;
 		font-size: 0.9rem;
 	}
+	/* Both row editors (Statistika karijere + Nastupi) share the SAME max height (= a full
+	   ~10-row Statistika table ≈ 30rem); any more rows scroll vertically inside the box. */
 	.rows-scroll {
-		overflow-x: auto;
+		overflow: auto;
+		max-height: 30rem;
 		border: 1px solid $border;
 		border-radius: 8px;
 	}
@@ -687,6 +702,12 @@
 		font-family: inherit;
 		color: $navy;
 		background: #fff;
+	}
+	/* Opseg / Vrsta selects: wider + extra right padding so the value text clears the
+	   native dropdown arrow (they were touching) without truncating "Međunarodno". */
+	.cell-select {
+		width: 8.75rem;
+		padding-right: 1.6rem;
 	}
 	.cell-input:focus,
 	.cell-select:focus {
