@@ -138,7 +138,7 @@
 				<div class="tbl-scroll custom-scrollbar">
 					<table class="mini-tbl">
 						<thead>
-							<tr><th>Godina</th><th>Disciplina</th><th>Prosjek</th><th>Pobjede</th><th>Porazi</th><th>Najbolji</th></tr>
+							<tr><th>Godina</th><th>Disciplina</th><th>Prosjek</th><th>Pobjede</th><th>Porazi</th><th>Najbolji score</th></tr>
 						</thead>
 						<tbody>
 							{#each a.careerStats as s (s.id)}
@@ -339,8 +339,12 @@
 		color: #9aa3b2;
 		font-size: 0.9rem;
 	}
+	/* Cap both tables at ~10 rows tall; any more rows scroll vertically inside the box
+	   (the sticky header stays visible). Scrollbar styling comes from the shared
+	   `.custom-scrollbar` class on the element. */
 	.tbl-scroll {
-		overflow-x: auto;
+		overflow: auto;
+		max-height: 20rem;
 		border: 1px solid $border;
 		border-radius: 8px;
 	}
@@ -357,6 +361,10 @@
 		white-space: nowrap;
 		border-bottom: 1px solid $border;
 		background: #f7f8fa;
+		/* Stay visible while the (capped) table body scrolls under it. */
+		position: sticky;
+		top: 0;
+		z-index: 1;
 	}
 	.mini-tbl td {
 		padding: 0.5rem 0.7rem;
