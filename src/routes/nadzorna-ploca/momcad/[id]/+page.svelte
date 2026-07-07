@@ -19,6 +19,8 @@
 		type PerformanceType,
 		type HiddenSection
 	} from '$lib/archers';
+	import { fade } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
 	import PersonIcon from '$lib/components/icons/PersonIcon.svelte';
 	import EditIcon from '$lib/components/icons/EditIcon.svelte';
 
@@ -85,11 +87,16 @@
 		<div class="top-row">
 			<div class="photo-switch column-nowrap gap-0-7">
 				<div class="photo-box display-f align-items-center justify-content-center">
-					{#if activePhoto.url}
-						<img class="photo-img" src={activePhoto.url} alt={activePhoto.alt} />
-					{:else}
-						<span class="photo-empty display-f align-items-center justify-content-center"><PersonIcon size={44} /></span>
-					{/if}
+					<!-- Keyed on the shown photo so switching Kartica ↔ Profil crossfades. -->
+					{#key shownPhoto}
+						<div class="photo-layer display-f align-items-center justify-content-center" in:fade={{ duration: 220, easing: cubicOut }} out:fade={{ duration: 180, easing: cubicOut }}>
+							{#if activePhoto.url}
+								<img class="photo-img" src={activePhoto.url} alt={activePhoto.alt} />
+							{:else}
+								<span class="photo-empty display-f align-items-center justify-content-center"><PersonIcon size={44} /></span>
+							{/if}
+						</div>
+					{/key}
 				</div>
 				<div class="photo-tabs display-f align-items-center justify-content-center gap-1-5">
 					<button type="button" class="photo-tab cursor-pointer" class:active={shownPhoto === 'card'} onclick={() => (shownPhoto = 'card')}>Kartica</button>
@@ -252,12 +259,19 @@
 	/* One bigger photo box that shows a single photo at a time; the image is fully
 	   CONTAINED (never cropped) inside it. */
 	.photo-box {
+		position: relative;
 		width: 20rem;
 		height: 20rem;
 		border-radius: 14px;
 		background: #f7f8fa;
 		border: 1px solid #e3e7ee;
 		overflow: hidden;
+	}
+	/* Each keyed photo is an absolutely-positioned layer so the outgoing and incoming
+	   photos overlap during the crossfade (no stacking / layout jump). */
+	.photo-layer {
+		position: absolute;
+		inset: 0;
 	}
 	.photo-img {
 		max-width: 100%;
@@ -339,12 +353,13 @@
 		color: #9aa3b2;
 		font-size: 0.9rem;
 	}
-	/* Cap both tables at ~10 rows tall; any more rows scroll vertically inside the box
-	   (the sticky header stays visible). Scrollbar styling comes from the shared
-	   `.custom-scrollbar` class on the element. */
+	/* Cap both tables at the height of the fullest current roster table (Nastupi ≈ 13 rows
+	   + header) so a typical archer's data shows fully; only MORE rows than that scroll
+	   vertically inside the box (the sticky header stays visible). Scrollbar styling comes
+	   from the shared `.custom-scrollbar` class on the element. */
 	.tbl-scroll {
 		overflow: auto;
-		max-height: 20rem;
+		max-height: 29rem;
 		border: 1px solid $border;
 		border-radius: 8px;
 	}
