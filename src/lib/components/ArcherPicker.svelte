@@ -155,13 +155,19 @@
 		/* Align to the top so wrapped chip rows stack from the top when scrolling. */
 		align-items: flex-start;
 		gap: 0.4rem;
-		margin-top: 0.5rem;
+		/* Clear gap from the trigger above and the checkbox below so the selected-tags
+		   box reads as its own grouped area. */
+		margin-top: 0.7rem;
+		/* Bordered box with inner padding so the chips sit in a clear container. */
+		padding: 0.6rem 0.7rem;
+		border: 1px solid #d7dee8;
+		border-radius: 8px;
+		background: #fbfcfe;
 		/* Cap the height (~ up to 10 chips) and scroll internally beyond that, so a long
 		   selection never grows the picker (and never pushes the form panel taller).
 		   Scrollbar styling comes from the shared `.custom-scrollbar` class. */
-		max-height: 8.5rem;
+		max-height: 9rem;
 		overflow-y: auto;
-		padding-right: 0.25rem;
 	}
 	.arp-chip {
 		padding: 0.25rem 0.35rem 0.25rem 0.6rem;
