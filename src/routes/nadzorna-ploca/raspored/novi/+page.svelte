@@ -118,12 +118,14 @@
 		};
 	}
 
-	// Everything is mandatory except Datum završetka and Poveznica na izvor. Sudionici
-	// is satisfied by either at least one archer or the "other club members" flag.
+	// Everything is mandatory except Poveznica na izvor. Sudionici is satisfied by either
+	// at least one archer or the "other club members" flag. For a one-day event, enter the
+	// same date in both fields (the list then shows it once).
 	function validate(): string | null {
 		if (!name.trim()) return 'Naziv događaja je obavezan.';
 		if (!dateFrom) return 'Datum početka je obavezan.';
-		if (dateTo && dateTo < dateFrom) return 'Datum završetka ne može biti prije početka.';
+		if (!dateTo) return 'Datum završetka je obavezan.';
+		if (dateTo < dateFrom) return 'Datum završetka ne može biti prije početka.';
 		if (!location.trim()) return 'Lokacija je obavezna.';
 		if (!organizer.trim()) return 'Organizator je obavezan.';
 		if (!format.trim()) return 'Format je obavezan.';
@@ -197,8 +199,8 @@
 						<input class="field-input w-full br-xs" type="date" bind:value={dateFrom} required />
 					</label>
 					<label class="field column-nowrap gap-title">
-						<span class="field-title">Datum završetka <span class="field-hint">(nije obavezno)</span></span>
-						<input class="field-input w-full br-xs" type="date" bind:value={dateTo} />
+						<span class="field-title">Datum završetka <span class="req">*</span></span>
+						<input class="field-input w-full br-xs" type="date" bind:value={dateTo} required />
 					</label>
 				</div>
 				<label class="field column-nowrap gap-title">
@@ -241,13 +243,13 @@
 				</label>
 
 				<fieldset class="group">
-					<legend class="group-legend">Slika <span class="req">*</span></legend>
+					<legend class="group-legend">Poster fotografija <span class="req">*</span></legend>
 					<label class="field column-nowrap gap-title">
-						<span class="field-title">URL slike <span class="req">*</span></span>
+						<span class="field-title">URL slike</span>
 						<input class="field-input w-full br-xs" type="url" bind:value={imageUrl} />
 					</label>
 					<label class="field column-nowrap gap-title mt-0-6">
-						<span class="field-title">Opis slike (alt) <span class="req">*</span></span>
+						<span class="field-title">Opis slike (alt)</span>
 						<input class="field-input w-full br-xs" type="text" bind:value={imageAlt} />
 					</label>
 				</fieldset>
