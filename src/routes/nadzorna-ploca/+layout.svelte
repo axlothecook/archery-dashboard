@@ -13,9 +13,30 @@
 	import { cubicOut } from 'svelte/easing';
 	import { logout } from '$lib/auth';
 	import { getCurrentAdmin } from '$lib/teamStore.svelte';
+	import {
+		initSeen,
+		hasNew as sectionHasNew,
+		markSeen,
+		sectionOf,
+		type SectionKey
+	} from '$lib/newSections.svelte';
 
 	// Live current-admin record from the shared store (updates when the profile is edited).
 	const currentAdmin = $derived(getCurrentAdmin());
+
+	// Per-admin "new section" tracking: seed the seen-set for the current admin, and clear
+	// a section's gold dot once THIS admin navigates into it.
+	$effect(() => {
+		initSeen(currentAdmin.id);
+	});
+	$effect(() => {
+		const section = sectionOf(page.url.pathname);
+		if (section) markSeen(section);
+	});
+	// The section key for a NAV item (from its own href or its first child's href).
+	function navSection(item: (typeof NAV)[number]): SectionKey | null {
+		return sectionOf(item.href ?? item.children?.[0]?.href ?? '');
+	}
 
 	import GridIcon from '$lib/components/icons/GridIcon.svelte';
 	import HomeIcon from '$lib/components/icons/HomeIcon.svelte';
@@ -271,6 +292,7 @@
 						items={item.children}
 						compact={railCollapsed}
 						open={openGroups.has(item.label)}
+						hasNew={navSection(item) ? sectionHasNew(navSection(item)!) : false}
 						onToggle={() => toggleGroup(item.label)}
 					/>
 				{:else}
@@ -280,6 +302,7 @@
 						icon={item.icon}
 						active={isActive(item.href)}
 						compact={railCollapsed}
+						hasNew={navSection(item) ? sectionHasNew(navSection(item)!) : false}
 					/>
 				{/if}
 			{/each}
