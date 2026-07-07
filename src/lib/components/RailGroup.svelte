@@ -23,6 +23,7 @@
 		items,
 		compact = false,
 		open = false,
+		hasNew = false,
 		onToggle
 	}: {
 		label: string;
@@ -30,6 +31,8 @@
 		items: Child[];
 		compact?: boolean;
 		open?: boolean;
+		/** Show a slow-blinking gold dot (new, unseen content in this section). */
+		hasNew?: boolean;
 		onToggle?: () => void;
 	} = $props();
 
@@ -57,8 +60,14 @@
 			<Icon size={26} />
 		</span>
 		<span class="rail-label">{label}</span>
+		{#if hasNew}
+			<!-- Slow-blinking gold dot: new, unseen content in one of this group's pages.
+			     Sits at the far side (before the chevron); in compact mode it floats at the
+			     row's top-right corner. -->
+			<span class="rail-new-dot" class:compact aria-label="Novo" title="Novo"></span>
+		{/if}
 		{#if !compact}
-			<span class="rail-chevron" class:open aria-hidden="true">
+			<span class="rail-chevron" class:open class:has-dot={hasNew} aria-hidden="true">
 				<ChevronIcon size={16} direction="right" />
 			</span>
 		{/if}
@@ -123,8 +132,51 @@
 		align-items: center;
 		transition: transform 0.18s ease;
 	}
+	/* When the gold dot is present it takes the `margin-left:auto` (pushing to the far
+	   end) and the chevron just sits after it with a small gap. */
+	.rail-chevron.has-dot {
+		margin-left: 0.55rem;
+	}
 	.rail-chevron.open {
 		transform: rotate(90deg);
+	}
+
+	/* Gold "new content" dot: slow ease-in-out infinite pulse; stays until this admin
+	   opens the section. Sits before the chevron (far side of the row). */
+	.rail-new-dot {
+		margin-left: auto;
+		flex: 0 0 auto;
+		width: 0.6rem;
+		height: 0.6rem;
+		border-radius: 50%;
+		background: #f2c94c; /* gold */
+		animation: rail-new-pulse 2.2s ease-in-out infinite;
+	}
+	.rail-new-dot.compact {
+		margin-left: 0;
+		position: absolute;
+		top: 0.45rem;
+		right: 0.45rem;
+	}
+	.rail-group-btn.compact {
+		position: relative;
+	}
+	@keyframes rail-new-pulse {
+		0%,
+		100% {
+			opacity: 0.35;
+			box-shadow: 0 0 0 0 rgba(242, 201, 76, 0);
+		}
+		50% {
+			opacity: 1;
+			box-shadow: 0 0 0 3px rgba(242, 201, 76, 0.25);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.rail-new-dot {
+			animation: none;
+			opacity: 1;
+		}
 	}
 
 	/* Sub-options (Cloudflare style): a vertical GUIDE LINE runs down the left of the

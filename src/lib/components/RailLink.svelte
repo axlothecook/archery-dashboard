@@ -12,13 +12,16 @@
 		label,
 		icon: Icon,
 		active = false,
-		compact = false
+		compact = false,
+		hasNew = false
 	}: {
 		href: string;
 		label: string;
 		icon: Component<{ size?: number }>;
 		active?: boolean;
 		compact?: boolean;
+		/** Show a slow-blinking gold dot (new, unseen content in this section). */
+		hasNew?: boolean;
 	} = $props();
 </script>
 
@@ -33,6 +36,10 @@
 		<Icon size={26} />
 	</span>
 	<span class="rail-label">{label}</span>
+	{#if hasNew}
+		<!-- Slow-blinking gold dot on the far side (opposite the text): new, unseen content. -->
+		<span class="rail-new-dot" class:compact aria-label="Novo" title="Novo"></span>
+	{/if}
 </a>
 
 <style>
@@ -67,6 +74,47 @@
 		background: #fff;
 		color: #187ff5; /* blue-dress — chip reads as "active" against the blue rail */
 		font-weight: 600;
+	}
+
+	/* Gold "new content" dot at the far end of the row (opposite the label). Slow, smooth
+	   ease-in-out infinite pulse; stays until this admin opens the section. */
+	.rail-new-dot {
+		margin-left: auto;
+		flex: 0 0 auto;
+		width: 0.6rem;
+		height: 0.6rem;
+		border-radius: 50%;
+		background: #f2c94c; /* gold */
+		box-shadow: 0 0 0 rgba(242, 201, 76, 0.6);
+		animation: rail-new-pulse 2.2s ease-in-out infinite;
+	}
+	/* On an active (white) row the gold still reads; keep it. In compact/icon-only mode the
+	   dot floats at the row's top-right corner instead of after the (hidden) label. */
+	.rail-new-dot.compact {
+		margin-left: 0;
+		position: absolute;
+		top: 0.45rem;
+		right: 0.45rem;
+	}
+	.rail-link.compact {
+		position: relative;
+	}
+	@keyframes rail-new-pulse {
+		0%,
+		100% {
+			opacity: 0.35;
+			box-shadow: 0 0 0 0 rgba(242, 201, 76, 0);
+		}
+		50% {
+			opacity: 1;
+			box-shadow: 0 0 0 3px rgba(242, 201, 76, 0.25);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.rail-new-dot {
+			animation: none;
+			opacity: 1;
+		}
 	}
 
 	/* Icon-only mode: on narrow screens (top-strip) OR when `compact` is set (the
