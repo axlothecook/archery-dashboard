@@ -40,7 +40,7 @@
 			<p class="ar-load-error" role="alert">Učitavanje nacrta nije uspjelo. Osvježite stranicu ili pokušajte kasnije.</p>
 		{/if}
 		<div class="ar-scroll custom-scrollbar">
-			<ArcherTable bind:archers emptyText="Nema nacrta streličara." {onDeleted} />
+			<ArcherTable bind:archers action="edit" emptyText="Nema nacrta streličara." {onDeleted} />
 		</div>
 	</div>
 </section>

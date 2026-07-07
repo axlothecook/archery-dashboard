@@ -1,8 +1,10 @@
 <script lang="ts">
 	// Archer list table for Momčad → Svi streličari (+ Nacrti share it). Columns:
-	// photo, name, roles, bow types, categories, status, VIEW + delete. The VIEW icon
-	// (an eye, not a pen) opens the individual archer page, which is where editing
-	// happens. Real data from GET /admin/archers. Mirrors SponsorTable/ArticleTable.
+	// photo, name, roles, bow types, categories, status, action + delete. The row's
+	// primary action depends on `action`: 'view' (eye → the individual archer page,
+	// used on Svi streličari) or 'edit' (pen → straight to the edit form, used on
+	// Nacrti, since a draft has to be filled in before it can be published — drafts
+	// aren't public so there's nothing to "view"). Real data from GET /admin/archers.
 	import { goto } from '$app/navigation';
 	import {
 		deleteArcher,
@@ -11,6 +13,7 @@
 		type ArcherAdminRow
 	} from '$lib/archers';
 	import EyeIcon from '$lib/components/icons/EyeIcon.svelte';
+	import EditIcon from '$lib/components/icons/EditIcon.svelte';
 	import TrashIcon from '$lib/components/icons/TrashIcon.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import PersonIcon from '$lib/components/icons/PersonIcon.svelte';
@@ -21,10 +24,13 @@
 	let {
 		archers = $bindable(),
 		emptyText,
+		action = 'view',
 		onDeleted
 	}: {
 		archers: ArcherAdminRow[];
 		emptyText: string;
+		/** Row's primary action: 'view' (eye → profile page) or 'edit' (pen → edit form). */
+		action?: 'view' | 'edit';
 		onDeleted?: (id: string) => void;
 	} = $props();
 
@@ -41,10 +47,13 @@
 		return { update: () => check(), destroy: () => ro.disconnect() };
 	}
 
-	// The VIEW action opens the individual archer page (read-only, with an Uredi
-	// button there) — the requested "view, then edit" flow.
+	// VIEW opens the read-only profile page (Uredi lives there); EDIT jumps straight to
+	// the edit form (used for drafts).
 	function view(a: ArcherAdminRow) {
 		goto(`/nadzorna-ploca/momcad/${a.id}`);
+	}
+	function edit(a: ArcherAdminRow) {
+		goto(`/nadzorna-ploca/momcad/uredi/${a.id}`);
 	}
 
 	async function remove(a: ArcherAdminRow) {
@@ -95,8 +104,8 @@
 							{#if a.cardPhoto}
 								<img class="ar-img" src={a.cardPhoto.url} alt={a.cardPhoto.alt} loading="lazy" />
 							{:else}
-								<span class="ar-img ar-img--empty display-f align-items-center justify-content-center" aria-hidden="true">
-									<PersonIcon size={20} />
+								<span class="ar-img ar-img--empty" aria-hidden="true">
+									<PersonIcon size={26} />
 								</span>
 							{/if}
 							<span class="ar-name fw-600" use:fadeIfOverflow={a.name}>{a.name}</span>
@@ -116,9 +125,15 @@
 					</td>
 					<td class="ar-actions-cell">
 						<div class="ar-actions display-f align-items-center">
-							<button class="ar-act cursor-pointer display-f" type="button" aria-label="Pregledaj" title="Pregledaj" onclick={() => view(a)}>
-								<EyeIcon size={20} />
-							</button>
+							{#if action === 'edit'}
+								<button class="ar-act cursor-pointer display-f" type="button" aria-label="Uredi" title="Uredi" onclick={() => edit(a)}>
+									<EditIcon size={18} />
+								</button>
+							{:else}
+								<button class="ar-act cursor-pointer display-f" type="button" aria-label="Pregledaj" title="Pregledaj" onclick={() => view(a)}>
+									<EyeIcon size={20} />
+								</button>
+							{/if}
 							<button class="ar-act ar-act--del cursor-pointer display-f" type="button" aria-label="Izbriši" title="Izbriši" onclick={() => remove(a)}>
 								<TrashIcon size={18} />
 							</button>
@@ -194,7 +209,12 @@
 		border-radius: 50%;
 		background: #f7f8fa;
 	}
+	/* Placeholder (draft archers have no photo): centre the person glyph inside the grey
+	   circle. Overrides .ar-img's `display: block` so the SVG is truly centred. */
 	.ar-img--empty {
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		color: #9aa3b2;
 		border: 1px solid #e3e7ee;
 	}
