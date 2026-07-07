@@ -76,7 +76,7 @@
 	<table class="ar-table w-full">
 		<thead>
 			<tr>
-				<th class="ar-col-name-head" colspan="2">
+				<th class="ar-col-name-head">
 					<span class="th-in display-f align-items-center gap-0-4"><PersonIcon size={18} />Streličar</span>
 				</th>
 				<th><span class="th-in display-f align-items-center gap-0-4"><PersonIcon size={18} />Uloga</span></th>
@@ -90,16 +90,18 @@
 		<tbody>
 			{#each archers as a (a.id)}
 				<tr>
-					<td class="ar-img-cell">
-						{#if a.cardPhoto}
-							<img class="ar-img" src={a.cardPhoto.url} alt={a.cardPhoto.alt} loading="lazy" />
-						{:else}
-							<span class="ar-img ar-img--empty display-f align-items-center justify-content-center" aria-hidden="true">
-								<PersonIcon size={20} />
-							</span>
-						{/if}
+					<td class="ar-name-cell">
+						<div class="ar-person display-f align-items-center">
+							{#if a.cardPhoto}
+								<img class="ar-img" src={a.cardPhoto.url} alt={a.cardPhoto.alt} loading="lazy" />
+							{:else}
+								<span class="ar-img ar-img--empty display-f align-items-center justify-content-center" aria-hidden="true">
+									<PersonIcon size={20} />
+								</span>
+							{/if}
+							<span class="ar-name fw-600" use:fadeIfOverflow={a.name}>{a.name}</span>
+						</div>
 					</td>
-					<td class="ar-name fw-600" use:fadeIfOverflow={a.name}>{a.name}</td>
 					<td class="ar-roles text-jet-grey" use:fadeIfOverflow={rolesText(a)}>{rolesText(a)}</td>
 					<td class="ar-bow text-jet-grey" use:fadeIfOverflow={bowText(a)}>{bowText(a)}</td>
 					<td class="ar-cats text-jet-grey" use:fadeIfOverflow={catsText(a)}>{catsText(a)}</td>
@@ -173,14 +175,21 @@
 		border-bottom: 1px solid #f3f5f8;
 		vertical-align: middle;
 	}
-	.ar-img-cell {
-		width: 3.6rem;
-		padding-right: 0.5rem;
+	/* Streličar cell = avatar + name in one flex row, so the name sits right next to
+	   the photo (a fixed small gap) instead of across an empty image column. The cell
+	   takes the slack (auto) so the right-side columns push toward the actions. */
+	.ar-table :is(th, td).ar-name-cell {
+		width: auto;
+	}
+	.ar-person {
+		gap: 0.6rem;
+		min-width: 0;
 	}
 	.ar-img {
 		display: block;
 		width: 2.8rem;
 		height: 2.8rem;
+		flex: 0 0 auto;
 		object-fit: cover;
 		border-radius: 50%;
 		background: #f7f8fa;
@@ -189,19 +198,16 @@
 		color: #9aa3b2;
 		border: 1px solid #e3e7ee;
 	}
-	/* Name takes the slack so the right-side columns push toward the actions. */
-	.ar-table :is(th, td).ar-name {
-		width: auto;
-	}
 	.ar-name {
+		min-width: 0;
 		white-space: nowrap;
 		overflow: hidden;
 	}
-	.ar-table :is(th, td):nth-child(3) { width: 11rem; } /* Uloga */
-	.ar-table :is(th, td):nth-child(4) { width: 12rem; } /* Luk */
-	.ar-table :is(th, td):nth-child(5) { width: 13rem; } /* Kategorije */
-	.ar-table :is(th, td):nth-child(6) { width: 9rem; } /* Stanje */
-	.ar-table :is(th, td):nth-child(7) { width: 6rem; } /* actions */
+	.ar-table :is(th, td):nth-child(2) { width: 11rem; } /* Uloga */
+	.ar-table :is(th, td):nth-child(3) { width: 12rem; } /* Luk */
+	.ar-table :is(th, td):nth-child(4) { width: 13rem; } /* Kategorije */
+	.ar-table :is(th, td):nth-child(5) { width: 9rem; } /* Stanje */
+	.ar-table :is(th, td):nth-child(6) { width: 6rem; } /* actions */
 	.ar-roles,
 	.ar-bow,
 	.ar-cats {
