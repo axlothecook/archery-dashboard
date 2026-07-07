@@ -23,7 +23,7 @@ export const LEVEL_LABEL: Record<AchievementLevel, string> = {
 export const TYPE_LABEL: Record<AchievementType, string> = {
 	title: 'Naslov',
 	record: 'Rekord',
-	other: 'Ostalo'
+	other: 'Plasman'
 };
 export const MEDAL_LABEL: Record<AchievementMedal, string> = {
 	gold: 'Zlato',
