@@ -174,6 +174,10 @@
 		border-collapse: collapse;
 		font-size: 1rem;
 		table-layout: fixed;
+		/* Keep all columns at a readable size; below this the .ar-scroll wrapper scrolls
+		   horizontally instead of collapsing the auto name column to just the avatar (which
+		   made the "Streličar" header overlap "Uloga"). */
+		min-width: 62rem;
 	}
 	.ar-table th {
 		text-align: left;
@@ -227,7 +231,7 @@
 	.ar-table :is(th, td):nth-child(3) { width: 12rem; } /* Luk */
 	.ar-table :is(th, td):nth-child(4) { width: 13rem; } /* Kategorije */
 	.ar-table :is(th, td):nth-child(5) { width: 9rem; } /* Stanje */
-	.ar-table :is(th, td):nth-child(6) { width: 6rem; } /* actions */
+	.ar-table :is(th, td):nth-child(6) { width: 8.75rem; } /* actions — icons right-aligned (see .ar-actions) */
 	.ar-roles,
 	.ar-bow,
 	.ar-cats {
@@ -271,11 +275,11 @@
 		background: #fde7d8;
 		color: #8a4b1e;
 	}
-	.ar-actions-cell {
-		width: 1%;
-	}
+	/* Right-align the icon pair in its cell so it sits away from the Stanje pill
+	   (the widened actions column + this alignment create the gap). */
 	.ar-actions {
 		gap: 1rem;
+		justify-content: flex-end;
 	}
 	.ar-act {
 		align-items: center;
@@ -290,5 +294,46 @@
 	}
 	.ar-act--del:hover {
 		color: $red;
+	}
+
+	/* Phone: give the table a min-width so it SCROLLS horizontally (in .ar-scroll) instead of
+	   squishing the auto name column to nothing (which overlaps the header). Compact
+	   font/padding + narrower columns; weight 800 headers to match Zadaci/other tables. */
+	@media (max-width: 900px) {
+		.ar-table {
+			min-width: 48rem;
+		}
+		.ar-table th {
+			padding: 0.5rem 0.5rem;
+			font-size: 0.82rem;
+			font-weight: 800;
+		}
+		.ar-table td {
+			padding: 0.5rem 0.5rem;
+			font-size: 0.85rem;
+		}
+		.ar-table :is(th, td).ar-name-cell {
+			width: 12rem;
+		}
+		.ar-table :is(th, td):nth-child(2) { width: 7rem; }
+		.ar-table :is(th, td):nth-child(3) { width: 7rem; }
+		.ar-table :is(th, td):nth-child(4) { width: 8rem; }
+		.ar-table :is(th, td):nth-child(5) { width: 6rem; }
+		/* The actions column absorbs the leftover width here, so flex-end would fling the
+		   icons to the table's far edge — instead pad the cell's left side to push the
+		   icons away from the Stanje pill by a fixed amount. */
+		.ar-table :is(th, td):nth-child(6) { width: auto; padding-left: 2.5rem; }
+		.ar-actions {
+			justify-content: flex-start;
+		}
+		.ar-img,
+		.ar-img--empty {
+			width: 2.2rem;
+			height: 2.2rem;
+		}
+		.ar-state {
+			min-width: 5rem;
+			font-size: 0.75rem;
+		}
 	}
 </style>

@@ -243,10 +243,9 @@
 	/* Top gap = the content area's 2rem top padding + this small margin (a touch more
 	   breathing room below the topbar); bottom gap = 2rem down to the cards. */
 	.greeting {
-		/* Tightened (mt 0.6→0.3, mb 2→1) so the whole dashboard fits the shared content
-		   frame and its bottom lands on the same 2rem line as the other pages. */
+		/* More breathing room below the greeting before the Zadaci/Hitno content. */
 		margin-top: 0.3rem;
-		margin-bottom: 0.75rem;
+		margin-bottom: 1.75rem;
 	}
 	.greeting-date {
 		margin: 0 0 0.45rem;

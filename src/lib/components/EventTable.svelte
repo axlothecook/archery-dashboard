@@ -208,8 +208,11 @@
 		border-collapse: collapse;
 		font-size: 1rem;
 		/* Fixed layout: column widths come from the rules below (not content), so the
-		   name column truncates cleanly and the table never overflows the panel. */
+		   name column truncates cleanly. A min-width keeps all 7 columns at a readable size —
+		   below it the .ev-scroll wrapper scrolls horizontally rather than collapsing the
+		   Naziv column to a few characters (which happened in the narrow sidebar layout). */
 		table-layout: fixed;
+		min-width: 66rem;
 	}
 	.ev-table th {
 		text-align: left;
@@ -237,19 +240,15 @@
 	.ev-table :is(th, td):first-child {
 		width: auto;
 	}
-	.ev-table :is(th, td):nth-child(2) { width: 8rem; } /* Disciplina */
-	.ev-table :is(th, td):nth-child(3) { width: 11.75rem; } /* Datum — snug to its content
-		(widest date incl. a cross-year range ≈ 10.6rem) so Razina sits close, not across a
-		wide empty box; text stays left-aligned. The extra ~1rem over the content width is
-		spent as left padding below, so the Disciplina→Datum gap equals the Datum→Razina gap. */
-	/* Push the Datum text ~1rem further right so the gap before it (Disciplina→Datum) equals
-	   the gap after it (Datum→Razina); the column is widened by the same amount above so the
-	   date still fits and never clips. Applies to the header too, keeping it column-aligned. */
-	.ev-table :is(th, td):nth-child(3) {
-		padding-left: 1.75rem;
-	}
-	.ev-table :is(th, td):nth-child(4) { width: 11rem; } /* Razina */
-	.ev-table :is(th, td):nth-child(5) { width: 7rem; } /* Sudionici */
+	/* Each of the meta columns carries the SAME left padding (1.75rem) as the gap before it,
+	   so adjacent columns don't crowd: Naziv→Disciplina, Disciplina→Datum, Datum→Razina and
+	   Razina→Sudionici all get consistent breathing room. Widths are sized to hold the content
+	   PLUS that padding (Razina fits "Europsko prvenstvo"); the table min-width scrolls if the
+	   panel is narrower. */
+	.ev-table :is(th, td):nth-child(2) { width: 9rem; padding-left: 1.75rem; } /* Disciplina */
+	.ev-table :is(th, td):nth-child(3) { width: 12.5rem; padding-left: 1.75rem; } /* Datum */
+	.ev-table :is(th, td):nth-child(4) { width: 13rem; padding-left: 1.75rem; } /* Razina */
+	.ev-table :is(th, td):nth-child(5) { width: 8rem; padding-left: 1.75rem; } /* Sudionici */
 	.ev-table :is(th, td):nth-child(6) { width: 8rem; } /* Stanje */
 	.ev-table :is(th, td):nth-child(7) { width: 7.5rem; } /* actions */
 	.ev-table :is(th, td).ev-col-spacer {
@@ -354,4 +353,40 @@
 	}
 	/* All three action icons share the same base colour + size; the eye's glyph
 	   (eye vs eye-off) alone conveys the hidden state, so it isn't recoloured. */
+
+	/* Phone: give the table a min-width so it SCROLLS horizontally (in the .ev-scroll wrapper)
+	   instead of squishing the auto Naziv column to nothing — that squish made the "Naziv"
+	   header overflow onto "Disciplina" ("NaDisciplina"). Compact font/padding + narrower
+	   fixed columns so more fits before the scroll. Weight 800 matches the Zadaci headers. */
+	@media (max-width: 900px) {
+		.ev-table {
+			min-width: 46rem;
+		}
+		.ev-table th {
+			padding: 0.5rem 0.5rem;
+			font-size: 0.82rem;
+			font-weight: 800;
+		}
+		.ev-table td {
+			padding: 0.5rem 0.5rem;
+			font-size: 0.85rem;
+		}
+		/* Naziv gets a real minimum so it never collapses; the rest tighten. A smaller, uniform
+		   left padding (0.9rem) on the meta columns keeps consistent gaps without the wide
+		   desktop 1.75rem crowding a narrow phone. */
+		.ev-table :is(th, td):first-child {
+			width: 11rem;
+		}
+		.ev-table :is(th, td):nth-child(2) { width: 6rem; padding-left: 0.9rem; }
+		.ev-table :is(th, td):nth-child(3) { width: 9rem; padding-left: 0.9rem; }
+		.ev-table :is(th, td):nth-child(4) { width: 8rem; padding-left: 0.9rem; }
+		.ev-table :is(th, td):nth-child(5) { width: 5.5rem; padding-left: 0.9rem; }
+		.ev-table :is(th, td):nth-child(6) { width: 6rem; padding-left: 0.9rem; }
+		.ev-table :is(th, td):nth-child(7) { width: auto; }
+		.ev-badge,
+		.ev-state {
+			min-width: 5rem;
+			font-size: 0.75rem;
+		}
+	}
 </style>

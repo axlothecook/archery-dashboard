@@ -15,8 +15,12 @@
 	import PersonIcon from '$lib/components/icons/PersonIcon.svelte';
 	import FilterIcon from '$lib/components/icons/FilterIcon.svelte';
 	import CheckIcon from '$lib/components/icons/CheckIcon.svelte';
+	import ChevronIcon from '$lib/components/icons/ChevronIcon.svelte';
 
 	let { data } = $props();
+
+	// Mobile: filters collapse behind a tappable "Filteri" bar (same as Svi događaji).
+	let filtersOpen = $state(false);
 	// Published + hidden (everything that isn't a draft) belongs on this page.
 	let archers = $state<ArcherAdminRow[]>([]);
 	$effect(() => {
@@ -68,21 +72,37 @@
 				<p class="mgmt-sub">Momčad kluba. Pregledajte, uredite ili uklonite streličare i trenere.</p>
 			</div>
 		</div>
-		<a class="btn-add cursor-pointer display-f align-items-center gap-0-4" href="/nadzorna-ploca/momcad/novi">
+		<a class="btn-add btn-add--inline cursor-pointer display-f align-items-center gap-0-4" href="/nadzorna-ploca/momcad/novi">
 			<AddIcon size={18} />
 			Novi streličar
 		</a>
 	</div>
 
 	<div class="layout">
-		<aside class="panel bg-white filter-panel column-nowrap gap-1">
-			<div class="filter-head display-f align-items-center justify-content-space-between">
+		<!-- Mobile-only: full-width "Novi streličar" at the TOP of the white card (CSS). -->
+		<a class="btn-add btn-add--block cursor-pointer display-f align-items-center justify-content-center gap-0-4" href="/nadzorna-ploca/momcad/novi">
+			<AddIcon size={18} />
+			Novi streličar
+		</a>
+		<aside class="panel bg-white filter-panel column-nowrap gap-1" class:is-open={filtersOpen}>
+			<button
+				class="filter-head filter-toggle display-f align-items-center justify-content-space-between w-full cursor-pointer"
+				type="button"
+				aria-expanded={filtersOpen}
+				onclick={() => (filtersOpen = !filtersOpen)}
+			>
 				<h3 class="filter-heading display-f align-items-center gap-0-5">
 					<FilterIcon size={18} />
 					Filteri
 				</h3>
-				<span class="filter-count text-jet-grey">{filtered.length} od {archers.length}</span>
-			</div>
+				<span class="filter-head-right display-f align-items-center gap-0-6">
+					<span class="filter-count text-jet-grey">{filtered.length} od {archers.length}</span>
+					<span class="filter-chevron display-f" class:open={filtersOpen} aria-hidden="true">
+						<ChevronIcon direction="right" size={18} />
+					</span>
+				</span>
+			</button>
+			<div class="filter-body column-nowrap gap-1">
 			<div class="filter-item column-nowrap gap-0-3">
 				<span class="filter-label">Uloga</span>
 				<div class="opt-list column-nowrap" role="radiogroup" aria-label="Filtriraj po ulozi">
@@ -140,6 +160,7 @@
 					{/each}
 				</div>
 			</div>
+			</div>
 		</aside>
 
 		<div class="panel bg-white ar-panel column-nowrap">
@@ -195,10 +216,30 @@
 	.btn-add:hover {
 		background: #0c2350;
 	}
+	/* The full-width mobile copy is hidden on desktop; the inline (header-right) copy shows. */
+	.btn-add--block {
+		display: none;
+	}
 	.panel {
 		border-radius: 14px;
 		padding: 1.25rem 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
+	}
+	/* Filter head is a <button> (mobile toggle). Desktop: plain heading look, no chevron. */
+	.filter-toggle {
+		padding: 0;
+		border: 0;
+		background: none;
+		font-family: inherit;
+		text-align: left;
+	}
+	.filter-chevron {
+		display: none;
+		color: #5b6577;
+		transition: transform 0.18s ease;
+	}
+	.filter-chevron.open {
+		transform: rotate(90deg);
 	}
 	.layout {
 		display: grid;
@@ -236,6 +277,9 @@
 		flex: 1 1 auto;
 		min-height: 8rem;
 		overflow: auto;
+		/* Scrollbar flush to the panel's right edge with a content gap (matches Svi događaji). */
+		margin-right: -1.5rem;
+		padding-right: 1rem;
 	}
 	.filter-label {
 		font-size: 0.95rem;
@@ -275,12 +319,82 @@
 	.filter-count {
 		font-size: 0.85rem;
 	}
+	/* Phone/tablet: fit the page to the viewport (only the list scrolls, inside its panel);
+	   collapse filters behind the "Filteri" bar; full-width "Novi streličar"; edge-to-edge
+	   white panels (touch the grey area's sides, like the novi/event forms). */
 	@media (max-width: 820px) {
-		.layout {
-			grid-template-columns: 1fr;
+		.ar-section {
+			display: flex;
+			flex-direction: column;
+			height: calc(100dvh - 70px - 44px);
+			min-height: 0;
 		}
+		.mgmt-head {
+			flex: 0 0 auto;
+			margin-bottom: 1.5rem;
+		}
+		.btn-add--inline {
+			display: none;
+		}
+		/* The whole .layout is ONE white card (edge-to-edge): navy "Novi streličar" at the top,
+		   then Filteri bar, then table — no gaps. */
+		.layout {
+			display: flex;
+			flex-direction: column;
+			gap: 0;
+			flex: 1 1 auto;
+			min-height: 0;
+			background: #fff;
+			margin-left: -1rem;
+			margin-right: -1rem;
+			padding: 1rem;
+			border-radius: 0;
+		}
+		.btn-add--block {
+			display: flex;
+			flex: 0 0 auto;
+			width: 100%;
+			padding: 0.7rem 1rem;
+			font-size: 0.95rem;
+			margin-bottom: 1.6rem;
+		}
+		/* Bordered box around the Filteri panel (collapsed AND open) so it's clearly distinct. */
 		.filter-panel {
 			position: static;
+			gap: 0;
+			flex: 0 0 auto;
+			align-self: stretch;
+			background: none;
+			box-shadow: none;
+			border: 1px solid #d7dee8;
+			border-radius: 10px;
+			padding: 0.85rem 1rem;
+			margin-bottom: 1.6rem;
+		}
+		.ar-panel {
+			flex: 1 1 auto;
+			min-height: 0;
+			background: none;
+			box-shadow: none;
+			padding: 0;
+			border-radius: 0;
+		}
+		.filter-chevron {
+			display: inline-flex;
+		}
+		.filter-body {
+			display: none;
+			margin-top: 1.25rem;
+		}
+		.filter-panel.is-open .filter-body {
+			display: flex;
+		}
+		.ar-scroll {
+			flex: 1 1 auto;
+			min-height: 0;
+			max-height: none;
+			margin-right: -1rem;
+			padding-right: 0.75rem;
 		}
 	}
 </style>

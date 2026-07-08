@@ -358,12 +358,10 @@
 		border-radius: 14px;
 		padding: 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
-		/* Fill the shared content frame and scroll the form INSIDE the panel (the page
-		   never scrolls; the panel bottoms on the shared 2rem line like every page).
-		   Flex column so the grid can fill the panel height (→ Tijelo reaches the bottom). */
-		flex: 1 1 auto;
+		/* Hug the content height (Tijelo is now a fixed height) so there's no big empty white
+		   below the shorter middle/right columns. Flex column for the grid + sticky actions. */
+		flex: 0 1 auto;
 		min-height: 0;
-		overflow-y: auto;
 		display: flex;
 		flex-direction: column;
 	}
@@ -384,12 +382,13 @@
 	/* Tijelo grows to fill the rest of the left column (now that Sažetak is short) down to
 	   the panel's bottom padding; its own scrollbar handles overflow. */
 	.body-field {
-		flex: 1 1 auto;
-		min-height: 0;
+		flex: 0 0 auto;
 	}
+	/* Fixed, moderate height so the panel doesn't stretch tall (which left big empty white
+	   beside the shorter middle/right columns). Scrolls inside for long article bodies. */
 	.body-textarea {
-		min-height: 12rem; /* floor for very short viewports */
-		height: 100%;
+		height: 16rem;
+		resize: vertical;
 	}
 	/* Galerija: URL+opis rows scroll inside .gallery-scroll while "Dodaj sliku" stays
 	   pinned at the bottom of the fieldset (matches the edit page). */

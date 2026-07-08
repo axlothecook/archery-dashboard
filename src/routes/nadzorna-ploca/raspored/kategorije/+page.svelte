@@ -11,6 +11,7 @@
 		type EventLevelAdminRow
 	} from '$lib/events';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
+	import ErrorPopup from '$lib/components/ErrorPopup.svelte';
 	import AddIcon from '$lib/components/icons/AddIcon.svelte';
 	import EditIcon from '$lib/components/icons/EditIcon.svelte';
 	import TrashIcon from '$lib/components/icons/TrashIcon.svelte';
@@ -25,6 +26,8 @@
 
 	let confirmDlg = $state<ConfirmDialog>();
 	let error = $state('');
+	// Standardized top-centre form-validation errors (mandatory Naziv).
+	let formErrors = $state<string[]>([]);
 
 	// ── Add / edit modal ─────────────────────────────────────────────────────
 	let modalOpen = $state(false);
@@ -39,6 +42,7 @@
 		fName = '';
 		fColor = '#187ff5';
 		fOrder = levels.length; // next slot
+		formErrors = [];
 		modalOpen = true;
 	}
 	function openEdit(l: EventLevelAdminRow) {
@@ -46,12 +50,19 @@
 		fName = l.name;
 		fColor = l.color;
 		fOrder = l.order;
+		formErrors = [];
 		modalOpen = true;
 	}
 
 	async function submit(e: SubmitEvent) {
 		e.preventDefault();
-		if (!fName.trim()) return;
+		// Naziv is mandatory — surface it in the shared top-centre ErrorPopup (visible on all
+		// screens) rather than silently blocking submit.
+		if (!fName.trim()) {
+			formErrors = ['Naziv je obavezan.'];
+			return;
+		}
+		formErrors = [];
 		error = '';
 		try {
 			if (editingId) {
@@ -101,11 +112,17 @@
 				<p class="mgmt-sub">Kategorije natjecanja (legenda kalendara). Svaka ima naziv, boju i redoslijed.</p>
 			</div>
 		</div>
-		<button class="btn-add cursor-pointer display-f align-items-center gap-0-4" type="button" onclick={openAdd}>
+		<button class="btn-add btn-add--inline cursor-pointer display-f align-items-center gap-0-4" type="button" onclick={openAdd}>
 			<AddIcon size={18} />
 			Nova kategorija
 		</button>
 	</div>
+
+	<!-- Mobile-only: full-width "Nova kategorija" below the title. -->
+	<button class="btn-add btn-add--block cursor-pointer display-f align-items-center justify-content-center gap-0-4" type="button" onclick={openAdd}>
+		<AddIcon size={18} />
+		Nova kategorija
+	</button>
 
 	<div class="panel bg-white column-nowrap">
 		{#if data.loadError}
@@ -152,22 +169,22 @@
 		</header>
 		<form class="modal-form column-nowrap gap-1" onsubmit={submit}>
 			<label class="field column-nowrap gap-0-3">
-				<span class="field-label fw-600">Naziv</span>
-				<input class="field-input w-full br-xs" type="text" bind:value={fName} required />
+				<span class="field-label fw-600">Naziv <span class="req">*</span></span>
+				<input class="field-input w-full br-xs" type="text" bind:value={fName} />
 			</label>
-			<div class="two-col">
-				<label class="field column-nowrap gap-0-3">
-					<span class="field-label fw-600">Boja</span>
-					<span class="color-row display-f align-items-center gap-0-5">
-						<input class="color-swatch w-2-5 h-2-5 br-sm border-width-1 border-heather flex-grow-0 cursor-pointer" type="color" bind:value={fColor} aria-label="Boja" />
-						<input class="field-input color-hex br-xs" type="text" bind:value={fColor} />
-					</span>
-				</label>
-				<label class="field column-nowrap gap-0-3">
-					<span class="field-label fw-600">Redoslijed</span>
-					<input class="field-input w-full br-xs" type="number" bind:value={fOrder} min="0" />
-				</label>
-			</div>
+			<!-- Redoslijed above Boja, each full-width (the side-by-side layout clipped the
+			     Redoslijed select off the modal's right edge). -->
+			<label class="field column-nowrap gap-0-3">
+				<span class="field-label fw-600">Redoslijed</span>
+				<input class="field-input w-full br-xs" type="number" bind:value={fOrder} min="0" />
+			</label>
+			<label class="field column-nowrap gap-0-3">
+				<span class="field-label fw-600">Boja</span>
+				<span class="color-row display-f align-items-center gap-0-5">
+					<input class="color-swatch w-2-5 h-2-5 br-sm border-width-1 border-heather flex-grow-0 cursor-pointer" type="color" bind:value={fColor} aria-label="Boja" />
+					<input class="field-input color-hex br-xs w-full" type="text" bind:value={fColor} />
+				</span>
+			</label>
 			<div class="modal-actions display-f justify-content-flex-end gap-0-5">
 				<button class="btn btn--ghost cursor-pointer br-xs fw-600" type="button" onclick={() => (modalOpen = false)}>Odustani</button>
 				<button class="btn btn--primary cursor-pointer br-xs fw-600" type="submit">{editingId ? 'Spremi' : 'Dodaj'}</button>
@@ -177,6 +194,9 @@
 {/if}
 
 <ConfirmDialog bind:this={confirmDlg} />
+
+<!-- Shared top-centre, non-auto-dismiss error stack (mandatory-field validation). -->
+<ErrorPopup bind:messages={formErrors} />
 
 <style>
 	.lvl-section {
@@ -216,6 +236,10 @@
 	}
 	.btn-add:hover {
 		background: #0c2350;
+	}
+	/* The full-width mobile copy is hidden on desktop; the inline (header-right) copy shows. */
+	.btn-add--block {
+		display: none;
 	}
 	.panel {
 		border-radius: 14px;
@@ -321,14 +345,12 @@
 	.modal-close:hover {
 		background: #eef1f3;
 	}
-	.two-col {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 0.9rem;
-	}
 	.field-label {
 		font-size: 0.85rem;
 		color: #5b6577;
+	}
+	.req {
+		color: #d32752;
 	}
 	.field-input {
 		box-sizing: border-box;
@@ -394,5 +416,24 @@
 	}
 	.btn--ghost:hover {
 		background: #eef1f3;
+	}
+	/* Phone: "Nova kategorija" becomes a full-width button below the title; white panel goes
+	   edge-to-edge (cancel the content area's 1rem side padding). */
+	@media (max-width: 820px) {
+		.btn-add--inline {
+			display: none;
+		}
+		.btn-add--block {
+			display: flex;
+			width: 100%;
+			padding: 0.7rem 1rem;
+			font-size: 0.95rem;
+			margin-bottom: 1rem;
+		}
+		.panel {
+			margin-left: -1rem;
+			margin-right: -1rem;
+			border-radius: 0;
+		}
 	}
 </style>

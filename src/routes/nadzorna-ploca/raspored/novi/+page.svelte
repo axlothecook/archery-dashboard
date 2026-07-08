@@ -14,6 +14,7 @@
 	} from '$lib/events';
 	import DashSelect from '$lib/components/DashSelect.svelte';
 	import ArcherPicker from '$lib/components/ArcherPicker.svelte';
+	import ImageUpload from '$lib/components/ImageUpload.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import ErrorPopup from '$lib/components/ErrorPopup.svelte';
 	import CalendarIcon from '$lib/components/icons/CalendarIcon.svelte';
@@ -131,7 +132,7 @@
 		if (!dateTo) errs.push('Datum završetka je obavezan.');
 		else if (dateFrom && dateTo < dateFrom) errs.push('Datum završetka ne može biti prije početka.');
 		if (!location.trim()) errs.push('Lokacija je obavezna.');
-		if (!levelId) errs.push('Razina (kategorija) je obavezna.');
+		if (!levelId) errs.push('Razina je obavezna.');
 		if (attendingArcherIds.length === 0 && !hasUnlistedClubAttendee) {
 			errs.push('Sudionici su obavezni (odaberite streličare ili označite druge članove kluba).');
 		}
@@ -214,29 +215,28 @@
 					<input class="field-input w-full br-xs" type="text" bind:value={format} />
 				</label>
 
-				<fieldset class="group">
-					<legend class="group-legend">Poster fotografija <span class="req">*</span></legend>
-					<label class="field column-nowrap gap-title">
-						<span class="field-title">URL slike</span>
-						<input class="field-input w-full br-xs" type="url" bind:value={imageUrl} />
-					</label>
-					<label class="field column-nowrap gap-title mt-0-6">
-						<span class="field-title">Opis slike (alt)</span>
-						<input class="field-input w-full br-xs" type="text" bind:value={imageAlt} />
-					</label>
-				</fieldset>
-			</div>
-
-			<!-- RIGHT: level, attendees, flags. -->
-			<div class="col column-nowrap gap-1-5">
+				<!-- Razina moved to the LEFT column. -->
 				<div class="field column-nowrap gap-title">
-					<span class="field-title">Razina (kategorija) <span class="req">*</span></span>
+					<span class="field-title">Razina <span class="req">*</span></span>
 					{#if data.levelLoadError}
 						<div class="soft-warn">Učitavanje kategorija nije uspjelo.</div>
 					{:else}
 						<DashSelect options={levelOptions} bind:value={levelId} ariaLabel="Razina" />
 					{/if}
 				</div>
+			</div>
+
+			<!-- RIGHT: poster image (top), attendees, flags. -->
+			<div class="col column-nowrap gap-1-5">
+				<!-- Naslovna slika: same component + labels as the Vijesti (article) form. -->
+				<fieldset class="group">
+					<legend class="group-legend">Naslovna slika <span class="req">*</span></legend>
+					<ImageUpload label="Slika" bind:url={imageUrl} />
+					<label class="field column-nowrap gap-title mt-0-6">
+						<span class="field-title">Opis slike (alt) <span class="req">*</span></span>
+						<input class="field-input w-full br-xs" type="text" bind:value={imageAlt} />
+					</label>
+				</fieldset>
 
 				<div class="field column-nowrap gap-title">
 					<span class="field-title">Sudionici (streličari) <span class="req">*</span></span>
@@ -390,8 +390,38 @@
 		color: #102e66;
 	}
 	.check-row {
-		font-size: 0.95rem;
+		font-size: 0.9rem;
 		color: #102e66;
+		white-space: nowrap;
+	}
+	/* Themed checkbox: unchecked = empty outlined box (not a black square); checked = navy
+	   fill + white tick. */
+	.check-row input[type='checkbox'] {
+		appearance: none;
+		-webkit-appearance: none;
+		width: 1.1rem;
+		height: 1.1rem;
+		flex: 0 0 auto;
+		margin: 0;
+		border: 1.5px solid #b9c3d3;
+		border-radius: 4px;
+		background: #fff;
+		cursor: pointer;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.check-row input[type='checkbox']:checked {
+		border-color: #102e66;
+		background: #102e66;
+	}
+	.check-row input[type='checkbox']:checked::after {
+		content: '';
+		width: 0.28rem;
+		height: 0.55rem;
+		border: solid #fff;
+		border-width: 0 2px 2px 0;
+		transform: translateY(-1px) rotate(45deg);
 	}
 	/* The "other club members" checkbox belongs to the Sudionici field above it, so pull
 	   it up close (counteract most of the column's 1.5rem gap) rather than sitting a full
@@ -417,6 +447,12 @@
 		font-size: 0.9rem;
 		font-family: inherit;
 		border: 1px solid transparent;
+		text-align: center;
+		white-space: nowrap;
+	}
+	/* All action buttons the SAME width on desktop (fixed basis). Mobile → equal flex share. */
+	.form-actions .btn {
+		flex: 0 0 10rem;
 	}
 	.btn:disabled {
 		opacity: 0.6;
@@ -450,6 +486,41 @@
 	@media (max-width: 900px) {
 		.form-grid {
 			grid-template-columns: 1fr;
+		}
+		/* Pin the action bar to the bottom of the SCREEN; panel gets bottom padding so the
+		   last checkboxes clear it. */
+		.form-actions {
+			position: fixed;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			margin: 0;
+			z-index: 40;
+			padding: 0.9rem 1rem calc(0.9rem + env(safe-area-inset-bottom));
+			box-shadow: 0 -4px 16px rgba(16, 46, 102, 0.12);
+			gap: 0.4rem;
+			align-items: stretch;
+		}
+		.form-actions .btn {
+			flex: 1 1 0;
+			min-width: 0;
+			height: 2.75rem;
+			padding: 0 0.4rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 0.8rem;
+			white-space: nowrap;
+			line-height: 1;
+		}
+		/* White panel edge-to-edge + tighter inner padding; clears the fixed bar. */
+		.panel {
+			margin-left: -1rem;
+			margin-right: -1rem;
+			border-radius: 0;
+			padding-left: 1rem;
+			padding-right: 1rem;
+			padding-bottom: 5rem;
 		}
 	}
 </style>
