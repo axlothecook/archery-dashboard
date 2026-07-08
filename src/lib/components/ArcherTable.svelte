@@ -187,6 +187,12 @@
 		color: #1b1b1b;
 		border-bottom: 1px solid $border;
 		white-space: nowrap;
+		/* Sticky header: stays visible while the list scrolls vertically inside .ar-scroll.
+		   Opaque white bg so rows don't show through; z-index over the cells. */
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		background: #fff;
 	}
 	.ar-table td {
 		padding: 0.7rem 0.75rem;
@@ -300,8 +306,11 @@
 	   squishing the auto name column to nothing (which overlaps the header). Compact
 	   font/padding + narrower columns; weight 800 headers to match Zadaci/other tables. */
 	@media (max-width: 900px) {
+		/* min-width = sum of the fixed column widths below (13 + 7 + 7 + 8 + 6 + 5.5 + 1.25
+		   spacer ≈ 47.75), so the table pushes wider and scrolls horizontally instead of
+		   scaling the Streličar column down and truncating the name. */
 		.ar-table {
-			min-width: 48rem;
+			min-width: 49rem;
 		}
 		.ar-table th {
 			padding: 0.5rem 0.5rem;
@@ -312,17 +321,18 @@
 			padding: 0.5rem 0.5rem;
 			font-size: 0.85rem;
 		}
+		/* Streličar column wide enough to fit "Amanda Mlinarić" in full (avatar + gap +
+		   name + padding). This is the phone-only fix — most archer names now show whole. */
 		.ar-table :is(th, td).ar-name-cell {
-			width: 12rem;
+			width: 13rem;
 		}
 		.ar-table :is(th, td):nth-child(2) { width: 7rem; }
 		.ar-table :is(th, td):nth-child(3) { width: 7rem; }
 		.ar-table :is(th, td):nth-child(4) { width: 8rem; }
 		.ar-table :is(th, td):nth-child(5) { width: 6rem; }
-		/* The actions column absorbs the leftover width here, so flex-end would fling the
-		   icons to the table's far edge — instead pad the cell's left side to push the
-		   icons away from the Stanje pill by a fixed amount. */
-		.ar-table :is(th, td):nth-child(6) { width: auto; padding-left: 2.5rem; }
+		/* Fixed (not auto) so the name column above keeps its full width instead of this
+		   column stealing the slack. Left pad keeps the icons off the Stanje pill. */
+		.ar-table :is(th, td):nth-child(6) { width: 5.5rem; padding-left: 2.5rem; }
 		.ar-actions {
 			justify-content: flex-start;
 		}

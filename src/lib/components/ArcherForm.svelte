@@ -274,16 +274,15 @@
 	<div class="form-grid">
 		<!-- LEFT: identity + classification + bio. -->
 		<div class="col column-nowrap gap-1-5">
-			<div class="two-col">
-				<label class="field column-nowrap gap-title">
-					<span class="field-title">Ime <span class="req">*</span></span>
-					<input class="field-input w-full br-xs" type="text" bind:value={firstName} required />
-				</label>
-				<label class="field column-nowrap gap-title">
-					<span class="field-title">Prezime <span class="req">*</span></span>
-					<input class="field-input w-full br-xs" type="text" bind:value={lastName} required />
-				</label>
-			</div>
+			<!-- Ime + Prezime each on their own full-width row (was cramped side-by-side). -->
+			<label class="field column-nowrap gap-title">
+				<span class="field-title">Ime <span class="req">*</span></span>
+				<input class="field-input w-full br-xs" type="text" bind:value={firstName} required />
+			</label>
+			<label class="field column-nowrap gap-title">
+				<span class="field-title">Prezime <span class="req">*</span></span>
+				<input class="field-input w-full br-xs" type="text" bind:value={lastName} required />
+			</label>
 
 			<div class="field column-nowrap gap-title">
 				<span class="field-title">Uloga <span class="req">*</span></span>
@@ -372,16 +371,15 @@
 				<ArcherPicker options={coachOptions} loadError={coachLoadError} errorDetail={coachErrorDetail} bind:selected={coachIds} />
 			</div>
 
-			<div class="two-col">
-				<div class="field column-nowrap gap-title">
-					<span class="field-title">Stanje <span class="req">*</span></span>
-					<DashSelect options={statusOptions} bind:value={status} ariaLabel="Stanje" />
-				</div>
-				<label class="field checkbox-field display-f align-items-center gap-0-5">
-					<input type="checkbox" bind:checked={hidden} />
-					<span class="field-title">Skriveno s javne stranice</span>
-				</label>
+			<div class="field column-nowrap gap-title">
+				<span class="field-title">Stanje <span class="req">*</span></span>
+				<DashSelect options={statusOptions} bind:value={status} ariaLabel="Stanje" />
 			</div>
+			<!-- "Skriveno s javne stranice" on its own row (was cramped beside Stanje). -->
+			<label class="field checkbox-field display-f align-items-center gap-0-5">
+				<input type="checkbox" bind:checked={hidden} />
+				<span class="field-title">Skriveno s javne stranice</span>
+			</label>
 
 			<div class="field column-nowrap">
 				<span class="field-title">Skrivene informacije</span>
@@ -583,8 +581,36 @@
 		margin-top: 0;
 	}
 	.checkbox-field {
-		align-self: end;
-		padding-bottom: 0.6rem;
+		align-self: start;
+	}
+	/* Themed checkbox: unchecked = empty outlined box (not a black square), checked = navy
+	   fill + white tick — matches the article/event forms. */
+	.checkbox-field input[type='checkbox'] {
+		appearance: none;
+		-webkit-appearance: none;
+		width: 1.1rem;
+		height: 1.1rem;
+		flex: 0 0 auto;
+		margin: 0;
+		border: 1.5px solid #b9c3d3;
+		border-radius: 4px;
+		background: #fff;
+		cursor: pointer;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.checkbox-field input[type='checkbox']:checked {
+		border-color: $navy;
+		background: $navy;
+	}
+	.checkbox-field input[type='checkbox']:checked::after {
+		content: '';
+		width: 0.28rem;
+		height: 0.55rem;
+		border: solid #fff;
+		border-width: 0 2px 2px 0;
+		transform: translateY(-1px) rotate(45deg);
 	}
 	.group {
 		margin: 0;
@@ -645,7 +671,7 @@
 		min-width: 12.5rem;
 	}
 	.btn-row-add {
-		padding: 0.2rem 0.8rem;
+		padding: 0.35rem 0.8rem;
 		border: 1px solid #d7dee8;
 		border-radius: 8px;
 		background: #fff;
@@ -653,6 +679,8 @@
 		font-size: 0.85rem;
 		font-weight: 600;
 		font-family: inherit;
+		white-space: nowrap; /* "Dodaj red" stays on one line (was wrapping when cramped) */
+		flex: 0 0 auto;
 	}
 	.btn-row-add:hover {
 		background: #eef1f3;
@@ -669,6 +697,10 @@
 	.rows-scroll {
 		overflow: auto;
 		max-height: 30rem;
+		/* Gap between the column-title row and the title + "Dodaj red" above it.
+		   Placed here (not on .rows-head) so it only applies when the table is shown,
+		   keeping the empty "Nema..." text tight under the title. */
+		margin-top: 1.1rem;
 		border: 1px solid $border;
 		border-radius: 8px;
 	}
@@ -774,6 +806,43 @@
 	@media (max-width: 900px) {
 		.form-grid {
 			grid-template-columns: 1fr;
+		}
+		/* White panel edge-to-edge (cancel the content area's 1rem side padding) + tighter
+		   inner padding; bottom padding clears the fixed action bar. Matches Uredi događaj. */
+		.panel {
+			margin-left: -1rem;
+			margin-right: -1rem;
+			border-radius: 0;
+			padding-left: 1rem;
+			padding-right: 1rem;
+			padding-bottom: 5rem;
+		}
+		/* Pin the action bar to the bottom of the SCREEN (the page scrolls on mobile, so the
+		   in-panel sticky wouldn't stay in view). Mirrors Uredi događaj / Novi članak. */
+		.form-actions {
+			position: fixed;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			margin: 0;
+			z-index: 40;
+			padding: 0.9rem 1rem calc(0.9rem + env(safe-area-inset-bottom));
+			box-shadow: 0 -4px 16px rgba(16, 46, 102, 0.12);
+			gap: 0.4rem;
+			align-items: stretch;
+		}
+		/* Both buttons share the row evenly, one line, FIXED height so they're identical. */
+		.form-actions .btn {
+			flex: 1 1 0;
+			min-width: 0;
+			height: 2.75rem;
+			padding: 0 0.4rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 0.8rem;
+			white-space: nowrap;
+			line-height: 1;
 		}
 	}
 </style>
