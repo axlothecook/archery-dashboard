@@ -50,10 +50,13 @@ function buildUrl(path: string): string {
 	if (typeof window !== 'undefined') {
 		return new URL('api/' + rel, window.location.origin + '/').toString();
 	}
-	// On the SERVER (SSR guard) there's no proxy and no window: hit the backend directly
-	// via the absolute base from PUBLIC_API_BASE_URL (default :3100). Strip a trailing
-	// '/api' if present so we don't double it (the backend has no /api prefix).
-	const serverBase = BASE_URL.replace(/\/?api\/?$/, '').replace(/\/$/, '');
+	// On the SERVER (SSR guard) there's no window: use PUBLIC_API_BASE_URL AS-IS.
+	//  - prod: `https://archery.axlothecook.com/api` — the SSR fetch must keep `/api`
+	//    because it loops back through nginx, which only proxies `/api/*` to the backend
+	//    (a bare `/auth/me` would hit the public site → 404).
+	//  - dev:  `http://localhost:3100` (no `/api`) — hits the backend directly.
+	// Either way the base already has the right prefix, so DON'T strip anything.
+	const serverBase = BASE_URL.replace(/\/$/, '');
 	return new URL(rel, serverBase + '/').toString();
 }
 
