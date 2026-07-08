@@ -42,7 +42,19 @@ type RequestOptions = {
 };
 
 function buildUrl(path: string): string {
-	return new URL(path.replace(/^\//, ''), BASE_URL.endsWith('/') ? BASE_URL : BASE_URL + '/').toString();
+	const rel = path.replace(/^\//, '');
+	// In the BROWSER, always go same-origin via the Vite `/api` proxy: use the CURRENT page
+	// origin, so it works unchanged from the PC (localhost:5174) AND a phone on the LAN
+	// (192.168.x.x:5174). An absolute localhost base would break the phone (on the phone
+	// `localhost` is the phone itself). The proxy rewrites /api → backend.
+	if (typeof window !== 'undefined') {
+		return new URL('api/' + rel, window.location.origin + '/').toString();
+	}
+	// On the SERVER (SSR guard) there's no proxy and no window: hit the backend directly
+	// via the absolute base from PUBLIC_API_BASE_URL (default :3100). Strip a trailing
+	// '/api' if present so we don't double it (the backend has no /api prefix).
+	const serverBase = BASE_URL.replace(/\/?api\/?$/, '').replace(/\/$/, '');
+	return new URL(rel, serverBase + '/').toString();
 }
 
 // Core request helper: always credentialed, JSON in/out, throws AuthError on

@@ -223,13 +223,6 @@
 	.rail-link.compact .rail-label {
 		display: none;
 	}
-	@media (max-width: 720px) {
-		.rail-link {
-			padding: 0.6rem 0.7rem;
-		}
-		.rail-label,
-		.rail-chevron {
-			display: none;
-		}
-	}
+	/* NB: no narrow-screen label/chevron hiding — the mobile nav is the full-screen overlay
+	   menu where labels + chevrons MUST show; icon-only is `compact` only. */
 </style>

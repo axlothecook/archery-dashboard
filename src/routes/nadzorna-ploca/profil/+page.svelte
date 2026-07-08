@@ -332,6 +332,14 @@
 <style>
 	.profile {
 		max-width: 78rem;
+		/* The shell clips .admin-content (page never scrolls; inner divs do). This page has
+		   no single inner scroll region, so the SECTION itself scrolls when its content is
+		   taller than the frame — otherwise everything below the fold (Podrška) is clipped
+		   and unreachable, which happened on phones. */
+		overflow-y: auto;
+		min-height: 0;
+		/* Room for the scrollbar / a little breathing space at the bottom. */
+		padding-right: 0.25rem;
 	}
 	.profile-head {
 		/* layout via utility classes (display-f align-items-center gap-1) */
@@ -508,12 +516,22 @@
 	}
 	.support-sub {
 		margin: 0 0 1.1rem;
-		font-size: 0.95rem;
+		font-size: 0.85rem;
 		color: #5b6577;
 	}
+	/* Both support buttons stay on ONE row; each takes an equal share and its label stays
+	   on a single line. */
 	.support-actions {
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
 		margin-bottom: 1.1rem;
+	}
+	.support-actions .btn {
+		flex: 1 1 0;
+		min-width: 0;
+		padding: 0.8rem 1rem;
+		font-size: 0.95rem;
+		border-radius: 10px;
+		white-space: nowrap;
 	}
 	.btn--report {
 		background: #d32752;

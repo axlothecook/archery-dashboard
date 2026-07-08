@@ -95,20 +95,41 @@
 			background-image: var(--cover);
 		}
 	}
+	// Phone/tablet: the cover image becomes a FULL-SCREEN BACKGROUND with the white card
+	// centred on top (both axes) — kept in sync with /prijava. Image + card pane overlap in
+	// one grid cell; the pane sits above (z-index) so the card shows over the photo.
 	@include bp.md-down {
 		.login-split {
 			grid-template-columns: 1fr;
-			grid-template-rows: auto 1fr;
+			grid-template-rows: 1fr;
+			min-height: 100dvh;
 		}
 		.login-image {
-			order: -1;
-			min-height: 11.25rem;
+			grid-area: 1 / 1;
+			min-height: 0;
+			z-index: 0;
+			// Slight navy scrim so the white card + text read clearly over the photo.
+			&.is-ready {
+				background-image: linear-gradient(rgba(16, 46, 102, 0.35), rgba(16, 46, 102, 0.35)),
+					var(--cover);
+			}
 		}
 		.login-pane {
-			padding: ($sp * 1.5) ($sp * 1.1);
+			grid-area: 1 / 1;
+			z-index: 1;
+			background: transparent;
+			align-items: center; // vertical centre (card no longer sits low)
+			justify-content: center;
+			padding: ($sp * 1.5) ($sp * 1.25);
+			min-height: 100dvh;
+		}
+		.login-card {
+			max-width: 26rem;
+			padding: ($sp * 2) ($sp * 1.75);
 		}
 		.login-title {
-			font-size: 2.1rem;
+			font-size: 1.8rem;
+			margin-bottom: ($sp * 1.1);
 		}
 	}
 </style>
