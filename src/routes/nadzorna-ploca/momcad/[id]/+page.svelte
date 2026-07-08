@@ -75,14 +75,20 @@
 				<p class="mgmt-sub">Profil streličara. Pregled svih podataka.</p>
 			</div>
 		</div>
-		<!-- Uredi sits right next to the title/subtitle block. -->
-		<a class="btn-edit cursor-pointer display-f align-items-center gap-0-4" href="/nadzorna-ploca/momcad/uredi/{a.id}">
+		<!-- Uredi sits right next to the title/subtitle block (desktop; hidden on phone). -->
+		<a class="btn-edit btn-edit--head cursor-pointer display-f align-items-center gap-0-4" href="/nadzorna-ploca/momcad/uredi/{a.id}">
 			<EditIcon size={18} />
 			Uredi
 		</a>
 	</div>
 
 	<div class="panel bg-white custom-scrollbar">
+		<!-- Phone-only Uredi, pinned to the top of the white panel (the header one is hidden
+		     at this width). Space below it separates it from the photo. -->
+		<a class="btn-edit btn-edit--panel cursor-pointer display-f align-items-center gap-0-4" href="/nadzorna-ploca/momcad/uredi/{a.id}">
+			<EditIcon size={18} />
+			Uredi
+		</a>
 		<!-- TOP ROW: photo switcher (left) + basic data (right). -->
 		<div class="top-row">
 			<div class="photo-switch column-nowrap gap-0-7">
@@ -239,6 +245,10 @@
 	.btn-edit:hover {
 		background: #0c2350;
 	}
+	/* The in-panel Uredi is phone-only; desktop uses the one in the header. */
+	.btn-edit--panel {
+		display: none;
+	}
 	.panel {
 		border-radius: 14px;
 		padding: 2.5rem;
@@ -362,6 +372,8 @@
 		max-height: 29rem;
 		border: 1px solid $border;
 		border-radius: 8px;
+		/* Breathing room between the last row and the horizontal scrollbar at the bottom. */
+		padding-bottom: 0.6rem;
 	}
 	.mini-tbl {
 		width: 100%;
@@ -417,9 +429,50 @@
 			grid-template-columns: 1fr;
 			gap: 1.5rem;
 		}
+		/* Photo box spans the full panel width (same length as the Uredi button); square via
+		   aspect-ratio and the fixed desktop height is dropped so width drives the size. */
 		.photo-box {
 			width: 100%;
-			max-width: 20rem;
+			max-width: none;
+			height: auto;
+			aspect-ratio: 1 / 1;
+		}
+		/* Pull the value column closer to the labels. Sized to the widest label
+		   ("World Archery ID", ~7.9rem) so it stays on one line, but far tighter than the
+		   desktop 11rem so the values no longer sit across a big gap. */
+		.field-row {
+			grid-template-columns: 8.25rem 1fr;
+		}
+		/* 1) White panel edge-to-edge: cancel the content area's 1rem side + 1.25rem bottom
+		   padding so the white touches the screen sides AND the bottom (no grey strip below
+		   when scrolled to the end). 2) Reduced inner padding (bottom keeps room for content
+		   above the screen edge). */
+		.panel {
+			margin-left: -1rem;
+			margin-right: -1rem;
+			margin-bottom: -1.25rem;
+			border-radius: 0;
+			padding: 1.25rem 1rem 2.5rem;
+		}
+		/* Move Uredi to the top of the white panel; hide the header copy. Full-width block
+		   with the same padding/length as the other top-of-panel buttons (e.g. the
+		   "Novi streličar" block button on the list pages). */
+		.btn-edit--head {
+			display: none;
+		}
+		.btn-edit--panel {
+			display: flex;
+			justify-content: center;
+			width: 100%;
+			padding: 0.7rem 1rem;
+			font-size: 0.95rem;
+			/* Space between the button and the photo/data below it. */
+			margin-bottom: 1.6rem;
+		}
+		/* 3) Cap Biografija and let it scroll instead of running long. */
+		.bio-text {
+			max-height: 14rem;
+			overflow-y: auto;
 		}
 	}
 </style>
