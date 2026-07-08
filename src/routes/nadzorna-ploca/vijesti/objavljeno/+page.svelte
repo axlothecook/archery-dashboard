@@ -103,13 +103,13 @@
 		</a>
 	</div>
 
-	<!-- Mobile-only: full-width "Novi članak" below the title (spans like the Filteri bar). -->
-	<a class="btn-add btn-add--block cursor-pointer display-f align-items-center justify-content-center gap-0-4" href="/nadzorna-ploca/vijesti/novi">
-		<AddIcon size={18} />
-		Novi članak
-	</a>
-
 	<div class="layout">
+		<!-- Mobile-only: full-width "Novi članak" at the TOP of the white card (CSS places it
+		     inside .layout on mobile; hidden on desktop where the header-right copy shows). -->
+		<a class="btn-add btn-add--block cursor-pointer display-f align-items-center justify-content-center gap-0-4" href="/nadzorna-ploca/vijesti/novi">
+			<AddIcon size={18} />
+			Novi članak
+		</a>
 		<!-- Filter panel: its own div, standing to the LEFT of the articles. -->
 		<aside class="panel bg-white filter-panel column-nowrap gap-1" class:is-open={filtersOpen}>
 			<!-- Head doubles as the mobile collapse toggle (tap to expand/collapse). On desktop
@@ -370,32 +370,51 @@
 		.btn-add--inline {
 			display: none;
 		}
+		/* The whole .layout is ONE white card (edge-to-edge), containing: the navy "Novi članak"
+		   button at the TOP, then the Filteri bar, then the table — no gaps between them. */
+		.layout {
+			display: flex;
+			flex-direction: column;
+			gap: 0;
+			flex: 1 1 auto;
+			min-height: 0;
+			background: #fff;
+			margin-left: -1rem;
+			margin-right: -1rem;
+			padding: 1rem;
+			border-radius: 0;
+		}
 		.btn-add--block {
 			display: flex;
 			flex: 0 0 auto;
 			width: 100%;
 			padding: 0.7rem 1rem;
 			font-size: 0.95rem;
-			margin-bottom: 0.75rem;
+			margin-bottom: 1.6rem;
 		}
-		/* Stack as a flex COLUMN so the filter bar + article panel sit with a small gap and
-		   the panel flex-grows to fill the remaining height (grid left an oversized gap). */
-		.layout {
-			display: flex;
-			flex-direction: column;
-			gap: 0.75rem;
-			flex: 1 1 auto;
-			min-height: 0;
-		}
+		/* Filter + article panels become transparent (the .layout card is the white surface),
+		   flush with no own padding/margins/shadow. */
+		/* Bordered box around the Filteri panel (collapsed AND open) so it's clearly a distinct
+		   element inside the white card. */
 		.filter-panel {
 			position: static;
-			gap: 0; /* the head + body manage their own spacing when collapsible */
+			gap: 0;
 			flex: 0 0 auto;
-			width: 100%; /* full-width bar (flex-column parent would otherwise shrink it) */
+			align-self: stretch;
+			background: none;
+			box-shadow: none;
+			border: 1px solid #d7dee8;
+			border-radius: 10px;
+			padding: 0.85rem 1rem;
+			margin-bottom: 1.6rem;
 		}
 		.articles-panel {
 			flex: 1 1 auto;
 			min-height: 0;
+			background: none;
+			box-shadow: none;
+			padding: 0;
+			border-radius: 0;
 		}
 		/* Chevron appears; head becomes a tappable bar. */
 		.filter-chevron {
@@ -409,12 +428,14 @@
 		.filter-panel.is-open .filter-body {
 			display: flex;
 		}
-		/* Fills the panel (which fills the bounded section) and scrolls INSIDE — rows reach
-		   the panel's bottom padding, the page itself never scrolls. */
+		/* Fills the card and scrolls INSIDE; scrollbar to the card's right edge (cancel the
+		   layout's 1rem right padding) with a small content gap. */
 		.art-scroll {
 			flex: 1 1 auto;
 			min-height: 0;
 			max-height: none;
+			margin-right: -1rem;
+			padding-right: 0.75rem;
 		}
 	}
 </style>

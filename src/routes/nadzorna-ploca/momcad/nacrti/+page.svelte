@@ -4,7 +4,6 @@
 	// scrolling panel, mirroring the Raspored/Vijesti Nacrti pages.
 	import { type ArcherAdminRow } from '$lib/archers';
 	import ArcherTable from '$lib/components/ArcherTable.svelte';
-	import AddIcon from '$lib/components/icons/AddIcon.svelte';
 	import PersonIcon from '$lib/components/icons/PersonIcon.svelte';
 
 	let { data } = $props();
@@ -29,10 +28,6 @@
 				<p class="mgmt-sub">Profili streličara u izradi. Objavite ih kad su spremni za javnu stranicu.</p>
 			</div>
 		</div>
-		<a class="btn-add cursor-pointer display-f align-items-center gap-0-4" href="/nadzorna-ploca/momcad/novi">
-			<AddIcon size={18} />
-			Novi streličar
-		</a>
 	</div>
 
 	<div class="panel bg-white">
@@ -72,21 +67,6 @@
 		font-size: 0.95rem;
 		color: #5b6577;
 	}
-	.btn-add {
-		padding: 0.5rem 0.9rem;
-		border: 0;
-		border-radius: 8px;
-		background: $navy;
-		color: #fff;
-		font-size: 0.88rem;
-		font-weight: 600;
-		font-family: inherit;
-		text-decoration: none;
-		white-space: nowrap;
-	}
-	.btn-add:hover {
-		background: #0c2350;
-	}
 	.panel {
 		border-radius: 14px;
 		padding: 1.25rem 1.5rem;
@@ -105,5 +85,30 @@
 		flex: 1 1 auto;
 		min-height: 0;
 		overflow: auto;
+		/* Scrollbar flush to the panel's right edge with a content gap (matches Svi streličari). */
+		margin-right: -1.5rem;
+		padding-right: 1rem;
+	}
+	/* Phone/tablet: fit the page to the viewport (only the list scrolls, inside its panel);
+	   edge-to-edge white panel (touches the grey area's sides) — mirrors Svi streličari,
+	   minus the filters/button it doesn't have. */
+	@media (max-width: 820px) {
+		.ar-section {
+			height: calc(100dvh - 70px - 44px);
+		}
+		.mgmt-head {
+			flex: 0 0 auto;
+			margin-bottom: 1.5rem;
+		}
+		.panel {
+			margin-left: -1rem;
+			margin-right: -1rem;
+			padding: 1rem;
+			border-radius: 0;
+		}
+		.ar-scroll {
+			margin-right: -1rem;
+			padding-right: 0.75rem;
+		}
 	}
 </style>

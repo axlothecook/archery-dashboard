@@ -64,6 +64,17 @@
 	}
 	.ev-scroll {
 		overflow-x: auto;
+		/* Scrollbar flush to the panel's right edge with a content gap (matches Svi događaji). */
+		margin-right: -1.5rem;
+		padding-right: 1rem;
 		/* Scrollbar styling comes from the shared `.custom-scrollbar` class (library). */
+	}
+	/* Phone: white panel edge-to-edge (cancel the content area's 1rem side padding). */
+	@media (max-width: 820px) {
+		.panel {
+			margin-left: -1rem;
+			margin-right: -1rem;
+			border-radius: 0;
+		}
 	}
 </style>

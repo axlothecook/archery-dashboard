@@ -140,7 +140,7 @@
 		if (!dateTo) errs.push('Datum završetka je obavezan.');
 		else if (dateFrom && dateTo < dateFrom) errs.push('Datum završetka ne može biti prije početka.');
 		if (!location.trim()) errs.push('Lokacija je obavezna.');
-		if (!levelId) errs.push('Razina (kategorija) je obavezna.');
+		if (!levelId) errs.push('Razina je obavezna.');
 		if (attendingArcherIds.length === 0 && !hasUnlistedClubAttendee) {
 			errs.push('Sudionici su obavezni (odaberite streličare ili označite druge članove kluba).');
 		}
@@ -188,32 +188,33 @@
 <svelte:head><title>Uredi događaj · VSK</title></svelte:head>
 
 <section class="ev-section">
-	<div class="mgmt-head display-f align-items-center justify-content-space-between">
-		<div class="display-f align-items-center gap-0-7">
-			<CalendarIcon size={48} />
-			<div>
-				<h2 class="mgmt-title">Uredi događaj</h2>
-				<p class="mgmt-sub">Uredite postojeći događaj i spremite promjene.</p>
-			</div>
+	<div class="mgmt-head display-f align-items-center gap-0-7">
+		<CalendarIcon size={48} />
+		<div>
+			<h2 class="mgmt-title">Uredi događaj</h2>
+			<p class="mgmt-sub">Uredite postojeći događaj i spremite promjene.</p>
 		</div>
-		<!-- Hide/unhide toggle: icon reflects the CURRENT state; click flips `hidden`. -->
-		<button
-			class="vis-toggle cursor-pointer display-f align-items-center gap-0-5"
-			class:is-hidden={hidden}
-			type="button"
-			aria-pressed={hidden}
-			title={hidden ? 'Trenutačno skriveno — klik za prikaz' : 'Trenutačno vidljivo — klik za skrivanje'}
-			onclick={() => (hidden = !hidden)}
-		>
-			{#if hidden}
-				<EyeOffIcon size={20} /> Skriveno
-			{:else}
-				<EyeIcon size={20} /> Vidljivo
-			{/if}
-		</button>
 	</div>
 
 	<form class="panel bg-white" onsubmit={(ev) => ev.preventDefault()}>
+		<!-- Hide/unhide toggle: INSIDE the white panel (top-right desktop, full-width phone).
+		     Icon reflects the CURRENT state; click flips `hidden`. -->
+		<div class="vis-row display-f justify-content-flex-end">
+			<button
+				class="vis-toggle cursor-pointer display-f align-items-center gap-0-5"
+				class:is-hidden={hidden}
+				type="button"
+				aria-pressed={hidden}
+				title={hidden ? 'Trenutačno skriveno — klik za prikaz' : 'Trenutačno vidljivo — klik za skrivanje'}
+				onclick={() => (hidden = !hidden)}
+			>
+				{#if hidden}
+					<EyeOffIcon size={20} /> Skriveno
+				{:else}
+					<EyeIcon size={20} /> Vidljivo
+				{/if}
+			</button>
+		</div>
 		<div class="form-grid">
 			<!-- LEFT: the core details. -->
 			<div class="col column-nowrap gap-1-5">
@@ -264,7 +265,7 @@
 			<!-- RIGHT: level, attendees, flags. -->
 			<div class="col column-nowrap gap-1-5">
 				<div class="field column-nowrap gap-title">
-					<span class="field-title">Razina (kategorija) <span class="req">*</span></span>
+					<span class="field-title">Razina <span class="req">*</span></span>
 					{#if data.levelLoadError}
 						<div class="soft-warn">Učitavanje kategorija nije uspjelo.</div>
 					{:else}
@@ -343,6 +344,10 @@
 		font-size: 0.95rem;
 		color: #5b6577;
 	}
+	/* Toggle row inside the white panel; sits above the form grid. */
+	.vis-row {
+		margin-bottom: 1rem;
+	}
 	/* Hide/unhide toggle: green when visible, grey when hidden — matches the state. */
 	.vis-toggle {
 		padding: 0.5rem 0.9rem;
@@ -353,6 +358,7 @@
 		font-size: 0.88rem;
 		font-weight: 600;
 		font-family: inherit;
+		white-space: nowrap; /* "Skriveno"/"Vidljivo" stay on ONE line (was clipping) */
 	}
 	.vis-toggle.is-hidden {
 		border-color: #d7dee8;
@@ -442,8 +448,38 @@
 		color: #102e66;
 	}
 	.check-row {
-		font-size: 0.95rem;
+		font-size: 0.9rem;
 		color: #102e66;
+		white-space: nowrap; /* keep each checkbox label on one row */
+	}
+	/* Themed checkbox: unchecked = empty outlined box (not a black square), checked = navy
+	   fill + white tick. Matches the article form + Vrsta filter boxes. */
+	.check-row input[type='checkbox'] {
+		appearance: none;
+		-webkit-appearance: none;
+		width: 1.1rem;
+		height: 1.1rem;
+		flex: 0 0 auto;
+		margin: 0;
+		border: 1.5px solid #b9c3d3;
+		border-radius: 4px;
+		background: #fff;
+		cursor: pointer;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.check-row input[type='checkbox']:checked {
+		border-color: #102e66;
+		background: #102e66;
+	}
+	.check-row input[type='checkbox']:checked::after {
+		content: '';
+		width: 0.28rem;
+		height: 0.55rem;
+		border: solid #fff;
+		border-width: 0 2px 2px 0;
+		transform: translateY(-1px) rotate(45deg);
 	}
 	/* The "other club members" checkbox belongs to the Sudionici field above it, so pull
 	   it up close (counteract most of the column's 1.5rem gap). */
@@ -468,6 +504,12 @@
 		font-size: 0.9rem;
 		font-family: inherit;
 		border: 1px solid transparent;
+		text-align: center;
+		white-space: nowrap;
+	}
+	/* All action buttons the SAME width on desktop (fixed basis). Mobile → equal flex share. */
+	.form-actions .btn {
+		flex: 0 0 10rem;
 	}
 	.btn:disabled {
 		opacity: 0.6;
@@ -500,6 +542,50 @@
 	@media (max-width: 900px) {
 		.form-grid {
 			grid-template-columns: 1fr;
+		}
+		/* Vidljivo/Skriveno toggle (inside the panel) spans FULL width on phone. */
+		.vis-toggle {
+			width: 100%;
+			justify-content: center;
+			padding: 0.7rem 1rem;
+			font-size: 0.95rem;
+		}
+		/* Pin the action bar to the bottom of the SCREEN (page scrolls on mobile). Panel gets
+		   bottom padding so the last fields/checkboxes clear it. */
+		.form-actions {
+			position: fixed;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			margin: 0;
+			z-index: 40;
+			padding: 0.9rem 1rem calc(0.9rem + env(safe-area-inset-bottom));
+			box-shadow: 0 -4px 16px rgba(16, 46, 102, 0.12);
+			gap: 0.4rem;
+			align-items: stretch;
+		}
+		/* Buttons share the row evenly, one line, FIXED height so they're all identical. */
+		.form-actions .btn {
+			flex: 1 1 0;
+			min-width: 0;
+			height: 2.75rem;
+			padding: 0 0.4rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 0.8rem;
+			white-space: nowrap;
+			line-height: 1;
+		}
+		/* White panel edge-to-edge (cancel the content area's 1rem side padding) + tighter
+		   inner padding; bottom padding clears the fixed bar. */
+		.panel {
+			margin-left: -1rem;
+			margin-right: -1rem;
+			border-radius: 0;
+			padding-left: 1rem;
+			padding-right: 1rem;
+			padding-bottom: 5rem;
 		}
 	}
 </style>
