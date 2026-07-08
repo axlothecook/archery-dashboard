@@ -114,6 +114,11 @@
 					</button>
 				</div>
 
+				<!-- Forgot-password link sits directly under the password field. -->
+				<p class="login-forgot">
+					<a href="/zaboravljena-lozinka">{t(locale, 'auth.forgotLink')}</a>
+				</p>
+
 				{#if errorMsg}
 					<p class="login-error" role="alert">{errorMsg}</p>
 				{/if}
@@ -123,13 +128,12 @@
 				</button>
 			</form>
 
-			<p class="login-forgot">
-				<a href="/zaboravljena-lozinka">{t(locale, 'auth.forgotLink')}</a>
-			</p>
-
 			<p class="login-help">
 				{t(locale, 'auth.help')}
-				<a href="https://archery.axlothecook.com/kontakt">{t(locale, 'auth.helpLink')}</a>
+				<!-- Login help = reach a human about ACCOUNT ACCESS (best practice: not the public
+				     inquiry form). mailto to the developer/administrator, subject prefilled.
+				     TODO(adoption): replace the placeholder address with the real support mailbox. -->
+				<a href="mailto:podrska@axlothecook.com?subject={encodeURIComponent('Pomoć pri prijavi — nadzorna ploča VSK')}">{t(locale, 'auth.helpLink')}</a>
 			</p>
 		</div>
 	</div>
@@ -341,9 +345,10 @@
 	}
 
 	.login-forgot {
-		margin: ($sp * 0.9) 0 0;
-		text-align: center;
-		font-size: 0.98rem;
+		/* Directly under the password field, right-aligned; small gap before the button. */
+		margin: (-$sp * 0.35) 0 ($sp * 0.4);
+		text-align: right;
+		font-size: 0.92rem;
 
 		a {
 			color: $link;
@@ -390,22 +395,72 @@
 		}
 	}
 
-	// Phone: stack — image becomes a short banner on top, card below. Uses the
-	// library's desktop-first breakpoint mixin instead of a raw @media query.
+	// Phone/tablet: the cover image becomes a FULL-SCREEN BACKGROUND and the white card
+	// is centred on top of it (both axes). Single grid cell; the image and the card pane
+	// overlap in that one cell (grid-area 1/1). A translucent navy scrim over the image
+	// keeps the card edges + any text legible against a busy photo.
 	@include bp.md-down {
 		.login-split {
 			grid-template-columns: 1fr;
-			grid-template-rows: auto 1fr;
+			grid-template-rows: 1fr;
+			min-height: 100dvh;
 		}
+		// Image fills the whole cell, BEHIND the card (z-index 0).
 		.login-image {
-			order: -1;
-			min-height: 11.25rem;
+			grid-area: 1 / 1;
+			min-height: 0;
+			z-index: 0;
+			// Darken slightly so the white card and text read clearly over the photo.
+			&.is-ready {
+				background-image: linear-gradient(rgba(16, 46, 102, 0.35), rgba(16, 46, 102, 0.35)),
+					var(--cover);
+			}
 		}
+		// Card pane sits in the SAME cell but ABOVE the image (z-index 1), transparent,
+		// centring the card both axes.
 		.login-pane {
-			padding: ($sp * 1.5) ($sp * 1.1);
+			grid-area: 1 / 1;
+			z-index: 1;
+			background: transparent;
+			align-items: center; // vertical centre (fixes the card sitting low)
+			justify-content: center; // horizontal centre
+			padding: ($sp * 1.5) ($sp * 1.25);
+			// Full available height so centring has room to work.
+			min-height: 100dvh;
+		}
+		.login-card {
+			// Narrower + tighter padding on phones (the full-size desktop padding was oversized
+			// on mobile now that the laptop font-shrink no longer applies here).
+			max-width: 26rem;
+			padding: ($sp * 2) ($sp * 1.75);
 		}
 		.login-title {
-			font-size: 2.1rem;
+			font-size: 1.8rem;
+			margin-bottom: ($sp * 1.1);
+		}
+		// Smaller field text + label so inputs aren't oversized on phones.
+		.field input {
+			font-size: 0.95rem;
+			padding: ($sp * 0.75) ($sp * 0.95);
+		}
+		.field label {
+			font-size: 1.05rem;
+		}
+		.field input:focus + label,
+		.field input:not(:placeholder-shown) + label {
+			font-size: 0.82rem;
+		}
+		.login-forgot {
+			font-size: 0.88rem;
+		}
+		.login-btn {
+			font-size: 0.98rem;
+		}
+		// Help line: smaller, and kept on ONE row (don't wrap the link under the sentence).
+		.login-help {
+			margin-top: ($sp * 1.4);
+			font-size: 0.9rem;
+			white-space: nowrap;
 		}
 	}
 </style>

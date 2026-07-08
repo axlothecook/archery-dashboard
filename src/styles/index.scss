@@ -126,17 +126,22 @@ body {
 // via the root font-size so the rem-based heights, padding, and text all scale down
 // together — the dashboard fits without the page scrolling / clipping, while larger
 // screens keep the full 16px sizing. Base layer so every page inherits it.
-@media (max-height: 900px) {
+//
+// IMPORTANT: gated to WIDE viewports (min-width: 901px) so it applies to laptops only.
+// On phones the page SCROLLS (it doesn't need to fit one screen), and the mobile browser's
+// hide/show address bar constantly changes the viewport height — without this gate that
+// would cross the max-height thresholds mid-scroll and jump the font-size (reflow/snap).
+@media (min-width: 901px) and (max-height: 900px) {
 	html {
 		font-size: 14px;
 	}
 }
-@media (max-height: 820px) {
+@media (min-width: 901px) and (max-height: 820px) {
 	html {
 		font-size: 12px;
 	}
 }
-@media (max-height: 700px) {
+@media (min-width: 901px) and (max-height: 700px) {
 	html {
 		font-size: 11px;
 	}

@@ -9,7 +9,7 @@
 	// CSS below. Section icons are reusable icon components (currentColor + size).
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { scale } from 'svelte/transition';
+	import { scale, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { logout } from '$lib/auth';
 	import { getCurrentAdmin } from '$lib/teamStore.svelte';
@@ -48,6 +48,7 @@
 	import InquiryIcon from '$lib/components/icons/InquiryIcon.svelte';
 	import AdministrationIcon from '$lib/components/icons/AdministrationIcon.svelte';
 	import SearchIcon from '$lib/components/icons/SearchIcon.svelte';
+	import MenuIcon from '$lib/components/icons/MenuIcon.svelte';
 	import BellIcon from '$lib/components/icons/BellIcon.svelte';
 	import CloseIcon from '$lib/components/icons/CloseIcon.svelte';
 	import LogoutIcon from '$lib/components/icons/LogoutIcon.svelte';
@@ -118,6 +119,15 @@
 		if (noticesOpen) closeNotices();
 		else openNotices();
 	}
+	// Lock the page from scrolling behind an OPEN overlay on mobile (the notifications sheet
+	// or the hamburger menu). Toggles a body class; the CSS sets overflow:hidden. Guarded to
+	// the browser (no document during SSR).
+	$effect(() => {
+		if (typeof document === 'undefined') return;
+		const lock = noticesOpen || menuOpen;
+		document.body.classList.toggle('overlay-open', lock);
+		return () => document.body.classList.remove('overlay-open');
+	});
 	// Respect the OS "reduce motion" setting — skip the open/close animation then.
 	const reduceMotion =
 		typeof window !== 'undefined' &&
@@ -133,7 +143,10 @@
 		if (!t.closest('.notif')) closeNotices();
 	}
 	function onWindowKey(e: KeyboardEvent) {
-		if (e.key === 'Escape') closeNotices();
+		if (e.key === 'Escape') {
+			closeNotices();
+			closeMenu();
+		}
 	}
 
 	// Dashboard sections (built incrementally; hrefs may 404 until their editor
@@ -259,6 +272,25 @@
 		railCollapsed = !railCollapsed;
 	}
 
+	// ── Mobile hamburger menu (≤900px) ──────────────────────────────────────────
+	// Below 900px the blue rail is replaced by a full-screen overlay menu opened from a
+	// hamburger in the top bar. The search bar moves to the TOP of this menu and logout to
+	// the BOTTOM; the top bar itself keeps only hamburger + bell + avatar. The menu closes
+	// on navigation (a route change), on Escape, and on the × / backdrop.
+	let menuOpen = $state(false);
+	function openMenu() {
+		menuOpen = true;
+	}
+	function closeMenu() {
+		menuOpen = false;
+	}
+	// Close the overlay whenever the route changes (any nav pick inside it navigates).
+	$effect(() => {
+		// Touch the pathname so this re-runs on navigation, then close.
+		void page.url.pathname;
+		menuOpen = false;
+	});
+
 	let loggingOut = $state(false);
 	async function handleLogout() {
 		if (loggingOut) return;
@@ -332,6 +364,17 @@
 	<div class="admin-body column-nowrap">
 		<!-- Top bar: search pill + notifications + user -->
 		<header class="admin-topbar display-f align-items-center justify-content-space-between gap-1-5">
+			<!-- Hamburger: opens the full-screen menu. Only shown ≤900px (CSS). -->
+			<button
+				class="topbar-hamburger"
+				type="button"
+				onclick={openMenu}
+				aria-label="Otvori izbornik"
+				aria-expanded={menuOpen}
+			>
+				<MenuIcon size={28} />
+			</button>
+
 			<form class="search-pill display-f align-items-stretch" role="search" onsubmit={submitSearch}>
 				<input
 					class="search-input"
@@ -413,6 +456,78 @@
 		</main>
 	</div>
 </div>
+
+<!-- ── Mobile full-screen menu (≤900px) ────────────────────────────────────────
+     A full-viewport overlay opened by the top-bar hamburger. Search sits at the top,
+     the section nav in the middle (reusing the same RailLink/RailGroup), and logout at
+     the bottom. Kept in the DOM tree only while open. Blue to match the desktop rail. -->
+{#if menuOpen}
+	<div
+		class="mobile-menu bg-blue-dress column-nowrap"
+		role="dialog"
+		aria-modal="true"
+		aria-label="Izbornik"
+		transition:fly={{ x: '-100%', duration: 260, easing: cubicOut, opacity: 1 }}
+	>
+		<div class="mm-head display-f align-items-center justify-content-space-between">
+			<div class="rail-brand mm-brand display-f align-items-center gap-0-7">
+				<span class="rail-brand-icon"><GridIcon size={32} /></span>
+				<span class="rail-brand-text">Nadzorna ploča</span>
+			</div>
+			<button class="mm-close" type="button" onclick={closeMenu} aria-label="Zatvori izbornik">
+				<CloseIcon size={28} />
+			</button>
+		</div>
+
+		<!-- Search moved into the menu (top). -->
+		<form class="search-pill mm-search display-f align-items-stretch" role="search" onsubmit={submitSearch}>
+			<input
+				class="search-input"
+				type="search"
+				placeholder="Pretraži pomoć…"
+				aria-label="Pretraži pomoć"
+				bind:value={searchQuery}
+			/>
+			{#if searchQuery}
+				<button class="search-clear" type="button" aria-label="Očisti pretragu" onclick={clearSearch}>
+					<CloseIcon size={24} />
+				</button>
+			{/if}
+			<button class="search-btn" type="submit" aria-label="Pretraži">
+				<SearchIcon size={26} />
+			</button>
+		</form>
+
+		<nav class="mm-nav column-nowrap custom-scrollbar" aria-label="Glavni izbornik">
+			{#each NAV as item (item.label)}
+				{#if item.children}
+					<RailGroup
+						label={item.label}
+						icon={item.icon}
+						items={item.children}
+						open={openGroups.has(item.label)}
+						hasNew={navSection(item) ? sectionHasNew(navSection(item)!) : false}
+						onToggle={() => toggleGroup(item.label)}
+					/>
+				{:else}
+					<RailLink
+						href={item.href}
+						label={item.label}
+						icon={item.icon}
+						active={isActive(item.href)}
+						hasNew={navSection(item) ? sectionHasNew(navSection(item)!) : false}
+					/>
+				{/if}
+			{/each}
+		</nav>
+
+		<!-- Logout at the bottom of the menu. -->
+		<button class="mm-logout display-f align-items-center gap-0-7" type="button" onclick={handleLogout} disabled={loggingOut}>
+			<LogoutIcon size={24} />
+			<span>Odjava</span>
+		</button>
+	</div>
+{/if}
 
 <style>
 	/* Layout shell — rail + body. Colours that map to the library palette use
@@ -531,6 +646,24 @@
 	.admin-topbar {
 		padding: 0.7rem 3rem;
 		background: #ffffff;
+	}
+
+	/* Hamburger: desktop-hidden; revealed ≤900px (see the responsive block). */
+	.topbar-hamburger {
+		display: none;
+		align-items: center;
+		justify-content: center;
+		flex: 0 0 auto;
+		padding: 0.4rem;
+		border: none;
+		border-radius: 8px;
+		background: transparent;
+		color: #102e66;
+		cursor: pointer;
+		transition: background-color 0.15s ease;
+	}
+	.topbar-hamburger:hover {
+		background: rgba(16, 46, 102, 0.08);
 	}
 
 	/* Search: YouTube-style. Input + button share ONE pill; the button is a
@@ -760,46 +893,186 @@
 		flex: 1 1 auto;
 	}
 
-	/* ---- Responsive: collapse the rail to a top strip on small screens ---- */
-	@media (max-width: 820px) {
+	/* ── Mobile full-screen menu overlay (≤900px) ─────────────────────────────────
+	   A full-viewport blue panel opened by the top-bar hamburger. Structure: brand + ×,
+	   then the search pill, the scrollable section nav, and logout pinned at the bottom. */
+	.mobile-menu {
+		position: fixed;
+		inset: 0;
+		z-index: 100;
+		color: #fff;
+		padding: 1rem 1.1rem calc(1rem + env(safe-area-inset-bottom));
+		gap: 0.6rem;
+		/* Use the small-viewport unit so mobile browser chrome doesn't clip the bottom. */
+		height: 100dvh;
+	}
+	.mm-head {
+		flex: 0 0 auto;
+		padding: 0.25rem 0.25rem 0.5rem;
+	}
+	.mm-brand {
+		padding: 0;
+		font-weight: 700;
+		font-size: 1.3rem;
+		white-space: nowrap;
+	}
+	.mm-close {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.5rem;
+		height: 2.5rem;
+		padding: 0;
+		border: none;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.14);
+		color: #fff;
+		cursor: pointer;
+		flex: 0 0 auto;
+	}
+	.mm-close:hover {
+		background: rgba(255, 255, 255, 0.24);
+	}
+	/* Search pill inside the menu: same .search-pill, but roomier — taller, more left
+	   padding on the input and a wider search button so it isn't cramped. */
+	.mm-search {
+		flex: 0 0 auto;
+		max-width: none;
+		margin: 0.25rem 0 0.5rem;
+		min-height: 3.1rem;
+		padding-left: 1.5rem;
+	}
+	.mm-search :global(.search-input) {
+		font-size: 1.05rem;
+	}
+	.mm-search :global(.search-btn) {
+		width: 4.2rem;
+	}
+	/* Scrollable nav fills the space between search and logout. */
+	.mm-nav {
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow-y: auto;
+		gap: 0.15rem;
+		padding-right: 0.25rem;
+	}
+	/* Logout row pinned at the bottom. */
+	.mm-logout {
+		flex: 0 0 auto;
+		width: 100%;
+		padding: 0.9rem 0.9rem;
+		border: none;
+		border-radius: 10px;
+		background: rgba(255, 255, 255, 0.12);
+		color: #fff;
+		font-family: inherit;
+		font-size: 1.1rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background-color 0.15s ease;
+	}
+	.mm-logout:hover:not(:disabled) {
+		background: rgba(255, 255, 255, 0.22);
+	}
+	.mm-logout:disabled {
+		opacity: 0.6;
+		cursor: default;
+	}
+
+	/* ---- Responsive: ≤900px → hide the desktop rail, use the hamburger overlay ---- */
+	@media (max-width: 900px) {
+		/* Lock page scroll behind an open overlay (notifications sheet / hamburger menu) so
+		   scrolling the overlay doesn't bleed into the page behind it. */
+		:global(body.overlay-open) {
+			overflow: hidden;
+		}
+		/* Single column: the blue rail is gone, content is full-width. */
 		.admin-shell,
 		.admin-shell.rail-collapsed {
 			grid-template-columns: 1fr;
 		}
-		/* The collapse toggle is a desktop-only affordance; the top-strip layout
-		   handles small screens on its own. Neutralise any collapsed overrides. */
+		/* Mobile scroll model: DON'T pin the shell to a fixed 100dvh and clip (that's the
+		   desktop "inner divs scroll" model). On phones a fixed dvh fights the browser's
+		   hide/show address bar → white gap + snap-back. Instead let the shell grow with its
+		   content and the PAGE (body) scroll naturally. */
+		.admin-shell {
+			height: auto;
+			min-height: 100dvh;
+		}
+		.admin-body {
+			min-height: 0;
+		}
+		.admin-content {
+			overflow: visible; /* body scrolls; don't clip the page */
+			min-height: 0;
+		}
+		/* Any per-page section that bounded itself to scroll internally (e.g. profil) should
+		   flow naturally now, so the whole page scrolls as one. */
+		.admin-content > :global(section) {
+			overflow: visible;
+			min-height: 0;
+		}
+		.admin-rail,
 		.rail-toggle {
 			display: none;
 		}
-		.rail-collapsed .admin-rail {
-			align-items: center;
-			padding: 0.8rem 1rem;
-		}
-		.rail-collapsed .rail-brand-text {
-			display: inline;
-		}
-		.admin-rail {
-			flex-direction: row;
-			flex-wrap: wrap;
-			align-items: center;
-			gap: 0.4rem;
-			padding: 0.8rem 1rem;
-		}
-		.rail-brand {
-			padding: 0 0.5rem;
-			flex: 1 1 100%;
-		}
-		.rail-nav {
-			flex-direction: row;
-			flex-wrap: wrap;
-			flex: 1 1 100%;
+		/* Reveal the hamburger; tighten the top bar. */
+		.topbar-hamburger {
+			display: inline-flex;
 		}
 		.admin-topbar {
-			padding: 1rem;
+			padding: 0.7rem 1rem;
 			gap: 0.8rem;
 		}
-		.user-name {
+		/* On mobile the top-bar search moves INTO the menu; hide the top-bar copy. */
+		.admin-topbar .search-pill {
 			display: none;
+		}
+		/* Compact right cluster: keep bell + avatar; drop the name + the top-bar logout
+		   (logout lives at the bottom of the menu). */
+		.user-name,
+		.topbar-logout {
+			display: none;
+		}
+		.topbar-right {
+			gap: 0.6rem;
+		}
+		/* Bigger, clearer "new notifications" dot on the bell (was too small on phones). */
+		.notif-dot {
+			top: 0.15rem;
+			right: 0.15rem;
+			width: 0.85rem;
+			height: 0.85rem;
+		}
+		/* Notifications panel: on phones the narrow bell-anchored dropdown (30rem, hugging the
+		   right edge) is awkward. Make it a near-full-width sheet fixed just below the top bar,
+		   inset from both edges, height-capped to the viewport so the list scrolls inside. */
+		.notif-panel {
+			position: fixed;
+			top: 3.75rem; /* just under the top bar */
+			left: 0.75rem;
+			right: 0.75rem;
+			width: auto;
+			max-width: none;
+			transform-origin: top right;
+		}
+		/* Slightly tighter header + smaller title on the sheet. */
+		.notif-head {
+			padding: 1.1rem 1.25rem 0.9rem;
+		}
+		.notif-title {
+			font-size: 1.35rem;
+		}
+		.notif-count {
+			font-size: 1.15rem;
+		}
+		/* Show ~4 notices, then scroll. overscroll-behavior:contain stops the scroll from
+		   chaining to the page behind once the list hits its top/bottom. */
+		.notif-list {
+			max-height: 25rem; /* ~4 items */
+			overflow-y: auto;
+			overscroll-behavior: contain;
+			flex: 0 1 auto;
 		}
 		.admin-content {
 			padding: 1.25rem 1rem;
