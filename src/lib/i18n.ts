@@ -20,6 +20,8 @@ const hr: Dict = {
 	'auth.imageAlt': 'Streličarstvo',
 	'auth.forgotLink': 'Zaboravili ste lozinku?',
 	'auth.backToLogin': 'Natrag na prijavu',
+	'auth.showPassword': 'Prikaži lozinku',
+	'auth.hidePassword': 'Sakrij lozinku',
 	// Forgot-password (request a reset link)
 	'forgot.title': 'Zaboravljena lozinka',
 	'forgot.intro': 'Unesite svoj email. Ako postoji račun, poslat ćemo vam poveznicu za postavljanje nove lozinke.',
@@ -63,6 +65,8 @@ const en: Dict = {
 	'auth.imageAlt': 'Archery',
 	'auth.forgotLink': 'Forgot your password?',
 	'auth.backToLogin': 'Back to login',
+	'auth.showPassword': 'Show password',
+	'auth.hidePassword': 'Hide password',
 	'forgot.title': 'Forgot password',
 	'forgot.intro': 'Enter your email. If an account exists, we’ll send you a link to set a new password.',
 	'forgot.submit': 'Send reset link',

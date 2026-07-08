@@ -67,7 +67,7 @@
 			<span class="rail-new-dot" class:compact aria-label="Novo" title="Novo"></span>
 		{/if}
 		{#if !compact}
-			<span class="rail-chevron" class:open class:has-dot={hasNew} aria-hidden="true">
+			<span class="rail-chevron" class:open aria-hidden="true">
 				<ChevronIcon size={16} direction="right" />
 			</span>
 		{/if}
@@ -132,44 +132,42 @@
 		align-items: center;
 		transition: transform 0.18s ease;
 	}
-	/* When the gold dot is present it takes the `margin-left:auto` (pushing to the far
-	   end) and the chevron just sits after it with a small gap. */
-	.rail-chevron.has-dot {
-		margin-left: 0.55rem;
-	}
 	.rail-chevron.open {
 		transform: rotate(90deg);
 	}
 
+	/* Anchor for the absolutely-positioned dot. */
+	.rail-group-btn {
+		position: relative;
+	}
 	/* Gold "new content" dot: slow ease-in-out infinite pulse; stays until this admin
-	   opens the section. Sits before the chevron (far side of the row). */
+	   opens the section. Fixed right offset (2.6rem) so it aligns in ONE column with the
+	   plain-link dots — the chevron sits further right in normal flow. */
 	.rail-new-dot {
-		margin-left: auto;
+		position: absolute;
+		top: 50%;
+		right: 2.6rem;
+		transform: translateY(-50%);
 		flex: 0 0 auto;
 		width: 0.6rem;
 		height: 0.6rem;
 		border-radius: 50%;
 		background: #f2c94c; /* gold */
-		animation: rail-new-pulse 2.2s ease-in-out infinite;
+		animation: rail-new-pulse 1.3s ease-in-out infinite;
 	}
 	.rail-new-dot.compact {
-		margin-left: 0;
-		position: absolute;
 		top: 0.45rem;
 		right: 0.45rem;
+		transform: none;
 	}
-	.rail-group-btn.compact {
-		position: relative;
-	}
+	/* Fully appears then fully disappears (0 → 1 → 0), on a quicker cycle. */
 	@keyframes rail-new-pulse {
 		0%,
 		100% {
-			opacity: 0.35;
-			box-shadow: 0 0 0 0 rgba(242, 201, 76, 0);
+			opacity: 0;
 		}
 		50% {
 			opacity: 1;
-			box-shadow: 0 0 0 3px rgba(242, 201, 76, 0.25);
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {

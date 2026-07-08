@@ -10,6 +10,8 @@
 	import { page } from '$app/state';
 	import { t } from '$lib/i18n';
 	import { login, AuthError } from '$lib/auth';
+	import EyeIcon from '$lib/components/icons/EyeIcon.svelte';
+	import EyeOffIcon from '$lib/components/icons/EyeOffIcon.svelte';
 
 	const locale = $derived(page.data.locale);
 
@@ -33,6 +35,7 @@
 
 	let email = $state('');
 	let password = $state('');
+	let showPassword = $state(false);
 	let submitting = $state(false);
 	let errorMsg = $state('');
 
@@ -84,18 +87,31 @@
 					<label for="login-email">{t(locale, 'auth.email')}</label>
 				</div>
 
-				<div class="field">
+				<div class="field field--pw">
+					<!-- value + oninput (not bind:value) so `type` can toggle with the eye button;
+					     Svelte forbids a dynamic `type` alongside bind:value. The label stays
+					     immediately after the input so the floating-label `+ label` selector holds. -->
 					<input
 						id="login-password"
-						type="password"
+						type={showPassword ? 'text' : 'password'}
 						name="password"
 						placeholder=" "
 						autocomplete="current-password"
-						bind:value={password}
+						value={password}
+						oninput={(e) => (password = e.currentTarget.value)}
 						required
 						disabled={submitting}
 					/>
 					<label for="login-password">{t(locale, 'auth.password')}</label>
+					<button
+						class="pw-eye"
+						type="button"
+						aria-label={showPassword ? t(locale, 'auth.hidePassword') : t(locale, 'auth.showPassword')}
+						aria-pressed={showPassword}
+						onclick={() => (showPassword = !showPassword)}
+					>
+						{#if showPassword}<EyeIcon size={20} />{:else}<EyeOffIcon size={20} />{/if}
+					</button>
 				</div>
 
 				{#if errorMsg}
@@ -212,6 +228,36 @@
 	}
 	.field input:disabled {
 		opacity: 0.6;
+	}
+
+	// Password field: leave room on the right for the show/hide eye button.
+	.field--pw input {
+		padding-right: $sp * 3.4;
+	}
+	.pw-eye {
+		position: absolute;
+		top: 50%;
+		right: $sp * 0.6;
+		transform: translateY(-50%);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.2rem;
+		height: 2.2rem;
+		padding: 0;
+		border: 0;
+		border-radius: $radius;
+		background: none;
+		color: $label-grey;
+		cursor: pointer;
+		transition:
+			color 0.15s ease,
+			background-color 0.15s ease;
+
+		&:hover {
+			color: $navy;
+			background: rgba(16, 46, 102, 0.06);
+		}
 	}
 	// Kill the browser AUTOFILL background tint (Chrome/Safari paint a yellow/blue
 	// fill once the field matches a saved value — this is the bg-colour change

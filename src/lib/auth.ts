@@ -161,6 +161,22 @@ export function resetPassword(
 	return adminRequest('/auth/reset-password', { method: 'POST', body: { token, password }, fetch });
 }
 
+// POST /auth/change-password { currentPassword, newPassword } — the signed-in admin
+// changes their own password. Throws AuthError: 401 if the current password is wrong,
+// 400 if the new one is too short / fields missing. Revokes the admin's OTHER sessions
+// server-side (the caller's own stays valid).
+export function changePassword(
+	currentPassword: string,
+	newPassword: string,
+	fetch?: typeof globalThis.fetch
+): Promise<{ ok: true }> {
+	return adminRequest('/auth/change-password', {
+		method: 'POST',
+		body: { currentPassword, newPassword },
+		fetch
+	});
+}
+
 // GET /auth/me — the current admin, or null if we can't confirm a valid session.
 // Used by the /nadzorna-ploca guard. `headers` lets the SSR load forward the browser's
 // Cookie. Returns null (→ guard redirects to /prijava) for BOTH a 401 (no/expired
