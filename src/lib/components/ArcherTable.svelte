@@ -182,7 +182,7 @@
 	.ar-table th {
 		text-align: left;
 		padding: 0.65rem 0.75rem;
-		font-size: 0.95rem;
+		font-size: 1.05rem;
 		font-weight: 700;
 		color: #1b1b1b;
 		border-bottom: 1px solid $border;
@@ -314,7 +314,7 @@
 		}
 		.ar-table th {
 			padding: 0.5rem 0.5rem;
-			font-size: 0.82rem;
+			font-size: 0.9rem;
 			font-weight: 800;
 		}
 		.ar-table td {
