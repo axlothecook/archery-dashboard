@@ -358,4 +358,54 @@
 	}
 	/* All three action icons share the same base colour + size; the eye's glyph
 	   (eye vs eye-off) alone conveys the hidden state, so it isn't recoloured. */
+
+	/* Phone: compact the whole table so far more fits before the horizontal scroll — cut the
+	   very wide title column, tighten the big inter-column gaps, shrink pills + cell padding.
+	   The far columns (Stanje/actions) are still reached by swiping the table sideways. */
+	@media (max-width: 900px) {
+		.art-table th {
+			padding: 0.5rem 0.5rem;
+			font-size: 0.82rem;
+		}
+		.art-table td {
+			padding: 0.5rem 0.5rem;
+			font-size: 0.85rem;
+		}
+		/* Cut the Naslov column right down. */
+		.art-table :is(th, td).art-col-title,
+		.art-title {
+			width: 11rem;
+			max-width: 11rem;
+		}
+		/* Tighten the (desktop-wide) 3.5rem gaps before each right column. */
+		.art-table :is(th, td).art-col-mid,
+		.art-table :is(th, td).art-actions-cell,
+		.art-table :is(th, td).art-col-first-mid {
+			padding-left: 1.25rem;
+		}
+		.art-table :is(th, td).art-col-vrsta {
+			width: 6.5rem;
+		}
+		.art-table :is(th, td).art-col-datum {
+			width: 5.5rem;
+		}
+		.art-table :is(th, td).art-col-stanje {
+			width: 6.5rem;
+		}
+		.art-table :is(th, td).art-actions-cell {
+			width: auto;
+		}
+		/* Smaller Vrsta + Stanje pills. */
+		.art-badge,
+		.art-state {
+			min-width: 5rem;
+			font-size: 0.75rem;
+			padding: 0.35rem 0.5rem;
+		}
+		.art-poster,
+		.art-poster--empty {
+			width: 2.8rem;
+			height: 1.75rem;
+		}
+	}
 </style>
