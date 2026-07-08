@@ -15,6 +15,7 @@
 	} from '$lib/inquiries';
 	import { showToast } from '$lib/toasts';
 	import InquiryIcon from '$lib/components/icons/InquiryIcon.svelte';
+	import ChevronIcon from '$lib/components/icons/ChevronIcon.svelte';
 
 	let { data } = $props();
 
@@ -122,7 +123,7 @@
 
 <svelte:head><title>Upiti · VSK</title></svelte:head>
 
-<section class="in-section">
+<section class="in-section" class:detail-open={selected}>
 	<div class="mgmt-head display-f align-items-center gap-0-7">
 		<InquiryIcon size={48} />
 		<div>
@@ -151,7 +152,7 @@
 		{/each}
 	</div>
 
-	<div class="in-layout">
+	<div class="in-layout" class:has-selection={selected}>
 		<!-- LIST -->
 		<div class="panel bg-white in-list-panel column-nowrap">
 			<div class="in-list custom-scrollbar">
@@ -187,7 +188,13 @@
 				<p class="in-placeholder">Odaberite upit s popisa za pregled i odgovor.</p>
 			{:else}
 				<div class="in-detail custom-scrollbar">
-					<div class="in-detail-head display-f align-items-center gap-1">
+					<div class="in-detail-head display-f align-items-center gap-0-7">
+						<!-- Phone-only: back to the list (the list + detail are shown one-at-a-time
+						     on a phone, so a selected inquiry needs a way back). -->
+						<button class="in-back cursor-pointer display-f align-items-center gap-0-4" type="button" onclick={() => (selectedId = null)}>
+							<ChevronIcon direction="left" size={18} />
+							Popis
+						</button>
 						<h3 class="in-detail-name">{senderName(selected)}</h3>
 					</div>
 
@@ -413,17 +420,39 @@
 	.in-detail-head {
 		margin-bottom: 1rem;
 	}
+	/* Back-to-list button is phone-only (desktop shows both panes at once). */
+	.in-back {
+		display: none;
+		border: 1px solid #d7dee8;
+		border-radius: 8px;
+		background: #fff;
+		padding: 0.4rem 0.7rem;
+		font-family: inherit;
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: $navy;
+		flex: 0 0 auto;
+	}
+	.in-back:hover {
+		background: #f1f4fa;
+	}
 	.in-detail-name {
 		margin: 0;
 		font-size: 1.2rem;
 		font-weight: 700;
 		color: $navy;
 	}
-	.in-reply-label,
 	.in-message-label {
 		font-size: 0.8rem;
 		font-weight: 600;
 		color: #5b6577;
+	}
+	/* "Odgovori e-poštom": styled like the archer view page's Biografija section title
+	   (navy, 1.15rem, bold) so it reads as a section header. */
+	.in-reply-label {
+		font-size: 1.15rem;
+		font-weight: 700;
+		color: $navy;
 	}
 	.in-fields {
 		margin: 0 0 1rem;
@@ -437,7 +466,9 @@
 		font-size: 0.92rem;
 	}
 	.in-field-row dt {
-		color: #9aa3b2;
+		/* Match the archer view page's basic-data labels (Uloga / Luk / Spol …). */
+		color: #5b6577;
+		font-weight: 600;
 	}
 	.in-field-row dd {
 		margin: 0;
@@ -522,8 +553,60 @@
 		background: #0c2350;
 	}
 	@media (max-width: 900px) {
+		/* Fit the page to the viewport so only the active pane scrolls (not the page). */
+		.in-section {
+			height: calc(100dvh - 70px - 44px);
+			min-height: 0;
+		}
+		.mgmt-head {
+			flex: 0 0 auto;
+		}
+		/* Tabs become the TOP of the white list card: white bg, edge-to-edge, rounded top
+		   corners, no gap to the list below. Hidden while a detail is open (you're viewing a
+		   single inquiry then). */
+		.in-tabs {
+			flex: 0 0 auto;
+			margin: 0 -1rem;
+			padding: 1rem 1rem 0.85rem;
+			background: #fff;
+			border-radius: 0;
+		}
+		.in-section.detail-open .in-tabs {
+			display: none;
+		}
+		/* Master–detail: show ONE pane at a time. No selection → the list fills the space;
+		   a selected inquiry → the detail replaces it (with a "Popis" back button). Stacking
+		   both (the old behaviour) wasted half the screen on an empty detail card. */
 		.in-layout {
-			grid-template-columns: 1fr;
+			display: flex;
+			flex-direction: column;
+			min-height: 0;
+		}
+		.in-list-panel,
+		.in-detail-panel {
+			/* Fill the frame + go edge-to-edge (cancel the content area's 1rem side padding). */
+			flex: 1 1 auto;
+			min-height: 0;
+			max-height: none;
+			margin-left: -1rem;
+			margin-right: -1rem;
+			border-radius: 0;
+		}
+		/* Default (no selection): list shown, detail hidden. */
+		.in-detail-panel {
+			display: none;
+		}
+		/* A selection swaps them: hide the list, show the detail full-screen. */
+		.in-layout.has-selection .in-list-panel {
+			display: none;
+		}
+		.in-layout.has-selection .in-detail-panel {
+			display: flex;
+		}
+		.in-back {
+			display: inline-flex;
+			/* A bit more breathing room between the back button and the title next to it. */
+			margin-right: 0.5rem;
 		}
 	}
 </style>
