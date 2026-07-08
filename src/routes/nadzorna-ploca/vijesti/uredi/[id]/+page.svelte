@@ -656,14 +656,21 @@
 			padding: 0.9rem 1rem calc(0.9rem + env(safe-area-inset-bottom));
 			box-shadow: 0 -4px 16px rgba(16, 46, 102, 0.12);
 			gap: 0.4rem;
+			align-items: stretch;
 		}
-		/* Three buttons share the row evenly, labels on ONE line (smaller font). */
+		/* Buttons share the row evenly, one line, and FIXED height so they're all identical
+		   height regardless of border/label. */
 		.form-actions .btn {
 			flex: 1 1 0;
 			min-width: 0;
-			padding: 0.65rem 0.4rem;
+			height: 2.75rem;
+			padding: 0 0.4rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 			font-size: 0.8rem;
 			white-space: nowrap;
+			line-height: 1;
 		}
 		/* White panel edge-to-edge (cancel the content area's 1rem side padding) + tighter
 		   inner form padding so fields get more room. */

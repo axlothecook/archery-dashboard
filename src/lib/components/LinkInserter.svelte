@@ -124,4 +124,11 @@
 		font-size: 0.78rem;
 		color: #9aa3b2;
 	}
+	/* Hide the helper text on small screens to save vertical space (the input placeholder +
+	   the button title already convey the format). */
+	@media (max-width: 760px) {
+		.li-help {
+			display: none;
+		}
+	}
 </style>
