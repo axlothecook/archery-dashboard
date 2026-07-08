@@ -635,17 +635,24 @@
 			z-index: 40;
 			padding: 0.9rem 1rem calc(0.9rem + env(safe-area-inset-bottom));
 			box-shadow: 0 -4px 16px rgba(16, 46, 102, 0.12);
-			/* Three buttons share the row evenly and their labels stay on ONE line. */
+			/* Three buttons share the row evenly, and stretch so they're all the SAME height. */
 			gap: 0.4rem;
+			align-items: stretch;
 		}
 		.form-actions .btn {
 			flex: 1 1 0;
 			min-width: 0;
-			padding: 0.65rem 0.4rem;
+			/* FIXED height + flex-centred text → every button is identical height regardless
+			   of its border colour / label. (Padding alone let the middle one render shorter.) */
+			height: 2.75rem;
+			padding: 0 0.4rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 			font-size: 0.8rem;
 			white-space: nowrap;
 			text-align: center;
-			justify-content: center;
+			line-height: 1;
 		}
 		.panel {
 			padding-bottom: 5rem; /* clear the fixed action bar */
