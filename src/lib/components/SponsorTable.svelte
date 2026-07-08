@@ -115,11 +115,17 @@
 	.sp-table th {
 		text-align: left;
 		padding: 0.65rem 0.75rem;
-		font-size: 0.95rem;
+		font-size: 1.05rem;
 		font-weight: 700;
 		color: #1b1b1b;
 		border-bottom: 1px solid $border;
 		white-space: nowrap;
+		/* Sticky header: stays visible while the list scrolls vertically inside .sp-scroll.
+		   Opaque white bg so rows don't show through; z-index over the cells. */
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		background: #fff;
 	}
 	.sp-table td {
 		padding: 0.7rem 0.75rem;
@@ -150,6 +156,9 @@
 	}
 	.sp-name {
 		display: block;
+		/* Larger than the default cell text so the sponsor name reads as the row's primary
+		   label (the row is otherwise just a logo + actions). */
+		font-size: 1.05rem;
 	}
 	/* Scoped under .sp-table so it outranks the base `.sp-table td` padding regardless of
 	   rule order — pulls the pen/trash well left, off the panel edge. */
@@ -173,5 +182,28 @@
 	}
 	.sp-act--del:hover {
 		color: $red;
+	}
+
+	/* Phone: compact font/padding + weight-800 headers + smaller logo, matching the other
+	   admin tables. Actions stay to the right (name column takes the slack). */
+	@media (max-width: 900px) {
+		.sp-table th {
+			padding: 0.5rem 0.5rem;
+			font-size: 0.9rem;
+			font-weight: 800;
+		}
+		.sp-table td {
+			padding: 0.5rem 0.5rem;
+			font-size: 0.85rem;
+		}
+		.sp-logo,
+		.sp-logo--empty {
+			width: 3rem;
+			height: 2rem;
+		}
+		/* Keep the icons off the panel edge (smaller than the wide desktop 4rem). */
+		.sp-table td.sp-actions-cell {
+			padding-right: 1.5rem;
+		}
 	}
 </style>
