@@ -152,4 +152,21 @@
 			display: none;
 		}
 	}
+
+	/* Phone: the fixed 22rem stack + right offset can overflow / clip on a narrow screen.
+	   Inset the stack from BOTH edges with an equal gap so the toast fits with a margin on
+	   the left and right (and a comfortable top gap below the top bar). */
+	@media (max-width: 900px) {
+		.toast-stack {
+			top: 0.75rem;
+			left: 0.75rem;
+			right: 0.75rem;
+			width: auto;
+		}
+		/* Toast spans the inset stack; still right-aligned within it (which is now full-ish
+		   width), so it reads as a top-of-screen banner with side margins. */
+		.toast {
+			width: 100%;
+		}
+	}
 </style>

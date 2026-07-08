@@ -46,6 +46,16 @@
 	const selectedItems = $derived(WEEK_ITEMS[selectedDay] ?? []);
 	const listKey = $derived(`${weekOffset}:${selectedDay}`);
 
+	// All week offsets that touch the current month → drives the pager indicator (one line
+	// per browsable week; the current week is highlighted). Scan a generous range and keep
+	// the contiguous run of in-month weeks around offset 0.
+	const weekOffsets = (() => {
+		const offs: number[] = [];
+		for (let o = -6; o <= 6; o++) if (weekTouchesCurMonth(o)) offs.push(o);
+		return offs;
+	})();
+	const weekIndex = $derived(weekOffsets.indexOf(weekOffset));
+
 	// Can we step to the previous / next week and still stay within the current month?
 	$effect(() => {
 		canPrev = weekTouchesCurMonth(weekOffset - 1);
@@ -68,19 +78,72 @@
 		selectedDay = i;
 	}
 	const isToday = (i: number) => weekOffset === 0 && i === todayIndex;
+
+	// Swipe to page weeks (like the public schedule): drag the day strip horizontally — a
+	// left swipe → next week, right → previous. Works for touch/pen AND mouse-drag (desktop
+	// has no arrows now). Only a mostly-horizontal drag past the threshold commits; the
+	// guarded prev/next no-op at the month's first/last week. The week strip slides in the
+	// swipe direction (keyed :key block below).
+	// Swipe: commit AS SOON AS the horizontal drag passes the threshold DURING the move
+	// (not on pointerup) — that's what makes it feel responsive instead of clunky. `armed`
+	// ensures one week-change per gesture; it re-arms on the next pointerdown.
+	const SWIPE_MIN = 28; // px horizontal travel to trigger a week change
+	let swipeX = 0;
+	let swipeY = 0;
+	let armed = false;
+	function onPointerDown(e: PointerEvent) {
+		armed = true;
+		swipeX = e.clientX;
+		swipeY = e.clientY;
+		try {
+			(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+		} catch {
+			/* capture unsupported → pointermove still fires */
+		}
+	}
+	function onPointerMove(e: PointerEvent) {
+		if (!armed) return;
+		const dx = e.clientX - swipeX;
+		const dy = e.clientY - swipeY;
+		// Ignore mostly-vertical drags (let the page scroll).
+		if (Math.abs(dx) < SWIPE_MIN || Math.abs(dx) < Math.abs(dy)) return;
+		armed = false; // fire once per gesture
+		if (dx < 0) nextWeek();
+		else prevWeek();
+	}
+	function endSwipe() {
+		armed = false;
+	}
 </script>
 
-<section class="panel bg-white schedule">
-	<div class="sched-days display-f gap-0-5">
-		{#each weekDates as d, i (i)}
-			<ScheduleDay
-				name={HR_WEEKDAYS_SHORT[i]}
-				dayNum={d.getDate()}
-				selected={i === selectedDay}
-				today={isToday(i)}
-				onSelect={() => selectDay(i)}
-			/>
-		{/each}
+<section
+	class="panel bg-white schedule"
+	role="group"
+	aria-label="Tjedni raspored — povucite lijevo ili desno za promjenu tjedna"
+	onpointerdown={onPointerDown}
+	onpointermove={onPointerMove}
+	onpointerup={endSwipe}
+	onpointercancel={endSwipe}
+>
+	<!-- Week strip: swipe left/right to page weeks; it slides in the swipe direction. The
+	     `overflow: hidden` wrapper clips the sliding strip so it doesn't bleed past the panel. -->
+	<div class="sched-days-wrap">
+		{#key weekOffset}
+			<div
+				class="sched-days display-f gap-0-5"
+				in:fly={{ x: dir * 60, duration: 220, easing: cubicOut }}
+			>
+				{#each weekDates as d, i (i)}
+					<ScheduleDay
+						name={HR_WEEKDAYS_SHORT[i]}
+						dayNum={d.getDate()}
+						selected={i === selectedDay}
+						today={isToday(i)}
+						onSelect={() => selectDay(i)}
+					/>
+				{/each}
+			</div>
+		{/key}
 	</div>
 
 	{#key listKey}
@@ -92,6 +155,24 @@
 			{/each}
 		</ul>
 	{/key}
+
+	<!-- Week pager: one line per browsable week (of the current month); the current week
+	     is highlighted, so it's clear WHERE you are and how many weeks there are to swipe
+	     through. Also tappable to jump directly to a week. -->
+	<div class="sched-pager display-f align-items-center justify-content-center gap-0-5" aria-hidden="true">
+		{#each weekOffsets as off, idx (off)}
+			<button
+				class="sched-pager-line"
+				class:active={idx === weekIndex}
+				type="button"
+				aria-label={`Tjedan ${idx + 1}`}
+				onclick={() => {
+					dir = off > weekOffset ? 1 : -1;
+					weekOffset = off;
+				}}
+			></button>
+		{/each}
+	</div>
 </section>
 
 <style>
@@ -105,9 +186,20 @@
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
 		height: 20rem;
 	}
-	.sched-days {
+	/* Clips the sliding week strip so it doesn't bleed past the panel during the fly-in.
+	   touch-action pan-y keeps vertical page scroll working while we handle horizontal swipe. */
+	.sched-days-wrap {
+		overflow: hidden;
 		margin-bottom: 1rem;
 		flex: 0 0 auto;
+		touch-action: pan-y;
+	}
+	.sched-days {
+		flex: 0 0 auto;
+	}
+	/* The whole panel is a swipe target; hint the browser we handle horizontal gestures. */
+	.schedule {
+		touch-action: pan-y;
 	}
 	/* Day-item list fills the remaining height and scrolls when the day has more items
 	   than fit. Scrollbar styling comes from the shared `.custom-scrollbar` class. */
@@ -117,11 +209,40 @@
 		list-style: none;
 		flex: 1 1 auto;
 		overflow-y: auto;
+		/* Give HORIZONTAL drags over the list to our swipe handler (only vertical scrolls the
+		   list) — otherwise the list swallows the gesture and swiping in the MIDDLE of the
+		   panel did nothing (worked only on the side edges). */
+		touch-action: pan-y;
 	}
 	.sched-empty {
 		list-style: none;
 		padding: 1.25rem 0;
 		font-size: 0.88rem;
 		color: #9aa3b2;
+	}
+
+	/* Week pager at the panel bottom: short lines, one per browsable week; the current week
+	   is the filled navy line. Signals position so the user knows swiping does something and
+	   how many weeks there are. */
+	.sched-pager {
+		flex: 0 0 auto;
+		margin-top: 0.9rem;
+		padding-top: 0.2rem;
+	}
+	.sched-pager-line {
+		width: 1.6rem;
+		height: 0.28rem;
+		padding: 0;
+		border: 0;
+		border-radius: 999px;
+		background: #d7dee8; /* inactive */
+		cursor: pointer;
+		transition: background-color 0.15s ease;
+	}
+	.sched-pager-line:hover {
+		background: #b8c2d1;
+	}
+	.sched-pager-line.active {
+		background: #102e66; /* current week */
 	}
 </style>

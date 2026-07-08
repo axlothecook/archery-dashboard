@@ -12,7 +12,6 @@
 	import AddIcon from '$lib/components/icons/AddIcon.svelte';
 	import CalendarIcon from '$lib/components/icons/CalendarIcon.svelte';
 	import MailAltIcon from '$lib/components/icons/MailAltIcon.svelte';
-	import ChevronIcon from '$lib/components/icons/ChevronIcon.svelte';
 	import TaskSquareIcon from '$lib/components/icons/TaskSquareIcon.svelte';
 	import AdministrationIcon from '$lib/components/icons/AdministrationIcon.svelte';
 	import TeamMember from '$lib/components/TeamMember.svelte';
@@ -166,32 +165,14 @@
 		<!-- Schedule (item 20) + incoming mail, side by side (each half the width). -->
 		<div class="lower-row grid grid-cols-2 gap-2">
 			<div>
-				<div class="dash-heading-row display-f align-items-center justify-content-space-between">
+				<div class="dash-heading-row display-f align-items-center">
 					<h2 class="dash-heading display-f align-items-center gap-0-5">
 						<span class="head-ico"><CalendarIcon size={22} /></span>
 						Raspored
 					</h2>
-					<div class="display-f align-items-center gap-0-5">
-						<button
-							class="week-arrow cursor-pointer"
-							class:is-hidden={!canPrevWeek}
-							type="button"
-							aria-label="Prethodni tjedan"
-							onclick={() => schedule?.prevWeek()}
-						>
-							<ChevronIcon direction="left" size={20} />
-						</button>
-						<button
-							class="week-arrow cursor-pointer"
-							class:is-hidden={!canNextWeek}
-							type="button"
-							aria-label="Sljedeći tjedan"
-							onclick={() => schedule?.nextWeek()}
-						>
-							<ChevronIcon direction="right" size={20} />
-						</button>
-					</div>
 				</div>
+				<!-- Week paging is now by SWIPE (drag the day strip) — arrows removed, matching
+				     the public schedule page. -->
 				<SchedulePanel bind:this={schedule} bind:canPrev={canPrevWeek} bind:canNext={canNextWeek} />
 			</div>
 			<div>
@@ -264,6 +245,13 @@
 	.dash {
 		grid-template-columns: 3fr 1fr;
 	}
+	/* Grid/flex items default to min-width:auto and expand to fit their widest child — the
+	   wide Zadaci table (min-width) would blow the column past the viewport and scroll the
+	   whole PAGE. min-width:0 keeps the column at its track width so the table's own
+	   overflow-x-auto wrapper scrolls instead. */
+	.dash-main {
+		min-width: 0;
+	}
 	/* Extra breathing room between the right (Hitno/Tim) column and the screen edge
 	   (the fractional track absorbs the margin). The top margin drops "Hitno" down so
 	   it lines up with the greeting TITLE line (past the date), not the date. */
@@ -326,29 +314,6 @@
 	}
 	.tasks-add:hover {
 		background: #0c2350;
-	}
-
-	/* Week-nav arrows (outside the schedule panel). */
-	.week-arrow {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 2rem;
-		height: 2rem;
-		border: 1px solid #d7dee8;
-		border-radius: 50%;
-		background: #fff;
-		color: #102e66;
-		transition: background-color 0.15s ease;
-	}
-	.week-arrow:hover {
-		background: #eef1f3;
-	}
-	/* At the month's first/last week the corresponding arrow is hidden (keeps its
-	   slot so the other arrow doesn't shift). */
-	.week-arrow.is-hidden {
-		visibility: hidden;
-		pointer-events: none;
 	}
 
 	/* Lower row: schedule + mail side by side, each half the tasks width. Top gap
@@ -415,12 +380,52 @@
 	}
 
 	/* ---- Responsive ---- */
+	/* Tablet/laptop: collapse the two columns; the side column drops below the main. */
 	@media (max-width: 1100px) {
 		.dash {
 			grid-template-columns: 1fr;
 		}
 		.dash-side {
 			margin-right: 0; /* single column: no asymmetric right margin */
+			/* Drop the desktop alignment offset — it only made sense beside the greeting. */
+			margin-top: 1.5rem;
+		}
+	}
+
+	/* Phone (≤900px): stack everything, neutralise desktop spacing hacks, shrink the
+	   greeting, and let panels be full-width with their own scroll. */
+	@media (max-width: 900px) {
+		.dash {
+			gap: 1.25rem; /* tighter than the desktop gap-2 */
+		}
+		/* Greeting title down from 2.5rem so it doesn't dominate a small screen. */
+		.greeting-title {
+			font-size: 1.6rem;
+		}
+		.greeting-date {
+			font-size: 1rem;
+		}
+		/* Equal vertical rhythm between ALL stacked sections (greeting→Zadaci→Raspored→
+		   Pošta→Hitno→Administracija). The .dash grid gap (1.25rem) spaces the columns;
+		   match the lower-row's internal gap + the Zadaci→lower-row margin to it, and drop
+		   the desktop side-column offset so nothing is tighter or looser than the rest. */
+		.lower-row {
+			grid-template-columns: 1fr;
+			gap: 1.25rem;
+			margin-top: 1.25rem;
+		}
+		.dash-side {
+			margin-top: 0;
+		}
+		.dash-heading.mt {
+			margin-top: 1.25rem;
+		}
+		.dash-heading {
+			font-size: 1.15rem;
+		}
+		/* Slightly tighter panel padding on phones. */
+		.panel {
+			padding: 1.1rem 1.15rem;
 		}
 	}
 </style>

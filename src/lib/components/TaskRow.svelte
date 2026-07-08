@@ -194,4 +194,30 @@
 	.tasks-act:hover {
 		color: #187ff5;
 	}
+
+	/* Phone: compact the row so more of the table is visible before scrolling — smaller
+	   text, tighter cell padding, a narrower name column and smaller status pills. */
+	@media (max-width: 900px) {
+		td {
+			padding: 0.5rem 0.5rem;
+			font-size: 0.85rem;
+		}
+		.tasks-name {
+			max-width: 11rem;
+		}
+		.tasks-status {
+			/* Wide enough to hold the longest label ("Na čekanju") so EVERY pill is the same
+			   width/shape (min-width drives it; padding keeps them from touching the text). */
+			min-width: 6rem;
+			padding: 0.4rem 0.6rem;
+			font-size: 0.78rem;
+		}
+		.tasks-appr {
+			gap: 0.3rem;
+		}
+		.tasks-appr-btn {
+			width: 1.5rem;
+			height: 1.5rem;
+		}
+	}
 </style>

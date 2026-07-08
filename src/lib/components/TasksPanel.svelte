@@ -14,6 +14,7 @@
 	import ApproveIcon from '$lib/components/icons/ApproveIcon.svelte';
 	import TaskRow from '$lib/components/TaskRow.svelte';
 	import DashSelect from '$lib/components/DashSelect.svelte';
+	import ErrorPopup from '$lib/components/ErrorPopup.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import {
 		tasks,
@@ -49,6 +50,8 @@
 	let fDue = $state('');
 	// String-typed for the DashSelect binding; cast back to TaskStatus on submit.
 	let fStatus = $state<string>('pending');
+	// Standardized form-validation errors (top-centre, no timer).
+	let formErrors = $state<string[]>([]);
 	const anim = { duration: 150, start: 0.97, opacity: 0, easing: cubicOut };
 
 	// ISO (yyyy-mm-dd) ⇄ EU (dd/mm/yyyy) helpers for the Rok text field.
@@ -72,6 +75,7 @@
 		fAssignee = team[0]?.displayName ?? '';
 		fDue = '';
 		fStatus = 'pending';
+		formErrors = [];
 		modalOpen = true;
 	}
 	function openEdit(t: Task) {
@@ -80,6 +84,7 @@
 		fAssignee = t.assignee;
 		fDue = isoToEu(t.due);
 		fStatus = t.status;
+		formErrors = [];
 		modalOpen = true;
 	}
 	function closeModal() {
@@ -87,9 +92,20 @@
 	}
 	function submitModal(e: SubmitEvent) {
 		e.preventDefault();
-		if (!fTitle.trim()) return;
-		const status = fStatus as TaskStatus;
+		// All fields are mandatory (title, assignee, valid Rok). Errors show in the shared
+		// top-centre ErrorPopup (dashboard standard), not inline.
 		const dueIso = euToIso(fDue); // '' if blank/invalid
+		const errs: string[] = [];
+		if (!fTitle.trim()) errs.push('Unesite naziv zadatka.');
+		if (!fAssignee) errs.push('Odaberite kome je zadatak dodijeljen.');
+		if (!fDue.trim()) errs.push('Unesite rok (dd/mm/gggg).');
+		else if (!dueIso) errs.push('Rok mora biti u obliku dd/mm/gggg.');
+		if (errs.length > 0) {
+			formErrors = errs;
+			return;
+		}
+		formErrors = [];
+		const status = fStatus as TaskStatus;
 		if (editingId) {
 			updateTask(editingId, { title: fTitle, assignee: fAssignee, due: dueIso, status });
 		} else {
@@ -159,15 +175,15 @@
 		</header>
 		<form class="modal-form column-nowrap gap-1" onsubmit={submitModal}>
 			<label class="field column-nowrap gap-0-3">
-				<span class="field-label fw-600">Zadatak</span>
-				<input class="field-input w-full br-xs" type="text" bind:value={fTitle} required />
+				<span class="field-label fw-600">Zadatak <span class="req">*</span></span>
+				<input class="field-input w-full br-xs" type="text" bind:value={fTitle} />
 			</label>
 			<div class="field column-nowrap gap-0-3">
-				<span class="field-label fw-600">Dodijeljeno</span>
+				<span class="field-label fw-600">Dodijeljeno <span class="req">*</span></span>
 				<DashSelect options={assigneeOptions} bind:value={fAssignee} ariaLabel="Dodijeljeno" />
 			</div>
 			<label class="field column-nowrap gap-0-3">
-				<span class="field-label fw-600">Rok</span>
+				<span class="field-label fw-600">Rok <span class="req">*</span></span>
 				<input
 					class="field-input w-full br-xs"
 					type="text"
@@ -193,6 +209,8 @@
 			</div>
 		</form>
 	</div>
+	<!-- Shared top-centre, non-auto-dismiss error stack (dashboard form standard). -->
+	<ErrorPopup bind:messages={formErrors} />
 {/if}
 
 <ConfirmDialog bind:this={confirmDlg} />
@@ -223,6 +241,9 @@
 	.tasks-table {
 		border-collapse: collapse;
 		font-size: 1rem;
+		/* Keep the columns readable: below this the wrapper (.tasks-scroll overflow-x-auto)
+		   scrolls horizontally instead of squishing/truncating cells. */
+		min-width: 44rem;
 	}
 	/* Column titles: bigger, bold, black; icon (provided) sits to the left via .th-in.
 	   Sticky so they stay visible while the body scrolls. */
@@ -236,10 +257,16 @@
 		text-align: left;
 		padding: 0.65rem 0.75rem;
 		font-size: 1.02rem;
-		font-weight: 700;
+		font-weight: 800;
 		color: #1b1b1b;
 		border-bottom: 1px solid #eef1f3;
 		white-space: nowrap;
+	}
+	/* Extra left space on the 2nd column (Dodijeljeno) — visibly separates it from the task
+	   name. Applied to header + body via the nth-child so the whole column shifts right. */
+	.tasks-table th:nth-child(2),
+	.tasks-table :global(td:nth-child(2)) {
+		padding-left: 1.5rem;
 	}
 	.tasks-actions-col {
 		width: 1%;
@@ -247,6 +274,21 @@
 	.tasks-empty {
 		color: #9aa3b2;
 		padding: 1.5rem 0;
+	}
+
+	/* Phone: compact header to match the compacted rows (TaskRow), and drop the table's
+	   min-width so far more columns fit before the horizontal scroll kicks in. */
+	@media (max-width: 900px) {
+		.tasks-table {
+			min-width: 30rem;
+		}
+		.tasks-table th {
+			padding: 0.5rem 0.5rem;
+			font-size: 0.82rem;
+		}
+		.tasks-table :global(.th-in) {
+			gap: 0.25rem;
+		}
 	}
 
 	/* ── Modal ── */
@@ -290,6 +332,9 @@
 	.field-label {
 		font-size: 0.85rem;
 		color: #5b6577;
+	}
+	.req {
+		color: #d32752;
 	}
 	.field-input {
 		box-sizing: border-box;
