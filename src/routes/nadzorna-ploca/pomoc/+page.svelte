@@ -4,7 +4,7 @@
 	// the answer drops down. Multiple can be open at once. This is where the top-bar search
 	// leads (?q= pre-filters). Two answers point to the Profil page's Report/Suggest buttons.
 	import { page } from '$app/state';
-	import { fade, slide } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import QuestionIcon from '$lib/components/icons/QuestionIcon.svelte';
 	import ChevronIcon from '$lib/components/icons/ChevronIcon.svelte';
@@ -88,15 +88,6 @@
 		</div>
 	</div>
 
-	{#if query.trim() && !noMatch}
-		<!-- Reflects the top-bar (help) search term; only shown when there ARE matches.
-		     On a no-match search we silently show all questions (no note). Fades in/out;
-		     sits on the grey page background (not inside a white card). -->
-		<p class="help-filtering" transition:fade={{ duration: 220 }}>
-			Prikaz rezultata za „{query}”. <a class="help-clear" href="/nadzorna-ploca/pomoc">Očisti</a>
-		</p>
-	{/if}
-
 	<div class="faq-scroll custom-scrollbar">
 		{#if display.length === 0}
 			<p class="help-empty">Nema dostupnih pitanja.</p>
@@ -155,19 +146,6 @@
 		margin: 0.35rem 0 0;
 		font-size: 0.95rem;
 		color: #5b6577;
-	}
-	.help-filtering {
-		margin: 0 0 1.25rem;
-		font-size: 0.95rem;
-		color: #5b6577;
-	}
-	.help-clear {
-		color: #187ff5;
-		font-weight: 600;
-		text-decoration: none;
-	}
-	.help-clear:hover {
-		text-decoration: underline;
 	}
 	/* Scroll the accordion list inside the frame (the page never scrolls). `overflow-y:
 	   scroll` keeps the styled scrollbar visible from the start (not only while scrolling);
@@ -233,5 +211,36 @@
 		text-align: center;
 		color: #9aa3b2;
 		font-size: 0.95rem;
+	}
+	@media (max-width: 820px) {
+		/* 1) Smaller question title so it doesn't dominate a phone screen. */
+		.faq-q {
+			font-size: 1.2rem;
+		}
+		/* 2) Bring the cards close to the screen edges (cancel the content area's 1rem side
+		   padding), EQUIDISTANT from both sides. On phone the PAGE scrolls (not this box), so
+		   drop the reserved scrollbar track (`overflow: visible`) — otherwise the always-on
+		   `overflow-y: scroll` reserves a right-side track and pushes the cards left of centre. */
+		.faq-scroll {
+			overflow: visible;
+			margin-left: -1rem;
+			margin-right: -1rem;
+			padding: 0.25rem 0.5rem 0.5rem 0.5rem;
+		}
+		/* Chevron down from 44 so it fits the smaller title bar. */
+		.faq-chevron :global(svg) {
+			width: 28px;
+			height: 28px;
+		}
+		.faq-head {
+			padding: 1.1rem 1.25rem;
+		}
+		/* 3) Tighter padding around the answer text. */
+		.faq-body {
+			padding: 0.75rem 1.25rem 1.5rem;
+		}
+		.faq-a {
+			font-size: 1rem;
+		}
 	}
 </style>

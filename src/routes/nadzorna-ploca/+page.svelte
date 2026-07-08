@@ -467,9 +467,13 @@
 		.dash-heading {
 			font-size: 1.15rem;
 		}
-		/* Slightly tighter panel padding on phones. */
+		/* Slightly tighter panel padding on phones; edge-to-edge (touch the screen sides) with
+		   square corners, matching the list/form pages (Objavljene vijesti / Svi događaji). */
 		.panel {
 			padding: 1.1rem 1.15rem;
+			margin-left: -1rem;
+			margin-right: -1rem;
+			border-radius: 0;
 		}
 		/* Mobile pages the week by SWIPE — hide the desktop arrow buttons. */
 		.week-nav {

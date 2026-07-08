@@ -75,3 +75,11 @@ export function removeMember(id: string) {
 	const i = team.findIndex((m) => m.id === id);
 	if (i !== -1) team.splice(i, 1);
 }
+
+// Edit an existing member's fields in place (name/email/phone/role) → reflected
+// everywhere the member is shown. Placeholder (in-memory) — TODO(adoption): PATCH
+// /admin/team/:id.
+export function updateMember(id: string, patch: Partial<Omit<Member, 'id' | 'color'>>) {
+	const m = team.find((x) => x.id === id);
+	if (m) Object.assign(m, patch);
+}

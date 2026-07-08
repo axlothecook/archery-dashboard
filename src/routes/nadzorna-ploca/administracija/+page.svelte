@@ -5,12 +5,13 @@
 	// backend yet (TODO(adoption): POST/DELETE /admin/team).
 	import { scale } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-	import { team, getCurrentAdmin, addMember, removeMember } from '$lib/teamStore.svelte';
+	import { team, getCurrentAdmin, addMember, removeMember, updateMember } from '$lib/teamStore.svelte';
 	import { roleLabel, type Member } from '$lib/team';
 	import Avatar from '$lib/components/Avatar.svelte';
 	import DashSelect from '$lib/components/DashSelect.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import AddIcon from '$lib/components/icons/AddIcon.svelte';
+	import EditIcon from '$lib/components/icons/EditIcon.svelte';
 	import TrashIcon from '$lib/components/icons/TrashIcon.svelte';
 	import CloseIcon from '$lib/components/icons/CloseIcon.svelte';
 
@@ -24,8 +25,11 @@
 		{ value: 'developer', label: roleLabel('developer') }
 	];
 
-	// ── Add-member modal ─────────────────────────────────────────────────────────
+	// ── Add / edit member modal ────────────────────────────────────────────────────
+	// The same modal handles both: `editingId` is null when adding, or the member's id
+	// when editing (title, confirm text and submit action switch on it).
 	let modalOpen = $state(false);
+	let editingId = $state<string | null>(null);
 	let fDisplayName = $state('');
 	let fRealName = $state('');
 	let fEmail = $state('');
@@ -35,6 +39,7 @@
 	const anim = { duration: 150, start: 0.97, opacity: 0, easing: cubicOut };
 
 	function openAdd() {
+		editingId = null;
 		fDisplayName = '';
 		fRealName = '';
 		fEmail = '';
@@ -42,21 +47,44 @@
 		fRole = 'admin';
 		modalOpen = true;
 	}
-	async function submitAdd(e: SubmitEvent) {
+	function openEdit(m: Member) {
+		editingId = m.id;
+		fDisplayName = m.displayName;
+		fRealName = m.realName;
+		fEmail = m.email;
+		fPhone = m.phone;
+		fRole = m.role;
+		modalOpen = true;
+	}
+	async function submitModal(e: SubmitEvent) {
 		e.preventDefault();
 		if (!fDisplayName.trim()) return;
 		const role = fRole as Member['role'];
-		const ok = await confirmDlg?.ask(
-			`Upravo ćete dodati ${roleLabel(role)}. Jeste li sigurni da želite nastaviti?`
-		);
-		if (!ok) return;
-		addMember({
-			displayName: fDisplayName,
-			realName: fRealName || fDisplayName,
-			role,
-			email: fEmail,
-			phone: fPhone
-		});
+		if (editingId) {
+			const ok = await confirmDlg?.ask(
+				`Spremiti promjene za ${roleLabel(role)}?`
+			);
+			if (!ok) return;
+			updateMember(editingId, {
+				displayName: fDisplayName,
+				realName: fRealName || fDisplayName,
+				role,
+				email: fEmail,
+				phone: fPhone
+			});
+		} else {
+			const ok = await confirmDlg?.ask(
+				`Upravo ćete dodati ${roleLabel(role)}. Jeste li sigurni da želite nastaviti?`
+			);
+			if (!ok) return;
+			addMember({
+				displayName: fDisplayName,
+				realName: fRealName || fDisplayName,
+				role,
+				email: fEmail,
+				phone: fPhone
+			});
+		}
 		modalOpen = false;
 	}
 	async function del(m: Member) {
@@ -80,7 +108,9 @@
 			<p class="mgmt-sub">Osobe koje rade na stranici. Dodajte ili uklonite administratore i razvojne programere.</p>
 		</div>
 		{#if canManage}
-			<button class="btn-add cursor-pointer display-f align-items-center gap-0-4" type="button" onclick={openAdd}>
+			<!-- Desktop: to the right of the title. Phone: hidden here; a full-width copy at the
+			     top of the white card takes over. -->
+			<button class="btn-add btn-add--inline cursor-pointer display-f align-items-center gap-0-4" type="button" onclick={openAdd}>
 				<AddIcon size={18} />
 				Dodaj člana
 			</button>
@@ -88,6 +118,13 @@
 	</div>
 
 	<div class="panel bg-white column-nowrap gap-0-8">
+		{#if canManage}
+			<!-- Phone-only: full-width "Dodaj člana" at the TOP of the white card. -->
+			<button class="btn-add btn-add--block cursor-pointer display-f align-items-center justify-content-center gap-0-4" type="button" onclick={openAdd}>
+				<AddIcon size={18} />
+				Dodaj člana
+			</button>
+		{/if}
 		{#each team as m (m.id)}
 			<div class="member-row display-f align-items-center gap-1">
 				<Avatar color={m.color} role={m.role} size={2.6} />
@@ -100,9 +137,14 @@
 					<span class="member-phone">{m.phone}</span>
 				</span>
 				{#if canManage}
-					<button class="row-del cursor-pointer display-f" type="button" aria-label="Izbriši" title="Izbriši" onclick={() => del(m)}>
-						<TrashIcon size={20} />
-					</button>
+					<div class="member-actions display-f align-items-center gap-0-5">
+						<button class="row-edit cursor-pointer display-f" type="button" aria-label="Uredi" title="Uredi" onclick={() => openEdit(m)}>
+							<EditIcon size={18} />
+						</button>
+						<button class="row-del cursor-pointer display-f" type="button" aria-label="Izbriši" title="Izbriši" onclick={() => del(m)}>
+							<TrashIcon size={20} />
+						</button>
+					</div>
 				{/if}
 			</div>
 		{/each}
@@ -111,14 +153,14 @@
 
 {#if modalOpen}
 	<div class="modal-backdrop position-fixed" role="presentation" onclick={() => (modalOpen = false)}></div>
-	<div class="modal position-fixed br-lg" role="dialog" aria-modal="true" aria-label="Dodaj člana" transition:scale={anim}>
+	<div class="modal position-fixed br-lg" role="dialog" aria-modal="true" aria-label={editingId ? 'Uredi člana' : 'Dodaj člana'} transition:scale={anim}>
 		<header class="modal-head display-f align-items-center justify-content-space-between">
-			<h3 class="modal-title">Dodaj člana</h3>
+			<h3 class="modal-title">{editingId ? 'Uredi člana' : 'Dodaj člana'}</h3>
 			<button class="modal-close cursor-pointer br-full display-f align-items-center justify-content-center" type="button" aria-label="Zatvori" onclick={() => (modalOpen = false)}>
 				<CloseIcon size={22} />
 			</button>
 		</header>
-		<form class="modal-form column-nowrap gap-1" onsubmit={submitAdd}>
+		<form class="modal-form column-nowrap gap-1" onsubmit={submitModal}>
 			<label class="field column-nowrap gap-0-3">
 				<span class="field-label fw-600">Korisničko ime</span>
 				<input class="field-input w-full br-xs" type="text" bind:value={fDisplayName} required />
@@ -141,7 +183,7 @@
 			</div>
 			<div class="modal-actions display-f justify-content-flex-end gap-0-5">
 				<button class="btn btn--ghost cursor-pointer br-xs fw-600" type="button" onclick={() => (modalOpen = false)}>Odustani</button>
-				<button class="btn btn--primary cursor-pointer br-xs fw-600" type="submit">Dodaj</button>
+				<button class="btn btn--primary cursor-pointer br-xs fw-600" type="submit">{editingId ? 'Spremi' : 'Dodaj'}</button>
 			</div>
 		</form>
 	</div>
@@ -180,6 +222,10 @@
 	.btn-add:hover {
 		background: #0c2350;
 	}
+	/* The full-width mobile copy is hidden on desktop; the inline header-right copy shows. */
+	.btn-add--block {
+		display: none;
+	}
 
 	.panel {
 		border-radius: 14px;
@@ -217,6 +263,23 @@
 	.member-phone {
 		font-size: 0.82rem;
 		color: #5b6577;
+	}
+	.member-actions {
+		flex: 0 0 auto;
+		/* Clear separation between the contact block (email/phone) and the edit/delete icons. */
+		margin-left: 2rem;
+	}
+	.row-edit {
+		align-items: center;
+		padding: 0.35rem;
+		border: 0;
+		background: none;
+		color: #5b6577;
+		flex: 0 0 auto;
+		transition: color 0.15s ease;
+	}
+	.row-edit:hover {
+		color: #187ff5;
 	}
 	.row-del {
 		align-items: center;
@@ -308,5 +371,35 @@
 	}
 	.btn--ghost:hover {
 		background: #eef1f3;
+	}
+	/* Phone: the white panel goes edge-to-edge (touch the screen sides) with square corners,
+	   matching the list/form pages (Objavljene vijesti / Svi događaji). The modal keeps its
+	   rounded corners (it's a centered dialog, not a content panel). */
+	@media (max-width: 820px) {
+		.panel {
+			margin-left: -1rem;
+			margin-right: -1rem;
+			border-radius: 0;
+			padding: 1rem;
+		}
+		/* Header-right button hidden; the full-width block copy at the top of the card shows. */
+		.btn-add--inline {
+			display: none;
+		}
+		.btn-add--block {
+			display: flex;
+			width: 100%;
+			padding: 0.7rem 1rem;
+			font-size: 0.95rem;
+			margin-bottom: 1.1rem;
+		}
+		/* Hide the email + phone on phone — the row keeps just name + role + edit/delete. */
+		.member-contact {
+			display: none;
+		}
+		/* No contact block to separate from on phone → drop the desktop gap. */
+		.member-actions {
+			margin-left: 0;
+		}
 	}
 </style>

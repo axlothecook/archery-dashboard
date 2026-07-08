@@ -569,5 +569,12 @@
 		.profile-grid {
 			grid-template-columns: 1fr;
 		}
+		/* White cards go edge-to-edge (touch the screen sides) with square corners, matching
+		   the list/form pages (Objavljene vijesti / Svi događaji). */
+		.card {
+			margin-left: -1rem;
+			margin-right: -1rem;
+			border-radius: 0;
+		}
 	}
 </style>
