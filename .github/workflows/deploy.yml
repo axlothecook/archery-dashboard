@@ -1,0 +1,77 @@
+# Build the archery ADMIN DASHBOARD image (arm64), publish to GHCR, then deploy to
+# the Pi. Mirrors the public-site frontend pipeline. Runs on every push to main.
+#   1. build-and-push — build linux/arm64, push ghcr.io/axlothecook/archery-dashboard:latest.
+#      Unlike the public site, PUBLIC_API_BASE_URL is read at RUNTIME (compose env),
+#      so nothing is baked here.
+#   2. deploy-to-pi    — join the tailnet, SSH to the Pi, pull + restart the stack.
+#      (Known-flaky SSH step — see the archery-dashboard-mock-inventory memory note;
+#      if it times out, deploy directly on the Pi: cd ~/archery-club-deploy && pull && up -d.)
+name: Build, publish, and deploy dashboard
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/arm64
+          push: true
+          tags: ghcr.io/axlothecook/archery-dashboard:latest
+
+  deploy-to-pi:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Deploy on the Pi
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.PI_TAILSCALE_IP }}
+          username: ${{ secrets.PI_USER }}
+          key: ${{ secrets.PI_SSH_KEY }}
+          # Raise above the default 10m: pulling a fresh arm64 image + restarting can
+          # exceed 10m on the Pi's connection, and a timeout would abort mid-deploy.
+          command_timeout: 20m
+          script: |
+            set -e
+            cd ~/archery-club-deploy
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d
+            # Reclaim disk from the images this deploy just replaced (every deploy leaves
+            # the previous :latest dangling; unpruned they fill the SD card and crash
+            # Postgres → site down). Only untagged/unused images are removed.
+            docker image prune -f
+            docker builder prune -f
