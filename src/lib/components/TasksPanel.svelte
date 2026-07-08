@@ -284,7 +284,7 @@
 		}
 		.tasks-table th {
 			padding: 0.5rem 0.5rem;
-			font-size: 0.82rem;
+			font-size: 0.9rem;
 		}
 		.tasks-table :global(.th-in) {
 			gap: 0.25rem;

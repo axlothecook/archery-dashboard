@@ -191,7 +191,7 @@
 	.art-table th {
 		text-align: left;
 		padding: 0.65rem 0.75rem;
-		font-size: 0.95rem;
+		font-size: 1.05rem;
 		font-weight: 800; /* match the Zadaci (Početno) table headers */
 		color: #1b1b1b;
 		border-bottom: 1px solid #eef1f3;
@@ -371,7 +371,7 @@
 	@media (max-width: 900px) {
 		.art-table th {
 			padding: 0.5rem 0.5rem;
-			font-size: 0.82rem;
+			font-size: 0.9rem;
 		}
 		.art-table td {
 			padding: 0.5rem 0.5rem;
