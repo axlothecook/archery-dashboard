@@ -28,13 +28,20 @@
 				<p class="mgmt-sub">Partneri i sponzori kluba. Uredite ili uklonite sponzore.</p>
 			</div>
 		</div>
-		<a class="btn-add cursor-pointer display-f align-items-center gap-0-4" href="/nadzorna-ploca/sponzori/novi">
+		<!-- Desktop: to the right of the title. Phone: hidden here; a full-width copy at the
+		     top of the white card takes over. -->
+		<a class="btn-add btn-add--inline cursor-pointer display-f align-items-center gap-0-4" href="/nadzorna-ploca/sponzori/novi">
 			<AddIcon size={18} />
 			Novi sponzor
 		</a>
 	</div>
 
 	<div class="panel bg-white">
+		<!-- Phone-only: full-width "Novi sponzor" at the TOP of the white card. -->
+		<a class="btn-add btn-add--block cursor-pointer display-f align-items-center justify-content-center gap-0-4" href="/nadzorna-ploca/sponzori/novi">
+			<AddIcon size={18} />
+			Novi sponzor
+		</a>
 		{#if data.loadError}
 			<p class="sp-load-error" role="alert">Učitavanje sponzora nije uspjelo. Osvježite stranicu ili pokušajte kasnije.</p>
 		{/if}
@@ -92,6 +99,10 @@
 	.btn-add:hover {
 		background: #0c2350;
 	}
+	/* The full-width mobile copy is hidden on desktop; the inline header-right copy shows. */
+	.btn-add--block {
+		display: none;
+	}
 	.panel {
 		border-radius: 14px;
 		padding: 1.25rem 1.5rem;
@@ -113,6 +124,41 @@
 		flex: 1 1 auto;
 		min-height: 0;
 		overflow: auto;
+		/* Scrollbar flush to the panel's right edge with a content gap (matches other lists). */
+		margin-right: -1.5rem;
+		padding-right: 1rem;
 		/* Scrollbar styling comes from the shared `.custom-scrollbar` class (library). */
+	}
+	/* Phone/tablet: fit the page to the viewport (only the table scrolls, inside its panel);
+	   edge-to-edge white card with a full-width "Novi sponzor" block button at the top. */
+	@media (max-width: 820px) {
+		.sp-section {
+			height: calc(100dvh - 70px - 44px);
+		}
+		.mgmt-head {
+			flex: 0 0 auto;
+			margin-bottom: 1.5rem;
+		}
+		.btn-add--inline {
+			display: none;
+		}
+		.panel {
+			margin-left: -1rem;
+			margin-right: -1rem;
+			padding: 1rem;
+			border-radius: 0;
+		}
+		.btn-add--block {
+			display: flex;
+			flex: 0 0 auto;
+			width: 100%;
+			padding: 0.7rem 1rem;
+			font-size: 0.95rem;
+			margin-bottom: 1.6rem;
+		}
+		.sp-scroll {
+			margin-right: -1rem;
+			padding-right: 0.75rem;
+		}
 	}
 </style>
