@@ -81,7 +81,7 @@
 <section class="ev-section">
 	<div class="mgmt-head display-f align-items-center justify-content-space-between">
 		<div class="display-f align-items-center gap-0-7">
-			<CalendarIcon size={40} />
+			<CalendarIcon size={48} />
 			<div>
 				<h2 class="mgmt-title">Svi događaji</h2>
 				<p class="mgmt-sub">Natjecanja i događaji kluba. Uredite ili uklonite događaje.</p>

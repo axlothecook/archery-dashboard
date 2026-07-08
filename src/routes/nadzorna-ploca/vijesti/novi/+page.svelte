@@ -186,7 +186,7 @@
 
 <section class="art-section">
 	<div class="mgmt-head display-f align-items-center gap-0-7">
-		<NewsIcon size={40} />
+		<NewsIcon size={48} />
 		<div>
 			<h2 class="mgmt-title">Novi članak</h2>
 			<p class="mgmt-sub">Napišite vijest, dodajte medije i spremite kao nacrt ili odmah objavite.</p>
@@ -513,8 +513,39 @@
 		background: #eef1f3;
 	}
 	.check-row {
-		font-size: 0.95rem;
+		font-size: 0.9rem;
 		color: #102e66;
+		white-space: nowrap; /* keep the label on ONE row */
+	}
+	/* Fully custom checkbox: unchecked = an EMPTY outlined box (bg-coloured, not the browser's
+	   black square); checked = navy fill + white tick. Matches the Vrsta filter boxes. */
+	.check-row input[type='checkbox'] {
+		appearance: none;
+		-webkit-appearance: none;
+		width: 1.1rem;
+		height: 1.1rem;
+		flex: 0 0 auto;
+		margin: 0;
+		border: 1.5px solid #b9c3d3;
+		border-radius: 4px;
+		background: #fff;
+		cursor: pointer;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.check-row input[type='checkbox']:checked {
+		border-color: #102e66;
+		background: #102e66;
+	}
+	/* White tick drawn with a border (no SVG needed). */
+	.check-row input[type='checkbox']:checked::after {
+		content: '';
+		width: 0.28rem;
+		height: 0.55rem;
+		border: solid #fff;
+		border-width: 0 2px 2px 0;
+		transform: translateY(-1px) rotate(45deg);
 	}
 	.form-actions {
 		/* Sticky action bar flush to the panel's bottom edge (off-white bg), always in view
@@ -531,6 +562,14 @@
 		font-size: 0.9rem;
 		font-family: inherit;
 		border: 1px solid transparent;
+		text-align: center;
+		white-space: nowrap; /* never wrap → all buttons keep the SAME single-line height */
+	}
+	/* All three action buttons the SAME width on desktop (fixed basis, no grow/shrink), wide
+	   enough that the longest label ("Spremi kao nacrt") stays on one line — so they're
+	   uniform in width AND height. Mobile overrides to an equal flex share. */
+	.form-actions .btn {
+		flex: 0 0 10rem;
 	}
 	.btn:disabled {
 		opacity: 0.6;
@@ -573,6 +612,43 @@
 		}
 		.body-textarea {
 			min-height: 12rem;
+		}
+		/* White panel spans the full width — cancel the shared content area's 1rem side
+		   padding so it touches the grey area's edges (edge-to-edge on phones) — and tighten
+		   the form's own inner padding so fields get more room. */
+		.panel {
+			margin-left: -1rem;
+			margin-right: -1rem;
+			border-radius: 0;
+			padding-left: 1rem;
+			padding-right: 1rem;
+		}
+		/* Pin the action bar to the bottom of the SCREEN (the page scrolls on mobile, so the
+		   in-panel sticky wouldn't stay in view). Panel gets bottom padding so the last
+		   fields clear it. */
+		.form-actions {
+			position: fixed;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			margin: 0;
+			z-index: 40;
+			padding: 0.9rem 1rem calc(0.9rem + env(safe-area-inset-bottom));
+			box-shadow: 0 -4px 16px rgba(16, 46, 102, 0.12);
+			/* Three buttons share the row evenly and their labels stay on ONE line. */
+			gap: 0.4rem;
+		}
+		.form-actions .btn {
+			flex: 1 1 0;
+			min-width: 0;
+			padding: 0.65rem 0.4rem;
+			font-size: 0.8rem;
+			white-space: nowrap;
+			text-align: center;
+			justify-content: center;
+		}
+		.panel {
+			padding-bottom: 5rem; /* clear the fixed action bar */
 		}
 	}
 </style>

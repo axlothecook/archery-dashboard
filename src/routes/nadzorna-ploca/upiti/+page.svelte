@@ -124,7 +124,7 @@
 
 <section class="in-section">
 	<div class="mgmt-head display-f align-items-center gap-0-7">
-		<InquiryIcon size={40} />
+		<InquiryIcon size={48} />
 		<div>
 			<h2 class="mgmt-title">Upiti</h2>
 			<p class="mgmt-sub">Pristigli upiti s javne stranice. Pregledajte, promijenite status i odgovorite.</p>

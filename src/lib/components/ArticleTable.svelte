@@ -192,7 +192,7 @@
 		text-align: left;
 		padding: 0.65rem 0.75rem;
 		font-size: 0.95rem;
-		font-weight: 700;
+		font-weight: 800; /* match the Zadaci (Početno) table headers */
 		color: #1b1b1b;
 		border-bottom: 1px solid #eef1f3;
 		white-space: nowrap;

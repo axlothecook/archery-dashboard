@@ -24,7 +24,7 @@
 
 <section class="ar-section">
 	<div class="mgmt-head display-f align-items-center gap-0-7">
-		<PersonIcon size={40} />
+		<PersonIcon size={48} />
 		<div>
 			<h2 class="mgmt-title">Uredi streličara</h2>
 			<p class="mgmt-sub">Uredite profil streličara i spremite promjene.</p>

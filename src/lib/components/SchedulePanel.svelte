@@ -79,19 +79,17 @@
 	}
 	const isToday = (i: number) => weekOffset === 0 && i === todayIndex;
 
-	// Swipe to page weeks (like the public schedule): drag the day strip horizontally — a
-	// left swipe → next week, right → previous. Works for touch/pen AND mouse-drag (desktop
-	// has no arrows now). Only a mostly-horizontal drag past the threshold commits; the
-	// guarded prev/next no-op at the month's first/last week. The week strip slides in the
-	// swipe direction (keyed :key block below).
-	// Swipe: commit AS SOON AS the horizontal drag passes the threshold DURING the move
-	// (not on pointerup) — that's what makes it feel responsive instead of clunky. `armed`
-	// ensures one week-change per gesture; it re-arms on the next pointerdown.
+	// Swipe to page weeks (TOUCH/PEN only): drag the day strip horizontally — left → next
+	// week, right → previous. On DESKTOP (mouse) swipe is disabled — the arrow buttons in the
+	// page heading are the desktop mechanism — so a mouse drag never pages the week. Commits
+	// AS SOON AS the horizontal drag passes the threshold DURING the move (responsive, not
+	// clunky); `armed` ensures one week-change per gesture and re-arms on the next pointerdown.
 	const SWIPE_MIN = 28; // px horizontal travel to trigger a week change
 	let swipeX = 0;
 	let swipeY = 0;
 	let armed = false;
 	function onPointerDown(e: PointerEvent) {
+		if (e.pointerType === 'mouse') return; // desktop uses the arrow buttons, not swipe
 		armed = true;
 		swipeX = e.clientX;
 		swipeY = e.clientY;

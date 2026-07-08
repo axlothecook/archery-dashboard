@@ -69,7 +69,7 @@
 <section class="ar-section">
 	<div class="mgmt-head display-f align-items-center gap-1-5">
 		<div class="display-f align-items-center gap-0-7">
-			<PersonIcon size={40} />
+			<PersonIcon size={48} />
 			<div>
 				<h2 class="mgmt-title">{fullName}</h2>
 				<p class="mgmt-sub">Profil streličara. Pregled svih podataka.</p>
