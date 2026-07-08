@@ -222,6 +222,12 @@
 		color: #1b1b1b;
 		border-bottom: 1px solid #eef1f3;
 		white-space: nowrap;
+		/* Sticky header: stays visible while the list scrolls vertically inside .ev-scroll.
+		   Opaque white bg so rows don't show through; z-index over the cells. */
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		background: #fff;
 	}
 	.ev-table td {
 		padding: 0.7rem 0.75rem;
@@ -382,7 +388,9 @@
 		.ev-table :is(th, td):nth-child(4) { width: 8rem; padding-left: 0.9rem; }
 		.ev-table :is(th, td):nth-child(5) { width: 5.5rem; padding-left: 0.9rem; }
 		.ev-table :is(th, td):nth-child(6) { width: 6rem; padding-left: 0.9rem; }
-		.ev-table :is(th, td):nth-child(7) { width: auto; }
+		/* Extra left padding pushes the action icons away from the Stanje pill (the actions
+		   column is `auto`, so this padding becomes the gap). Matches Svi streličari. */
+		.ev-table :is(th, td):nth-child(7) { width: auto; padding-left: 2.5rem; }
 		.ev-badge,
 		.ev-state {
 			min-width: 5rem;
