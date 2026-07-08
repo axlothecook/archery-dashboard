@@ -13,8 +13,13 @@
 	import NewsIcon from '$lib/components/icons/NewsIcon.svelte';
 	import FilterIcon from '$lib/components/icons/FilterIcon.svelte';
 	import CheckIcon from '$lib/components/icons/CheckIcon.svelte';
+	import ChevronIcon from '$lib/components/icons/ChevronIcon.svelte';
 
 	let { data } = $props();
+
+	// Mobile: the filter panel collapses behind a "Filteri" bar (tap to expand) so the
+	// article list is at the top on a phone. Ignored on desktop (filters always shown).
+	let filtersOpen = $state(false);
 	// Local mutable copy (ArticleTable removes rows on delete); re-synced on load change.
 	let articles = $state<ArticleAdminRow[]>([]);
 	$effect(() => {
@@ -98,14 +103,27 @@
 
 	<div class="layout">
 		<!-- Filter panel: its own div, standing to the LEFT of the articles. -->
-		<aside class="panel bg-white filter-panel column-nowrap gap-1">
-			<div class="filter-head display-f align-items-center justify-content-space-between">
+		<aside class="panel bg-white filter-panel column-nowrap gap-1" class:is-open={filtersOpen}>
+			<!-- Head doubles as the mobile collapse toggle (tap to expand/collapse). On desktop
+			     the chevron is hidden and the panel is always open (CSS). -->
+			<button
+				class="filter-head filter-toggle display-f align-items-center justify-content-space-between w-full cursor-pointer"
+				type="button"
+				aria-expanded={filtersOpen}
+				onclick={() => (filtersOpen = !filtersOpen)}
+			>
 				<h3 class="filter-heading display-f align-items-center gap-0-5">
 					<FilterIcon size={18} />
 					Filteri
 				</h3>
-				<span class="filter-count text-jet-grey">{filtered.length} od {articles.length}</span>
-			</div>
+				<span class="filter-head-right display-f align-items-center gap-0-6">
+					<span class="filter-count text-jet-grey">{filtered.length} od {articles.length}</span>
+					<span class="filter-chevron display-f" class:open={filtersOpen} aria-hidden="true">
+						<ChevronIcon direction="right" size={18} />
+					</span>
+				</span>
+			</button>
+			<div class="filter-body column-nowrap gap-1">
 			<div class="filter-item column-nowrap gap-0-3">
 				<span class="filter-label">Mjesec</span>
 				<DashSelect options={monthOptions} bind:value={monthFilter} ariaLabel="Filtriraj po mjesecu" />
@@ -149,6 +167,7 @@
 						</button>
 					{/each}
 				</div>
+			</div>
 			</div>
 		</aside>
 
@@ -228,6 +247,23 @@
 		font-weight: 700;
 		color: #102e66;
 	}
+	/* The head is a <button> (mobile toggle). On desktop strip the button chrome so it reads
+	   as a plain heading, hide the chevron, and keep the body always visible. */
+	.filter-toggle {
+		padding: 0;
+		border: 0;
+		background: none;
+		font-family: inherit;
+		text-align: left;
+	}
+	.filter-chevron {
+		display: none; /* desktop: no chevron */
+		color: #5b6577;
+		transition: transform 0.18s ease;
+	}
+	.filter-chevron.open {
+		transform: rotate(90deg);
+	}
 	.articles-panel {
 		min-width: 0;
 		/* Fill the grid row height + be a flex column so .art-scroll bounds to it. */
@@ -293,13 +329,62 @@
 		overflow-x: auto;
 		/* Scrollbar styling comes from the shared `.custom-scrollbar` class (library). */
 	}
-	/* Stack the filter panel above the articles on narrow screens. */
+	/* Phone/tablet: stack the filter panel above the articles, and COLLAPSE it behind the
+	   "Filteri" bar (tap to expand) so the article list starts near the top. */
 	@media (max-width: 820px) {
+		/* Fit the whole page to the viewport so the PAGE doesn't scroll — only the article
+		   list scrolls inside its panel. The section fills the space under the top bar
+		   (100dvh − top bar − content padding); header + Filteri bar are fixed height and
+		   the .layout/.articles-panel/.art-scroll flex chain gives the rest to the list. */
+		.art-section {
+			display: flex;
+			flex-direction: column;
+			/* 100dvh − top bar (≈70px) − content padding (20px top + 20px bottom). Slight extra
+			   subtracted so a rounding hair never spills into a page scrollbar. */
+			height: calc(100dvh - 70px - 44px);
+			min-height: 0;
+		}
+		.mgmt-head {
+			flex: 0 0 auto;
+			margin-bottom: 1rem;
+		}
+		/* Stack as a flex COLUMN so the filter bar + article panel sit with a small gap and
+		   the panel flex-grows to fill the remaining height (grid left an oversized gap). */
 		.layout {
-			grid-template-columns: 1fr;
+			display: flex;
+			flex-direction: column;
+			gap: 0.75rem;
+			flex: 1 1 auto;
+			min-height: 0;
 		}
 		.filter-panel {
 			position: static;
+			gap: 0; /* the head + body manage their own spacing when collapsible */
+			flex: 0 0 auto;
+			width: 100%; /* full-width bar (flex-column parent would otherwise shrink it) */
+		}
+		.articles-panel {
+			flex: 1 1 auto;
+			min-height: 0;
+		}
+		/* Chevron appears; head becomes a tappable bar. */
+		.filter-chevron {
+			display: inline-flex;
+		}
+		/* Collapsed by default: hide the filter body until the panel is open. */
+		.filter-body {
+			display: none;
+			margin-top: 1.25rem;
+		}
+		.filter-panel.is-open .filter-body {
+			display: flex;
+		}
+		/* Fills the panel (which fills the bounded section) and scrolls INSIDE — rows reach
+		   the panel's bottom padding, the page itself never scrolls. */
+		.art-scroll {
+			flex: 1 1 auto;
+			min-height: 0;
+			max-height: none;
 		}
 	}
 </style>
