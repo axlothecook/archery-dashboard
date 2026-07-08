@@ -196,6 +196,12 @@
 		color: #1b1b1b;
 		border-bottom: 1px solid #eef1f3;
 		white-space: nowrap;
+		/* Sticky header: stays visible while the list scrolls vertically inside .art-scroll.
+		   Opaque white bg so rows don't show through; z-index over the cells. */
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		background: #fff;
 	}
 	.art-table td {
 		padding: 0.7rem 0.75rem;
@@ -392,8 +398,12 @@
 		.art-table :is(th, td).art-col-stanje {
 			width: 6.5rem;
 		}
+		/* Wider left padding than the other columns pushes the action icons away from the
+		   Stanje pill (the actions column is `auto`, so this becomes the gap). Matches the
+		   Svi streličari table. */
 		.art-table :is(th, td).art-actions-cell {
 			width: auto;
+			padding-left: 2.5rem;
 		}
 		/* Smaller Vrsta + Stanje pills. */
 		.art-badge,
