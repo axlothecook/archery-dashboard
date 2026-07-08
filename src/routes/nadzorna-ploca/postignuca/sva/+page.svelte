@@ -15,8 +15,12 @@
 	import TrophyIcon from '$lib/components/icons/TrophyIcon.svelte';
 	import FilterIcon from '$lib/components/icons/FilterIcon.svelte';
 	import CheckIcon from '$lib/components/icons/CheckIcon.svelte';
+	import ChevronIcon from '$lib/components/icons/ChevronIcon.svelte';
 
 	let { data } = $props();
+	// Mobile: the filter panel collapses behind a "Filteri" bar (tap to expand) so the
+	// list is at the top on a phone. Ignored on desktop (filters always shown).
+	let filtersOpen = $state(false);
 	let achievements = $state<AchievementAdminRow[]>([]);
 	$effect(() => {
 		achievements = data.achievements;
@@ -68,22 +72,43 @@
 				<p class="mgmt-sub">Naslovi, rekordi i medalje kluba. Uredite ili uklonite postignuća.</p>
 			</div>
 		</div>
-		<a class="btn-add cursor-pointer display-f align-items-center gap-0-4" href="/nadzorna-ploca/postignuca/novo">
+		<!-- Desktop: sits to the right of the title. Mobile: hidden here; a full-width copy
+		     (below) takes over so it spans like the Filteri bar. -->
+		<a class="btn-add btn-add--inline cursor-pointer display-f align-items-center gap-0-4" href="/nadzorna-ploca/postignuca/novo">
 			<AddIcon size={18} />
 			Novo postignuće
 		</a>
 	</div>
 
 	<div class="layout">
+		<!-- Mobile-only: full-width "Novo postignuće" at the TOP of the white card (hidden on
+		     desktop where the header-right copy shows). -->
+		<a class="btn-add btn-add--block cursor-pointer display-f align-items-center justify-content-center gap-0-4" href="/nadzorna-ploca/postignuca/novo">
+			<AddIcon size={18} />
+			Novo postignuće
+		</a>
 		<!-- Filter panel: its own div, standing to the LEFT of the achievements. -->
-		<aside class="panel bg-white filter-panel column-nowrap gap-1">
-			<div class="filter-head display-f align-items-center justify-content-space-between">
+		<aside class="panel bg-white filter-panel column-nowrap gap-1" class:is-open={filtersOpen}>
+			<!-- Head doubles as the mobile collapse toggle. On desktop the chevron is hidden
+			     and the panel is always open (CSS). -->
+			<button
+				class="filter-head filter-toggle display-f align-items-center justify-content-space-between w-full cursor-pointer"
+				type="button"
+				aria-expanded={filtersOpen}
+				onclick={() => (filtersOpen = !filtersOpen)}
+			>
 				<h3 class="filter-heading display-f align-items-center gap-0-5">
 					<FilterIcon size={18} />
 					Filteri
 				</h3>
-				<span class="filter-count text-jet-grey">{filtered.length} od {achievements.length}</span>
-			</div>
+				<span class="filter-head-right display-f align-items-center gap-0-6">
+					<span class="filter-count text-jet-grey">{filtered.length} od {achievements.length}</span>
+					<span class="filter-chevron display-f" class:open={filtersOpen} aria-hidden="true">
+						<ChevronIcon direction="right" size={18} />
+					</span>
+				</span>
+			</button>
+			<div class="filter-body column-nowrap gap-1">
 			<div class="filter-item column-nowrap gap-0-3">
 				<span class="filter-label">Godina</span>
 				<DashSelect options={yearOptions} bind:value={yearFilter} ariaLabel="Filtriraj po godini" />
@@ -125,6 +150,7 @@
 						</button>
 					{/each}
 				</div>
+			</div>
 			</div>
 		</aside>
 
@@ -184,6 +210,10 @@
 	.btn-add:hover {
 		background: #0c2350;
 	}
+	/* The full-width mobile copy is hidden on desktop; the inline (header-right) copy shows. */
+	.btn-add--block {
+		display: none;
+	}
 	.panel {
 		border-radius: 14px;
 		padding: 1.25rem 1.5rem;
@@ -211,6 +241,23 @@
 		font-weight: 700;
 		color: $navy;
 	}
+	/* The head is a <button> (mobile toggle). On desktop strip the button chrome so it reads
+	   as a plain heading, hide the chevron, and keep the body always visible. */
+	.filter-toggle {
+		padding: 0;
+		border: 0;
+		background: none;
+		font-family: inherit;
+		text-align: left;
+	}
+	.filter-chevron {
+		display: none; /* desktop: no chevron */
+		color: #5b6577;
+		transition: transform 0.18s ease;
+	}
+	.filter-chevron.open {
+		transform: rotate(90deg);
+	}
 	/* Achievements panel: fills the grid row height + a flex column so .ac-scroll bounds
 	   to it and scrolls inside (the page never grows past the viewport). */
 	.ac-panel {
@@ -229,7 +276,13 @@
 	.ac-scroll {
 		flex: 1 1 auto;
 		min-height: 8rem;
-		overflow: auto;
+		overflow-y: auto;
+		overflow-x: auto;
+		/* Push the scroll area out to the panel's right edge (cancel the panel's 1.5rem right
+		   padding) so the SCROLLBAR sits flush at the white div's right edge; the padding-right
+		   then keeps a gap between the table content and the scrollbar. */
+		margin-right: -1.5rem;
+		padding-right: 1rem;
 		/* Scrollbar styling comes from the shared `.custom-scrollbar` class (library). */
 	}
 	.filter-label {
@@ -272,13 +325,88 @@
 	.filter-count {
 		font-size: 0.85rem;
 	}
-	/* Stack the filter panel above the achievements on narrow screens. */
+	/* Phone/tablet: fit the page to the viewport (only the table scrolls, not the page),
+	   and fold everything into ONE edge-to-edge white card — block button at the top, the
+	   collapsible Filteri bar, then the table. Mirrors Objavljene vijesti / Svi događaji. */
 	@media (max-width: 820px) {
-		.layout {
-			grid-template-columns: 1fr;
+		.ac-section {
+			display: flex;
+			flex-direction: column;
+			/* 100dvh − top bar (≈70px) − content padding (20px top + 20px bottom). */
+			height: calc(100dvh - 70px - 44px);
+			min-height: 0;
 		}
+		.mgmt-head {
+			flex: 0 0 auto;
+			margin-bottom: 1.5rem;
+		}
+		/* Header-right button hidden; the full-width block copy takes over. */
+		.btn-add--inline {
+			display: none;
+		}
+		/* The whole .layout is ONE white card (edge-to-edge): block button, Filteri bar, table. */
+		.layout {
+			display: flex;
+			flex-direction: column;
+			gap: 0;
+			flex: 1 1 auto;
+			min-height: 0;
+			background: #fff;
+			margin-left: -1rem;
+			margin-right: -1rem;
+			padding: 1rem;
+			border-radius: 0;
+		}
+		.btn-add--block {
+			display: flex;
+			flex: 0 0 auto;
+			width: 100%;
+			padding: 0.7rem 1rem;
+			font-size: 0.95rem;
+			margin-bottom: 1.6rem;
+		}
+		/* Bordered box around the Filteri panel (collapsed AND open) so it reads as a distinct
+		   element inside the white card. */
 		.filter-panel {
 			position: static;
+			gap: 0;
+			flex: 0 0 auto;
+			align-self: stretch;
+			background: none;
+			box-shadow: none;
+			border: 1px solid #d7dee8;
+			border-radius: 10px;
+			padding: 0.85rem 1rem;
+			/* Clear gap between the Filteri box and the table below it. */
+			margin-bottom: 2.5rem;
+		}
+		.ac-panel {
+			flex: 1 1 auto;
+			min-height: 0;
+			background: none;
+			box-shadow: none;
+			padding: 0;
+			border-radius: 0;
+		}
+		/* Chevron appears; head becomes a tappable bar; body collapses until open. */
+		.filter-chevron {
+			display: inline-flex;
+		}
+		.filter-body {
+			display: none;
+			margin-top: 1.25rem;
+		}
+		.filter-panel.is-open .filter-body {
+			display: flex;
+		}
+		/* Fills the card and scrolls INSIDE; scrollbar to the card's right edge (cancel the
+		   layout's 1rem right padding) with a small content gap. */
+		.ac-scroll {
+			flex: 1 1 auto;
+			min-height: 0;
+			max-height: none;
+			margin-right: -1rem;
+			padding-right: 0.75rem;
 		}
 	}
 </style>

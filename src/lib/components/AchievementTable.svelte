@@ -80,6 +80,19 @@
 	<p class="ac-empty">{emptyText}</p>
 {:else}
 	<table class="ac-table w-full">
+		<!-- Column widths live here so table-layout:fixed (phone) reads them directly,
+		     unaffected by the colspan=2 Naslov header. On desktop these <col>s have no width
+		     (auto layout), so the desktop sizing is unchanged. -->
+		<colgroup>
+			<col class="col-img" />
+			<col class="col-title" />
+			<col class="col-year" />
+			<col class="col-vrsta" />
+			<col class="col-razina" />
+			<col class="col-archers" />
+			<col class="col-actions" />
+			<col class="col-spacer" />
+		</colgroup>
 		<thead>
 			<tr>
 				<th class="ac-col-title-head" colspan="2">
@@ -166,6 +179,12 @@
 		color: #1b1b1b;
 		border-bottom: 1px solid $border;
 		white-space: nowrap;
+		/* Sticky header: stays visible while the (long) list scrolls vertically inside
+		   .ac-scroll. Opaque white bg so rows don't show through; z-index over the cells. */
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		background: #fff;
 	}
 	.ac-table td {
 		padding: 0.7rem 0.75rem;
@@ -222,7 +241,7 @@
 		mask-image: linear-gradient(to right, #000 82%, transparent 100%);
 	}
 	/* Trailing spacer: a small fixed gap between the actions and the scrollbar (the title
-	   column now eats the slack, so this just keeps the last column off the scrollbar). */
+	   column eats the slack, so this just keeps the last column off the scrollbar). */
 	.ac-table :is(th, td).ac-col-spacer {
 		width: 1.25rem;
 		min-width: 1.25rem;
@@ -282,5 +301,69 @@
 	}
 	.ac-act--del:hover {
 		color: $red;
+	}
+
+	/* Phone: compact font/padding + weight-800 headers + smaller pills, matching the other
+	   admin tables (Svi događaji / Objavljene vijesti / Svi streličari). The table scrolls
+	   horizontally inside .ac-scroll rather than squishing the title column. */
+	@media (max-width: 900px) {
+		.ac-table th {
+			padding: 0.5rem 0.5rem;
+			font-size: 0.82rem;
+			font-weight: 800;
+		}
+		.ac-table td {
+			padding: 0.5rem 0.5rem;
+			font-size: 0.85rem;
+		}
+		/* Fixed layout (phone only) so the column widths below are AUTHORITATIVE — otherwise
+		   auto-layout expands the Naslov column to fit the (nowrap) title and ignores its
+		   max-width. min-width = sum of the widths so the table scrolls horizontally inside
+		   .ac-scroll instead of squeezing a column. */
+		.ac-table {
+			table-layout: fixed;
+			min-width: 54.5rem;
+		}
+		/* Tighter, uniform gap before Godina / Vrsta / Razina (was the wide desktop 1.6rem).
+		   Body cols 3–5; matching header cols 2–4 (the Naslov header spans 2 columns). Stops
+		   BEFORE Strijelci so the two rules below fully own its + the actions column's padding
+		   (otherwise this rule's :nth-child specificity would beat the class selectors). */
+		.ac-table tbody td:nth-child(n + 3):nth-child(-n + 5):nth-child(n),
+		.ac-table thead th:nth-child(n + 2):nth-child(-n + 4):nth-child(n) {
+			padding-left: 1rem;
+		}
+		/* Pull Strijelci LEFT (closer to Razina) — small left padding — and push the action
+		   icons RIGHT with a wider left padding, opening a clear gap between Strijelci and the
+		   svg (edit/trash) column. Body Strijelci = col 6, actions = col 7; header = cols 5, 6.
+		   Doubled `:nth-child` on each so the specificity beats the desktop base padding rule
+		   (`:nth-child(n+3):nth-child(-n+7)`), which would otherwise win. */
+		.ac-table tbody td:nth-child(6):nth-child(6),
+		.ac-table thead th:nth-child(5):nth-child(5) {
+			padding-left: 0.1rem;
+		}
+		.ac-table tbody td:nth-child(7):nth-child(7),
+		.ac-table thead th:nth-child(6):nth-child(6) {
+			padding-left: 2.5rem;
+		}
+		/* Per-column widths via <colgroup> (phone only). table-layout:fixed reads these
+		   directly, so the colspan=2 Naslov header can't distort them. The narrow .col-title
+		   makes a long title like "Europsko prvenstvo u terenskom streličarstvu" fade at its
+		   last word; .col-archers narrows Strijelci. */
+		.ac-table .col-img { width: 3.25rem; }
+		.ac-table .col-title { width: 14rem; }
+		.ac-table .col-year { width: 5rem; }
+		.ac-table .col-vrsta { width: 7rem; }
+		.ac-table .col-razina { width: 9rem; }
+		.ac-table .col-archers { width: 8rem; }
+		.ac-table .col-actions { width: 6.5rem; }
+		.ac-badge {
+			min-width: 5rem;
+			font-size: 0.75rem;
+		}
+		.ac-img,
+		.ac-img--empty {
+			width: 2.2rem;
+			height: 2.2rem;
+		}
 	}
 </style>
