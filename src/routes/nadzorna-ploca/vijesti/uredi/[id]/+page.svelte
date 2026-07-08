@@ -211,32 +211,33 @@
 <svelte:head><title>Uredi članak · VSK</title></svelte:head>
 
 <section class="art-section">
-	<div class="mgmt-head display-f align-items-center justify-content-space-between">
-		<div class="display-f align-items-center gap-0-7">
-			<NewsIcon size={40} />
-			<div>
-				<h2 class="mgmt-title">Uredi članak</h2>
-				<p class="mgmt-sub">Uredite postojeći članak i spremite promjene.</p>
-			</div>
+	<div class="mgmt-head display-f align-items-center gap-0-7">
+		<NewsIcon size={48} />
+		<div>
+			<h2 class="mgmt-title">Uredi članak</h2>
+			<p class="mgmt-sub">Uredite postojeći članak i spremite promjene.</p>
 		</div>
-		<!-- Hide/unhide toggle: icon reflects the CURRENT state; click flips `hidden`. -->
-		<button
-			class="vis-toggle cursor-pointer display-f align-items-center gap-0-5"
-			class:is-hidden={hidden}
-			type="button"
-			aria-pressed={hidden}
-			title={hidden ? 'Trenutačno skriveno — klik za prikaz' : 'Trenutačno vidljivo — klik za skrivanje'}
-			onclick={() => (hidden = !hidden)}
-		>
-			{#if hidden}
-				<EyeOffIcon size={20} /> Skriveno
-			{:else}
-				<EyeIcon size={20} /> Vidljivo
-			{/if}
-		</button>
 	</div>
 
 	<form class="panel bg-white custom-scrollbar" onsubmit={(e) => e.preventDefault()}>
+		<!-- Hide/unhide toggle: INSIDE the white panel (top-right on desktop, full-width on
+		     phone). Icon reflects the CURRENT state; click flips `hidden`. -->
+		<div class="vis-row display-f justify-content-flex-end">
+			<button
+				class="vis-toggle cursor-pointer display-f align-items-center gap-0-5"
+				class:is-hidden={hidden}
+				type="button"
+				aria-pressed={hidden}
+				title={hidden ? 'Trenutačno skriveno — klik za prikaz' : 'Trenutačno vidljivo — klik za skrivanje'}
+				onclick={() => (hidden = !hidden)}
+			>
+				{#if hidden}
+					<EyeOffIcon size={20} /> Skriveno
+				{:else}
+					<EyeIcon size={20} /> Vidljivo
+				{/if}
+			</button>
+		</div>
 		<div class="form-grid">
 			<!-- LEFT: the article text. -->
 			<div class="col column-nowrap gap-1">
@@ -390,6 +391,10 @@
 		margin: 0.35rem 0 0;
 		font-size: 0.95rem;
 		color: #5b6577;
+	}
+	/* Toggle row inside the white panel; sits above the form grid. */
+	.vis-row {
+		margin-bottom: 1rem;
 	}
 	/* Hide/unhide toggle: green when visible, grey when hidden — matches the state. */
 	.vis-toggle {
@@ -584,6 +589,13 @@
 		font-size: 0.9rem;
 		font-family: inherit;
 		border: 1px solid transparent;
+		text-align: center;
+		white-space: nowrap; /* never wrap → equal single-line height */
+	}
+	/* All action buttons the SAME width on desktop (fixed basis, wide enough for the longest
+	   label "Spremi promjene" on one line) — uniform width AND height. Mobile → equal flex. */
+	.form-actions .btn {
+		flex: 0 0 10rem;
 	}
 	.btn:disabled {
 		opacity: 0.6;
@@ -623,6 +635,45 @@
 	@media (max-width: 760px) {
 		.form-grid {
 			grid-template-columns: 1fr;
+		}
+		/* Vidljivo/Skriveno toggle (now inside the white panel) spans FULL width on phone. */
+		.vis-toggle {
+			width: 100%;
+			justify-content: center;
+			padding: 0.7rem 1rem;
+			font-size: 0.95rem;
+		}
+		/* On mobile the PAGE scrolls (no bounded panel), so pin the Odustani/Spremi bar to the
+		   bottom of the SCREEN — always reachable without scrolling to the end of the long
+		   form. Full-width; the panel gets bottom padding so the last fields clear the bar. */
+		.form-actions {
+			position: fixed;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			margin: 0;
+			z-index: 40;
+			padding: 0.9rem 1rem calc(0.9rem + env(safe-area-inset-bottom));
+			box-shadow: 0 -4px 16px rgba(16, 46, 102, 0.12);
+			gap: 0.4rem;
+		}
+		/* Three buttons share the row evenly, labels on ONE line (smaller font). */
+		.form-actions .btn {
+			flex: 1 1 0;
+			min-width: 0;
+			padding: 0.65rem 0.4rem;
+			font-size: 0.8rem;
+			white-space: nowrap;
+		}
+		/* White panel edge-to-edge (cancel the content area's 1rem side padding) + tighter
+		   inner form padding so fields get more room. */
+		.panel {
+			padding-bottom: 5rem; /* clear the fixed action bar */
+			margin-left: -1rem;
+			margin-right: -1rem;
+			border-radius: 0;
+			padding-left: 1rem;
+			padding-right: 1rem;
 		}
 	}
 </style>

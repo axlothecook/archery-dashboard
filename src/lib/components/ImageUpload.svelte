@@ -168,6 +168,20 @@
 		color: #a4133c;
 		font-size: 0.82rem;
 	}
+	/* Phone: stack the action buttons in a COLUMN (Zamijeni/Učitaj on top, Ukloni below) so
+	   the "Zamijeni sliku" button stays put and the "Ukloni" button appears beneath it with
+	   room — side-by-side overflowed off the right edge on a narrow screen. */
+	@media (max-width: 760px) {
+		.img-upload-actions {
+			flex-direction: column;
+			align-items: stretch;
+		}
+		.img-upload-btn,
+		.img-clear {
+			justify-content: center;
+		}
+	}
+
 	/* Screen-reader-only file input (triggered by the button). */
 	.visually-hidden {
 		position: absolute;

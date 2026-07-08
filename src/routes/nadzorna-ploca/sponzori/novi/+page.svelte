@@ -99,7 +99,7 @@
 
 <section class="sp-section">
 	<div class="mgmt-head display-f align-items-center gap-0-7">
-		<HandshakeIcon size={40} />
+		<HandshakeIcon size={48} />
 		<div>
 			<h2 class="mgmt-title">Novi sponzor</h2>
 			<p class="mgmt-sub">Dodajte partnera ili sponzora kluba.</p>

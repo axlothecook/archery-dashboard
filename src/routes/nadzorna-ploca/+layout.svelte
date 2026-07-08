@@ -498,7 +498,7 @@
 			</button>
 		</form>
 
-		<nav class="mm-nav column-nowrap custom-scrollbar" aria-label="Glavni izbornik">
+		<nav class="mm-nav column-nowrap shadow-none custom-scrollbar" aria-label="Glavni izbornik">
 			{#each NAV as item (item.label)}
 				{#if item.children}
 					<RailGroup

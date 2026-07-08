@@ -95,7 +95,7 @@
 <section class="lvl-section">
 	<div class="mgmt-head display-f align-items-center justify-content-space-between gap-2">
 		<div class="display-f align-items-center gap-0-7">
-			<TrophyIcon size={40} />
+			<TrophyIcon size={48} />
 			<div>
 				<h2 class="mgmt-title">Razina</h2>
 				<p class="mgmt-sub">Kategorije natjecanja (legenda kalendara). Svaka ima naziv, boju i redoslijed.</p>

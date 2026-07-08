@@ -17,7 +17,7 @@
 
 <section class="ev-section">
 	<div class="mgmt-head display-f align-items-center gap-0-7">
-		<CalendarIcon size={40} />
+		<CalendarIcon size={48} />
 		<div>
 			<h2 class="mgmt-title">Nacrti</h2>
 			<p class="mgmt-sub">Događaji u pripremi, još nisu objavljeni. Dovršite ih i objavite kada su spremni.</p>

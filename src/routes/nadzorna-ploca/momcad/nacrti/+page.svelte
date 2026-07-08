@@ -23,7 +23,7 @@
 <section class="ar-section">
 	<div class="mgmt-head display-f align-items-center justify-content-space-between">
 		<div class="display-f align-items-center gap-0-7">
-			<PersonIcon size={40} />
+			<PersonIcon size={48} />
 			<div>
 				<h2 class="mgmt-title">Nacrti</h2>
 				<p class="mgmt-sub">Profili streličara u izradi. Objavite ih kad su spremni za javnu stranicu.</p>

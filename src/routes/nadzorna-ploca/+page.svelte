@@ -12,6 +12,7 @@
 	import AddIcon from '$lib/components/icons/AddIcon.svelte';
 	import CalendarIcon from '$lib/components/icons/CalendarIcon.svelte';
 	import MailAltIcon from '$lib/components/icons/MailAltIcon.svelte';
+	import ChevronIcon from '$lib/components/icons/ChevronIcon.svelte';
 	import TaskSquareIcon from '$lib/components/icons/TaskSquareIcon.svelte';
 	import AdministrationIcon from '$lib/components/icons/AdministrationIcon.svelte';
 	import TeamMember from '$lib/components/TeamMember.svelte';
@@ -165,14 +166,34 @@
 		<!-- Schedule (item 20) + incoming mail, side by side (each half the width). -->
 		<div class="lower-row grid grid-cols-2 gap-2">
 			<div>
-				<div class="dash-heading-row display-f align-items-center">
+				<div class="dash-heading-row display-f align-items-center justify-content-space-between">
 					<h2 class="dash-heading display-f align-items-center gap-0-5">
 						<span class="head-ico"><CalendarIcon size={22} /></span>
 						Raspored
 					</h2>
+					<!-- Desktop: arrow buttons page the weeks (hidden ≤900px, where SWIPE takes
+					     over — see the media query). The bottom pager lines show on both. -->
+					<div class="week-nav display-f align-items-center gap-0-5">
+						<button
+							class="week-arrow cursor-pointer"
+							class:is-hidden={!canPrevWeek}
+							type="button"
+							aria-label="Prethodni tjedan"
+							onclick={() => schedule?.prevWeek()}
+						>
+							<ChevronIcon direction="left" size={20} />
+						</button>
+						<button
+							class="week-arrow cursor-pointer"
+							class:is-hidden={!canNextWeek}
+							type="button"
+							aria-label="Sljedeći tjedan"
+							onclick={() => schedule?.nextWeek()}
+						>
+							<ChevronIcon direction="right" size={20} />
+						</button>
+					</div>
 				</div>
-				<!-- Week paging is now by SWIPE (drag the day strip) — arrows removed, matching
-				     the public schedule page. -->
 				<SchedulePanel bind:this={schedule} bind:canPrev={canPrevWeek} bind:canNext={canNextWeek} />
 			</div>
 			<div>
@@ -316,11 +337,35 @@
 		background: #0c2350;
 	}
 
+	/* Week-nav arrows (desktop; hidden ≤900px where swipe takes over). */
+	.week-arrow {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		border: 1px solid #d7dee8;
+		border-radius: 50%;
+		background: #fff;
+		color: #102e66;
+		transition: background-color 0.15s ease;
+	}
+	.week-arrow:hover {
+		background: #eef1f3;
+	}
+	/* At the month's first/last week the corresponding arrow is hidden (keeps its slot so the
+	   other arrow doesn't shift). */
+	.week-arrow.is-hidden {
+		visibility: hidden;
+		pointer-events: none;
+	}
+
 	/* Lower row: schedule + mail side by side, each half the tasks width. Top gap
-	   separates it from the tasks panel above (tightened 2.5→0.9rem so the dashboard
-	   fits the shared frame). */
+	   separates it from the tasks panel above; sized so the Raspored/Pošta panels bottom
+	   out on the SAME line as the right column's Administracija panel (which flex-grows to
+	   fill), rather than stopping a touch short. */
 	.lower-row {
-		margin-top: 0.9rem;
+		margin-top: 2rem;
 		align-items: start;
 	}
 
@@ -426,6 +471,10 @@
 		/* Slightly tighter panel padding on phones. */
 		.panel {
 			padding: 1.1rem 1.15rem;
+		}
+		/* Mobile pages the week by SWIPE — hide the desktop arrow buttons. */
+		.week-nav {
+			display: none;
 		}
 	}
 </style>

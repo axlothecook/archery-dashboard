@@ -16,7 +16,7 @@
 
 <section class="art-section">
 	<div class="mgmt-head display-f align-items-center gap-0-7">
-		<NewsIcon size={40} />
+		<NewsIcon size={48} />
 		<div>
 			<h2 class="mgmt-title">Nacrti</h2>
 			<p class="mgmt-sub">Članci u pripremi, još nisu objavljeni. Dovršite ih i objavite kada su spremni.</p>

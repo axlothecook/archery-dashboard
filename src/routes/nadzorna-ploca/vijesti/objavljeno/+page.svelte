@@ -89,17 +89,25 @@
 <section class="art-section">
 	<div class="mgmt-head display-f align-items-center justify-content-space-between">
 		<div class="display-f align-items-center gap-0-7">
-			<NewsIcon size={40} />
+			<NewsIcon size={48} />
 			<div>
 				<h2 class="mgmt-title">Objavljene vijesti</h2>
 				<p class="mgmt-sub">Članci vidljivi na javnoj stranici. Uredite ili uklonite objavljene vijesti.</p>
 			</div>
 		</div>
-		<a class="btn-add cursor-pointer display-f align-items-center gap-0-4" href="/nadzorna-ploca/vijesti/novi">
+		<!-- Desktop: sits to the right of the title. Mobile: hidden here; a full-width copy
+		     (below) takes over so it spans like the Filteri bar. -->
+		<a class="btn-add btn-add--inline cursor-pointer display-f align-items-center gap-0-4" href="/nadzorna-ploca/vijesti/novi">
 			<AddIcon size={18} />
 			Novi članak
 		</a>
 	</div>
+
+	<!-- Mobile-only: full-width "Novi članak" below the title (spans like the Filteri bar). -->
+	<a class="btn-add btn-add--block cursor-pointer display-f align-items-center justify-content-center gap-0-4" href="/nadzorna-ploca/vijesti/novi">
+		<AddIcon size={18} />
+		Novi članak
+	</a>
 
 	<div class="layout">
 		<!-- Filter panel: its own div, standing to the LEFT of the articles. -->
@@ -217,6 +225,10 @@
 	.btn-add:hover {
 		background: #0c2350;
 	}
+	/* The full-width mobile copy is hidden on desktop; the inline (header-right) copy shows. */
+	.btn-add--block {
+		display: none;
+	}
 	.panel {
 		border-radius: 14px;
 		padding: 1.25rem 1.5rem;
@@ -327,6 +339,11 @@
 		   exceed the panel width — allow horizontal scroll so the actions stay reachable
 		   rather than clipping them. */
 		overflow-x: auto;
+		/* Push the scroll area out to the panel's right edge (cancel the panel's 1.5rem right
+		   padding) so the SCROLLBAR sits flush at the white div's right edge; the padding-right
+		   then keeps a gap between the table content and the scrollbar. */
+		margin-right: -1.5rem;
+		padding-right: 1rem;
 		/* Scrollbar styling comes from the shared `.custom-scrollbar` class (library). */
 	}
 	/* Phone/tablet: stack the filter panel above the articles, and COLLAPSE it behind the
@@ -346,7 +363,20 @@
 		}
 		.mgmt-head {
 			flex: 0 0 auto;
-			margin-bottom: 1rem;
+			margin-bottom: 1.5rem;
+		}
+		/* "Novi članak": the header-right inline copy is hidden; the full-width block copy
+		   (below the title) takes over so it spans like the Filteri bar. */
+		.btn-add--inline {
+			display: none;
+		}
+		.btn-add--block {
+			display: flex;
+			flex: 0 0 auto;
+			width: 100%;
+			padding: 0.7rem 1rem;
+			font-size: 0.95rem;
+			margin-bottom: 0.75rem;
 		}
 		/* Stack as a flex COLUMN so the filter bar + article panel sit with a small gap and
 		   the panel flex-grows to fill the remaining height (grid left an oversized gap). */

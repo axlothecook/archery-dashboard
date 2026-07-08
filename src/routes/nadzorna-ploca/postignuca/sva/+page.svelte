@@ -62,7 +62,7 @@
 <section class="ac-section">
 	<div class="mgmt-head display-f align-items-center justify-content-space-between">
 		<div class="display-f align-items-center gap-0-7">
-			<TrophyIcon size={40} />
+			<TrophyIcon size={48} />
 			<div>
 				<h2 class="mgmt-title">Sva postignuća</h2>
 				<p class="mgmt-sub">Naslovi, rekordi i medalje kluba. Uredite ili uklonite postignuća.</p>

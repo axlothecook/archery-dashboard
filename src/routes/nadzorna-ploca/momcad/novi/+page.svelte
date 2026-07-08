@@ -16,7 +16,7 @@
 
 <section class="ar-section">
 	<div class="mgmt-head display-f align-items-center gap-0-7">
-		<PersonIcon size={40} />
+		<PersonIcon size={48} />
 		<div>
 			<h2 class="mgmt-title">Novi streličar</h2>
 			<p class="mgmt-sub">Dodajte streličara ili trenera u momčad kluba.</p>

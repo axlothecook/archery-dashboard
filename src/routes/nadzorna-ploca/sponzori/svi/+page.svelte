@@ -22,7 +22,7 @@
 <section class="sp-section">
 	<div class="mgmt-head display-f align-items-center justify-content-space-between">
 		<div class="display-f align-items-center gap-0-7">
-			<HandshakeIcon size={40} />
+			<HandshakeIcon size={48} />
 			<div>
 				<h2 class="mgmt-title">Svi sponzori</h2>
 				<p class="mgmt-sub">Partneri i sponzori kluba. Uredite ili uklonite sponzore.</p>
