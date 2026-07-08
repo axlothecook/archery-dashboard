@@ -28,6 +28,34 @@
 	} = $props();
 
 	let open = $state(false);
+	// Flip the dropdown ABOVE the trigger when there isn't enough room below it (e.g. the
+	// Strijelci field near the bottom of a form, above a fixed action bar). Measured on open.
+	let dropUp = $state(false);
+	let controlEl = $state<HTMLDivElement>();
+	// Keep in sync with the .arp-list max-height (14rem) so we only flip when the space below
+	// is genuinely too small.
+	const LIST_MAX_PX = 14 * 16;
+	function decideDirection() {
+		if (!controlEl) return;
+		const rect = controlEl.getBoundingClientRect();
+		// The room below is bounded by a fixed action bar if the form has one (it would
+		// otherwise cover a downward dropdown), else by the viewport bottom.
+		const bar = document.querySelector<HTMLElement>('.form-actions');
+		const barTop =
+			bar && getComputedStyle(bar).position === 'fixed'
+				? bar.getBoundingClientRect().top
+				: window.innerHeight;
+		const below = barTop - rect.bottom;
+		const above = rect.top;
+		// Flip up when the space below (down to the fixed bar) can't fit the list and there's
+		// at least as much room above. On a phone form the trigger is usually just above the
+		// fixed action bar, so this opens the list upward, fully clear of the bar.
+		dropUp = below < LIST_MAX_PX && above >= below;
+	}
+	function toggleOpen() {
+		if (!open) decideDirection();
+		open = !open;
+	}
 
 	// Report the load failure once, on mount, so the dev sees it (fire-and-forget).
 	onMount(() => {
@@ -68,13 +96,13 @@
 		<!-- Trigger + dropdown share a relative wrapper so the list anchors UNDER the
 		     trigger, not under the chips (which grow the component). The dropdown stays
 		     put like a normal select regardless of how many chips are chosen. -->
-		<div class="arp-control">
+		<div class="arp-control" class:drop-up={dropUp} bind:this={controlEl}>
 			<button
 				class="arp-trigger w-full display-f align-items-center justify-content-space-between br-xs cursor-pointer"
 				type="button"
 				aria-haspopup="listbox"
 				aria-expanded={open}
-				onclick={() => (open = !open)}
+				onclick={toggleOpen}
 			>
 				<span class="arp-trigger-text">
 					{selected.length ? `Odabrano: ${selected.length}` : 'Odaberite streličare'}
@@ -194,7 +222,7 @@
 	}
 	.arp-list {
 		position: absolute;
-		z-index: 20;
+		z-index: 41; /* above the forms' fixed action bar (z-index 40) so it's never covered */
 		top: calc(100% + 0.3rem);
 		left: 0;
 		right: 0;
@@ -206,6 +234,13 @@
 		background: #fff;
 		border: 1px solid #d7dee8;
 		box-shadow: 0 8px 24px rgba(16, 46, 102, 0.12);
+	}
+	/* When there isn't room below (last field above a fixed action bar), open UPWARD:
+	   anchor the list to the trigger's top edge and stack it above. */
+	.arp-control.drop-up .arp-list {
+		top: auto;
+		bottom: calc(100% + 0.3rem);
+		box-shadow: 0 -8px 24px rgba(16, 46, 102, 0.12);
 	}
 	.arp-opt {
 		gap: 0.6rem;

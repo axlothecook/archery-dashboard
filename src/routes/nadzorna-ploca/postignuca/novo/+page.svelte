@@ -355,5 +355,48 @@
 		.form-grid {
 			grid-template-columns: 1fr;
 		}
+		/* White panel edge-to-edge (cancel the content area's 1rem side padding) + tighter
+		   inner padding; bottom padding clears the fixed action bar. Matches Uredi događaj. */
+		.panel {
+			margin-left: -1rem;
+			margin-right: -1rem;
+			border-radius: 0;
+			padding-left: 1rem;
+			padding-right: 1rem;
+			/* Extra bottom room so the last field (Strijelci) + its open dropdown clear the
+			   fixed action bar instead of tucking under it. */
+			padding-bottom: 7rem;
+			/* The page (not the panel) scrolls on phone, so drop the internal scroll — an
+			   overflow:auto panel would clip the Strijelci dropdown (absolutely positioned)
+			   at the panel's bottom edge. */
+			overflow: visible;
+		}
+		/* Pin the action bar to the bottom of the SCREEN (the page scrolls on mobile, so the
+		   in-panel sticky wouldn't stay in view). Mirrors Uredi događaj / Novi članak. */
+		.form-actions {
+			position: fixed;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			margin: 0;
+			z-index: 40;
+			padding: 0.9rem 1rem calc(0.9rem + env(safe-area-inset-bottom));
+			box-shadow: 0 -4px 16px rgba(16, 46, 102, 0.12);
+			gap: 0.4rem;
+			align-items: stretch;
+		}
+		/* Both buttons share the row evenly, one line, FIXED height so they're identical. */
+		.form-actions .btn {
+			flex: 1 1 0;
+			min-width: 0;
+			height: 2.75rem;
+			padding: 0 0.4rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 0.8rem;
+			white-space: nowrap;
+			line-height: 1;
+		}
 	}
 </style>
