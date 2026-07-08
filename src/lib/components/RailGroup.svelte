@@ -153,22 +153,21 @@
 		height: 0.6rem;
 		border-radius: 50%;
 		background: #f2c94c; /* gold */
-		animation: rail-new-pulse 2.2s ease-in-out infinite;
+		animation: rail-new-pulse 1.3s ease-in-out infinite;
 	}
 	.rail-new-dot.compact {
 		top: 0.45rem;
 		right: 0.45rem;
 		transform: none;
 	}
+	/* Fully appears then fully disappears (0 → 1 → 0), on a quicker cycle. */
 	@keyframes rail-new-pulse {
 		0%,
 		100% {
-			opacity: 0.35;
-			box-shadow: 0 0 0 0 rgba(242, 201, 76, 0);
+			opacity: 0;
 		}
 		50% {
 			opacity: 1;
-			box-shadow: 0 0 0 3px rgba(242, 201, 76, 0.25);
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {

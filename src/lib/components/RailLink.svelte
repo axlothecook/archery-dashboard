@@ -94,8 +94,7 @@
 		height: 0.6rem;
 		border-radius: 50%;
 		background: #f2c94c; /* gold */
-		box-shadow: 0 0 0 rgba(242, 201, 76, 0.6);
-		animation: rail-new-pulse 2.2s ease-in-out infinite;
+		animation: rail-new-pulse 1.3s ease-in-out infinite;
 	}
 	/* Compact/icon-only mode: the dot floats at the row's top-right corner instead. */
 	.rail-new-dot.compact {
@@ -103,15 +102,14 @@
 		right: 0.45rem;
 		transform: none;
 	}
+	/* Fully appears then fully disappears (0 → 1 → 0), on a quicker cycle. */
 	@keyframes rail-new-pulse {
 		0%,
 		100% {
-			opacity: 0.35;
-			box-shadow: 0 0 0 0 rgba(242, 201, 76, 0);
+			opacity: 0;
 		}
 		50% {
 			opacity: 1;
-			box-shadow: 0 0 0 3px rgba(242, 201, 76, 0.25);
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
