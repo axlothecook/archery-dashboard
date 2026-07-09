@@ -366,7 +366,20 @@
 	   fill), rather than stopping a touch short. */
 	.lower-row {
 		margin-top: 2rem;
-		align-items: start;
+		/* stretch (not start) so the shorter Dolazna pošta column grows to the SAME bottom line
+		   as Raspored (which already lines up with Administracija) instead of stopping ~30px
+		   short. Only closes that gap — the shared bottom is unchanged, so the page can't grow. */
+		align-items: stretch;
+	}
+	/* Dolazna pošta column: flex column so its panel fills the now-stretched column height and
+	   reaches the shared bottom line. */
+	.lower-row > div:last-child {
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+	}
+	.lower-row > div:last-child :global(.mail) {
+		flex: 1 1 auto;
 	}
 
 	/* ---- Side panels ---- */
