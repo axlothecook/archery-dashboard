@@ -13,6 +13,7 @@
 	import ClockIcon from '$lib/components/icons/ClockIcon.svelte';
 	import LevelsIcon from '$lib/components/icons/LevelsIcon.svelte';
 	import PeopleIcon from '$lib/components/icons/PeopleIcon.svelte';
+	import StatusIcon from '$lib/components/icons/StatusIcon.svelte';
 	import EyeIcon from '$lib/components/icons/EyeIcon.svelte';
 	import EyeOffIcon from '$lib/components/icons/EyeOffIcon.svelte';
 
@@ -118,7 +119,7 @@
 					<span class="th-in display-f align-items-center gap-0-4"><PeopleIcon size={18} />Sudionici</span>
 				</th>
 				<th>
-					<span class="th-in display-f align-items-center gap-0-4"><EyeIcon size={18} />Stanje</span>
+					<span class="th-in display-f align-items-center gap-0-4"><StatusIcon size={18} />Stanje</span>
 				</th>
 				<th class="ev-th-actions"></th>
 				<th class="ev-col-spacer"></th>
@@ -211,8 +212,13 @@
 		   name column truncates cleanly. A min-width keeps all 7 columns at a readable size —
 		   below it the .ev-scroll wrapper scrolls horizontally rather than collapsing the
 		   Naziv column to a few characters (which happened in the narrow sidebar layout). */
+		/* Fixed layout so the column widths below are AUTHORITATIVE — otherwise long content
+		   ("Europsko prvenstvo", date ranges) balloons the columns past the narrow panel (the
+		   Filteri sidebar leaves only ~55rem) and forces a horizontal scroll. Widths sum to fit
+		   ~55rem: Naziv gets a medium width (long names fade), Razina/Datum are tight (long
+		   values fade). A small min-width guards very narrow desktop; phone widens it to scroll. */
 		table-layout: fixed;
-		min-width: 66rem;
+		min-width: 44rem;
 	}
 	.ev-table th {
 		text-align: left;
@@ -239,24 +245,24 @@
 		text-decoration: line-through;
 		color: #9aa3b2;
 	}
-	/* The name column takes ALL leftover width (the trailing spacer is 0) so the title
-	   shows as much as possible; every other column is a fixed width. table-layout:fixed
-	   (on .ev-table) makes these widths authoritative so the name truncates cleanly
-	   instead of the table overflowing the panel. */
+	/* Naziv is a fixed width sized to hold most event names — NOT auto. Auto made it grab
+	   all the slack and shove the meta columns to the far right (a big gap after Naziv).
+	   With a fixed Naziv, the meta columns pack left right after it, and the trailing spacer
+	   (auto) soaks up any leftover width. */
 	.ev-table :is(th, td):first-child {
-		width: auto;
+		width: 12rem;
 	}
 	/* Each of the meta columns carries the SAME left padding (1.75rem) as the gap before it,
 	   so adjacent columns don't crowd: Naziv→Disciplina, Disciplina→Datum, Datum→Razina and
 	   Razina→Sudionici all get consistent breathing room. Widths are sized to hold the content
 	   PLUS that padding (Razina fits "Europsko prvenstvo"); the table min-width scrolls if the
 	   panel is narrower. */
-	.ev-table :is(th, td):nth-child(2) { width: 9rem; padding-left: 1.75rem; } /* Disciplina */
-	.ev-table :is(th, td):nth-child(3) { width: 12.5rem; padding-left: 1.75rem; } /* Datum */
-	.ev-table :is(th, td):nth-child(4) { width: 13rem; padding-left: 1.75rem; } /* Razina */
-	.ev-table :is(th, td):nth-child(5) { width: 8rem; padding-left: 1.75rem; } /* Sudionici */
-	.ev-table :is(th, td):nth-child(6) { width: 8rem; } /* Stanje */
-	.ev-table :is(th, td):nth-child(7) { width: 7.5rem; } /* actions */
+	.ev-table :is(th, td):nth-child(2) { width: 6rem; padding-left: 0.9rem; } /* Disciplina */
+	.ev-table :is(th, td):nth-child(3) { width: 8.5rem; padding-left: 0.9rem; } /* Datum */
+	.ev-table :is(th, td):nth-child(4) { width: 9rem; padding-left: 0.9rem; overflow: hidden; } /* Razina */
+	.ev-table :is(th, td):nth-child(5) { width: 5.5rem; padding-left: 0.9rem; } /* Sudionici */
+	.ev-table :is(th, td):nth-child(6) { width: 6.5rem; } /* Stanje */
+	.ev-table :is(th, td):nth-child(7) { width: 6rem; } /* actions */
 	.ev-table :is(th, td).ev-col-spacer {
 		width: 1.25rem;
 		padding: 0;
