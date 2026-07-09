@@ -18,7 +18,28 @@ permissions:
   packages: write
 
 jobs:
+  # Gate: typecheck + unit tests must pass BEFORE we build/deploy. A push to main goes
+  # straight to the Pi, so this is the safety net that stops a broken build reaching prod
+  # (mirrors the backend repo's test gate).
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Typecheck
+        run: npm run check
+      - name: Unit tests
+        run: npm run test
+
   build-and-push:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
