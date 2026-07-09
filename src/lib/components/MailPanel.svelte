@@ -28,6 +28,12 @@
 		padding: 1rem;
 		border-radius: 14px;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
+		/* Flex column so the inner list fills the panel. The panel's height is set by its parent
+		   (stretched to Raspored on the desktop lower row); the list fills that height so the
+		   inner padding is EVEN on all sides instead of leaving empty space below a capped list. */
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
 	}
 	.mail-empty {
 		margin: 0;
@@ -36,13 +42,20 @@
 		color: #9aa3b2;
 		font-size: 0.95rem;
 	}
-	/* Cap the list to ~3 messages tall and scroll the rest inside (styled scrollbar via
-	   .custom-scrollbar) so the Pošta panel never grows the page — the Početno page itself
-	   must NOT scroll. Applies on every screen size. ~3 rows = 3 items + 2 gaps; padding-right
-	   keeps the scrollbar off the text. */
+	/* Fill the panel (flex parent) and scroll the overflow inside (styled scrollbar via
+	   .custom-scrollbar). flex-basis:0 + min-height:0 mean the list takes the panel's height
+	   WITHOUT its content inflating the panel, so it can't grow the page. padding-right keeps
+	   the scrollbar off the text. On the phone stack the panel isn't stretched → a max-height
+	   caps it at ~3 rows there. */
 	.mail-list {
-		max-height: 15.5rem;
+		flex: 1 1 0;
+		min-height: 0;
 		overflow-y: auto;
 		padding-right: 0.5rem;
+	}
+	@media (max-width: 900px) {
+		.mail-list {
+			max-height: 15.5rem;
+		}
 	}
 </style>
