@@ -265,17 +265,6 @@
 	   sit at the frame bottom, matching their bottom gap. */
 	.dash {
 		grid-template-columns: 3fr 1fr;
-		/* The content frame (.admin-content) clips overflow (page never scrolls); on shorter
-		   viewports the two panel rows are taller than the frame, so THIS grid is the page's
-		   designated scroll area — fill the frame height and scroll inside instead of clipping
-		   the Dolazna pošta / Administracija panels off the bottom. align-content:start keeps the
-		   rows packed at the top (not stretched) so scrolling reveals the full lower row; a little
-		   bottom padding gives the last panels breathing room from the scroll edge. */
-		flex: 1 1 auto;
-		min-height: 0;
-		overflow-y: auto;
-		align-content: start;
-		padding-bottom: 0.5rem;
 	}
 	/* Grid/flex items default to min-width:auto and expand to fit their widest child — the
 	   wide Zadaci table (min-width) would blow the column past the viewport and scroll the

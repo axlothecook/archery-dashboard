@@ -36,14 +36,13 @@
 		color: #9aa3b2;
 		font-size: 0.95rem;
 	}
-	/* Phone: cap the list to ~3 messages tall and scroll the rest inside (styled scrollbar via
-	   .custom-scrollbar), so a full inbox doesn't make the Pošta panel run long on a small
-	   screen. ~3 rows = 3 items + 2 gaps; padding-right keeps the scrollbar off the text. */
-	@media (max-width: 900px) {
-		.mail-list {
-			max-height: 15.5rem;
-			overflow-y: auto;
-			padding-right: 0.5rem;
-		}
+	/* Cap the list to ~3 messages tall and scroll the rest inside (styled scrollbar via
+	   .custom-scrollbar) so the Pošta panel never grows the page — the Početno page itself
+	   must NOT scroll. Applies on every screen size. ~3 rows = 3 items + 2 gaps; padding-right
+	   keeps the scrollbar off the text. */
+	.mail-list {
+		max-height: 15.5rem;
+		overflow-y: auto;
+		padding-right: 0.5rem;
 	}
 </style>
