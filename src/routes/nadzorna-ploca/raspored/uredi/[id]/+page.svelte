@@ -12,6 +12,7 @@
 	} from '$lib/events';
 	import DashSelect from '$lib/components/DashSelect.svelte';
 	import ArcherPicker from '$lib/components/ArcherPicker.svelte';
+	import ImageUpload from '$lib/components/ImageUpload.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import ErrorPopup from '$lib/components/ErrorPopup.svelte';
 	import CalendarIcon from '$lib/components/icons/CalendarIcon.svelte';
@@ -188,33 +189,34 @@
 <svelte:head><title>Uredi događaj · VSK</title></svelte:head>
 
 <section class="ev-section">
-	<div class="mgmt-head display-f align-items-center gap-0-7">
-		<CalendarIcon size={48} />
-		<div>
-			<h2 class="mgmt-title">Uredi događaj</h2>
-			<p class="mgmt-sub">Uredite postojeći događaj i spremite promjene.</p>
+	<div class="mgmt-head display-f align-items-center justify-content-space-between gap-0-7">
+		<div class="display-f align-items-center gap-0-7">
+			<CalendarIcon size={48} />
+			<div>
+				<h2 class="mgmt-title">Uredi događaj</h2>
+				<p class="mgmt-sub">Uredite postojeći događaj i spremite promjene.</p>
+			</div>
 		</div>
+		<!-- Hide/unhide toggle: in the HEADER row (right side), OUTSIDE the white panel, so it
+		     doesn't push the form content down. Icon reflects the CURRENT state; click flips
+		     `hidden`. On phone the header stacks, so it wraps beneath the title. -->
+		<button
+			class="vis-toggle cursor-pointer display-f align-items-center gap-0-5"
+			class:is-hidden={hidden}
+			type="button"
+			aria-pressed={hidden}
+			title={hidden ? 'Trenutačno skriveno — klik za prikaz' : 'Trenutačno vidljivo — klik za skrivanje'}
+			onclick={() => (hidden = !hidden)}
+		>
+			{#if hidden}
+				<EyeOffIcon size={20} /> Skriveno
+			{:else}
+				<EyeIcon size={20} /> Vidljivo
+			{/if}
+		</button>
 	</div>
 
 	<form class="panel bg-white" onsubmit={(ev) => ev.preventDefault()}>
-		<!-- Hide/unhide toggle: INSIDE the white panel (top-right desktop, full-width phone).
-		     Icon reflects the CURRENT state; click flips `hidden`. -->
-		<div class="vis-row display-f justify-content-flex-end">
-			<button
-				class="vis-toggle cursor-pointer display-f align-items-center gap-0-5"
-				class:is-hidden={hidden}
-				type="button"
-				aria-pressed={hidden}
-				title={hidden ? 'Trenutačno skriveno — klik za prikaz' : 'Trenutačno vidljivo — klik za skrivanje'}
-				onclick={() => (hidden = !hidden)}
-			>
-				{#if hidden}
-					<EyeOffIcon size={20} /> Skriveno
-				{:else}
-					<EyeIcon size={20} /> Vidljivo
-				{/if}
-			</button>
-		</div>
 		<div class="form-grid">
 			<!-- LEFT: the core details. -->
 			<div class="col column-nowrap gap-1-5">
@@ -251,10 +253,7 @@
 
 				<fieldset class="group">
 					<legend class="group-legend">Poster fotografija <span class="req">*</span></legend>
-					<label class="field column-nowrap gap-title">
-						<span class="field-title">URL slike</span>
-						<input class="field-input w-full br-xs" type="url" bind:value={imageUrl} />
-					</label>
+					<ImageUpload label="Slika" bind:url={imageUrl} />
 					<label class="field column-nowrap gap-title mt-0-6">
 						<span class="field-title">Opis slike (alt)</span>
 						<input class="field-input w-full br-xs" type="text" bind:value={imageAlt} />
@@ -344,12 +343,10 @@
 		font-size: 0.95rem;
 		color: #5b6577;
 	}
-	/* Toggle row inside the white panel; sits above the form grid. */
-	.vis-row {
-		margin-bottom: 1rem;
-	}
-	/* Hide/unhide toggle: green when visible, grey when hidden — matches the state. */
+	/* Hide/unhide toggle: green when visible, grey when hidden — matches the state. Lives in
+	   the header row (right side), so it must not stretch. */
 	.vis-toggle {
+		flex: 0 0 auto;
 		padding: 0.5rem 0.9rem;
 		border: 1px solid #cfe8d8;
 		border-radius: 8px;
