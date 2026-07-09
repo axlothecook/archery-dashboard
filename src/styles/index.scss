@@ -122,26 +122,40 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-// Laptop scaling: on shorter viewports (≈1366×768 and down) shrink the whole dashboard
-// via the root font-size so the rem-based heights, padding, and text all scale down
-// together — the dashboard fits without the page scrolling / clipping, while larger
-// screens keep the full 16px sizing. Base layer so every page inherits it.
+// Laptop scaling: on shorter viewports shrink the whole dashboard via the root font-size
+// so the rem-based heights, padding, and text all scale down together — the dashboard fits
+// without the page scrolling / clipping, while genuinely tall screens keep 16px.
 //
-// IMPORTANT: gated to WIDE viewports (min-width: 901px) so it applies to laptops only.
-// On phones the page SCROLLS (it doesn't need to fit one screen), and the mobile browser's
-// hide/show address bar constantly changes the viewport height — without this gate that
-// would cross the max-height thresholds mid-scroll and jump the font-size (reflow/snap).
-@media (min-width: 901px) and (max-height: 900px) {
+// The root font-size steps DOWN as the viewport gets shorter. The key fix vs the old scale:
+// the full 16px is now reserved for GENUINELY TALL windows (> 1000px). The old scale gave
+// 16px to anything over 900px, so a 901–1000px-tall laptop window (e.g. a 923px prod window)
+// jumped to full size and OVERFLOWED, while a 900px window sat at 14px and fit — the same code
+// "looked bigger / clipped" purely because a few px of window height crossed the 900 threshold.
+// Now 901–1000px gets 14px (the size that's proven to fit), and the steps are gentle.
+//
+// Breakpoints are in `em`, NOT px — in a media-query condition em/rem always resolve against the
+// BROWSER DEFAULT font size (typically 16px), ignoring the html font-size override above, so the
+// breakpoints respond to the user's browser font-size preference (accessibility; px would not).
+// `em` specifically (not `rem`): both behave identically in media queries, but `rem` has a Safari
+// media-query bug — `em` is the most cross-browser-consistent relative unit here. Everything else
+// is rem, so BROWSER ZOOM still enlarges the whole UI normally. Cascade: a short window matches
+// several queries; the last (smallest) wins.
+// em↔px at the 16px default: 56.3125em≈901px, 62.5em=1000px, 51.25em=820px, 43.75em=700px.
+//
+// IMPORTANT: gated to WIDE viewports so it applies to laptops only. On phones the page SCROLLS
+// (doesn't need to fit one screen), and the mobile address bar constantly changes the viewport
+// height — without this gate that would cross the thresholds mid-scroll and jump the font-size.
+@media (min-width: 56.3125em) and (max-height: 62.5em) {
 	html {
 		font-size: 14px;
 	}
 }
-@media (min-width: 901px) and (max-height: 820px) {
+@media (min-width: 56.3125em) and (max-height: 51.25em) {
 	html {
 		font-size: 12px;
 	}
 }
-@media (min-width: 901px) and (max-height: 700px) {
+@media (min-width: 56.3125em) and (max-height: 43.75em) {
 	html {
 		font-size: 11px;
 	}
