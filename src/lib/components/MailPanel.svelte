@@ -1,15 +1,19 @@
 <script lang="ts">
 	// "Dolazna pošta" (incoming mail) panel — sits beside the schedule, half width.
-	// Shows the placeholder messages (no scroll; just the few there are). Each row is
-	// the reusable <MailItem> component.
+	// Shows the newest real Upiti inquiries (passed in from the Početno server load). Each
+	// row is the reusable <MailItem>. Empty state when there are no inquiries yet.
 	import MailItem from '$lib/components/MailItem.svelte';
-	import { MAILS } from '$lib/mail';
+	import type { Mail } from '$lib/mail';
+
+	let { mails }: { mails: Mail[] } = $props();
 </script>
 
 <section class="panel bg-white mail">
 	<div class="mail-list column-nowrap gap-1">
-		{#each MAILS as m (m.id)}
+		{#each mails as m (m.id)}
 			<MailItem mail={m} />
+		{:else}
+			<p class="mail-empty">Nema novih upita.</p>
 		{/each}
 	</div>
 </section>
@@ -24,5 +28,12 @@
 		padding: 1rem;
 		border-radius: 14px;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
+	}
+	.mail-empty {
+		margin: 0;
+		padding: 1.5rem 0.5rem;
+		text-align: center;
+		color: #9aa3b2;
+		font-size: 0.95rem;
 	}
 </style>

@@ -20,13 +20,7 @@
 	import SchedulePanel from '$lib/components/SchedulePanel.svelte';
 	import TasksPanel from '$lib/components/TasksPanel.svelte';
 	import MailPanel from '$lib/components/MailPanel.svelte';
-	import { MAILS } from '$lib/mail';
 	import { team, getCurrentAdmin } from '$lib/teamStore.svelte';
-
-	// Show a "(N)" count next to "Dolazna pošta" only when there are MORE than the 3 that
-	// fit without scrolling — mirrors the notifications "Novo (N)" cue.
-	const mailCount = MAILS.length;
-	const showMailCount = mailCount > 3;
 	import type { Urgent } from '$lib/urgent';
 
 	// Component refs so the outside heading rows can drive the panels.
@@ -96,6 +90,13 @@
 		const pool = greetingPool(adminName);
 		return pool[data.greetVariant] ?? pool[0];
 	});
+
+	// "Dolazna pošta" preview = the real Upiti inquiries from the server load (newest first).
+	// Show a "(N)" count next to the title only when there are MORE than the 3 that fit
+	// without scrolling — mirrors the notifications "Novo (N)" cue.
+	const mails = $derived(data.mail);
+	const mailCount = $derived(mails.length);
+	const showMailCount = $derived(mailCount > 3);
 
 	// Things that need the admin's URGENT attention. Placeholder copy + links to
 	// the relevant section; empty = nothing urgent (panel shows a calm message).
@@ -204,7 +205,7 @@
 						{#if showMailCount}<span class="mail-count">({mailCount})</span>{/if}
 					</h2>
 				</div>
-				<MailPanel />
+				<MailPanel {mails} />
 			</div>
 		</div>
 	</section>
