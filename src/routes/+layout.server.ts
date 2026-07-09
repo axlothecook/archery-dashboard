@@ -1,15 +1,12 @@
-import { resolveLocale, LOCALE_COOKIE } from '$lib/locale';
+import { DEFAULT_LOCALE } from '$lib/locale';
 import type { LayoutServerLoad } from './$types';
 
-// The ACTIVE locale for the whole site comes from the `locale` cookie (set by the
-// language switcher). Reading it here, server-side, means SSR renders in the chosen
-// language on first paint (no hr→en flash). Child loads read it via `await parent()`;
-// the switcher re-runs all loads with `invalidateAll()` after changing the cookie.
-export const load: LayoutServerLoad = ({ cookies, depends }) => {
-	// Tag this load so the switcher can re-run it (and every child load that reads
-	// the locale via parent()) with invalidate('app:locale') — cookies aren't an
-	// auto-tracked dependency, so we register one explicitly.
-	depends('app:locale');
-	const locale = resolveLocale(cookies.get(LOCALE_COOKIE));
-	return { locale };
+// The dashboard is admin-only and HR-first, with NO language switcher of its own.
+// It shares an origin with the public site, so reading the public `locale` cookie
+// here made the dashboard flip to English whenever an admin had last viewed the
+// public site in EN (the reported "auth pages in English" bug). We therefore pin
+// the dashboard to Croatian always, ignoring that cookie. If the dashboard ever
+// gains its own switcher, resolve from a dashboard-scoped cookie instead.
+export const load: LayoutServerLoad = () => {
+	return { locale: DEFAULT_LOCALE };
 };
