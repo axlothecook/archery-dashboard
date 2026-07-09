@@ -68,10 +68,17 @@ jobs:
           script: |
             set -e
             cd ~/archery-club-deploy
-            docker compose -f docker-compose.prod.yml pull
-            docker compose -f docker-compose.prod.yml up -d
-            # Reclaim disk from the images this deploy just replaced (every deploy leaves
-            # the previous :latest dangling; unpruned they fill the SD card and crash
-            # Postgres → site down). Only untagged/unused images are removed.
+            docker compose -f docker-compose.prod.yml pull dashboard
+            # --force-recreate so the container always swaps to the freshly-pulled image.
+            docker compose -f docker-compose.prod.yml up -d --force-recreate dashboard
+            # Reload nginx so it re-resolves the recreated dashboard container's NEW internal
+            # Docker IP. The `proxy` (nginx) resolves the `dashboard` upstream once at startup;
+            # without this reload it keeps routing to the dead old IP → 502 Bad Gateway even
+            # though the new container is healthy.
+            sleep 4
+            docker exec archery-club-deploy-proxy-1 nginx -s reload
+            # Reclaim disk from the image this deploy just replaced (every deploy leaves the
+            # previous :latest dangling; unpruned they fill the SD card and crash Postgres →
+            # site down). Only untagged/unused images are removed.
             docker image prune -f
             docker builder prune -f
