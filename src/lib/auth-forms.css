@@ -78,6 +78,60 @@
 	color: #102e66;
 }
 
+/* Password field with a show/hide eye button (mirrors /prijava's .pw-eye). Leave
+   room on the right so the toggle never overlaps the typed value. */
+.af-field--pw input {
+	padding-right: 3.4rem;
+}
+.pw-eye {
+	position: absolute;
+	top: 50%;
+	right: 0.6rem;
+	transform: translateY(-50%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.2rem;
+	height: 2.2rem;
+	padding: 0;
+	border: 0;
+	border-radius: 10px;
+	background: none;
+	color: #607480;
+	cursor: pointer;
+	transition:
+		color 0.15s ease,
+		background-color 0.15s ease;
+}
+.pw-eye:hover {
+	color: #102e66;
+	background: rgba(16, 46, 102, 0.06);
+}
+
+/* Live per-field validation message (red) shown under a password field as the user
+   types. Distinct from .af-error (the submit/server error). */
+.af-field-error {
+	margin: 0.35rem 0 0;
+	color: #d32752;
+	font-size: 0.82rem;
+	font-weight: 500;
+	line-height: 1.35;
+}
+/* Red border on a field with a live validation problem. */
+.af-field--invalid input {
+	border-color: #d32752;
+}
+.af-field--invalid input:focus {
+	border-color: #d32752;
+}
+/* Small helper hint under the first password field (e.g. "12–20 characters"). */
+.af-hint {
+	margin: 0.35rem 0 0;
+	color: #607480;
+	font-size: 0.82rem;
+	line-height: 1.35;
+}
+
 .af-error {
 	margin: 0;
 	color: #d32752;
