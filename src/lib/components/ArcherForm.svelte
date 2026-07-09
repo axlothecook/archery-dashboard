@@ -520,6 +520,9 @@
 	}
 	.bio-field .field-textarea {
 		flex: 1 1 auto;
+		/* Bounded by the column via flex; scroll long bios inside instead of spilling. */
+		overflow-y: auto;
+		resize: none;
 	}
 	.two-col {
 		display: grid;

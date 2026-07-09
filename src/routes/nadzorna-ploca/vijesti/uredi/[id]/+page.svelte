@@ -475,6 +475,8 @@
 		height: calc(5lh + 1.2rem);
 		min-height: calc(5lh + 1.2rem);
 		resize: none;
+		/* Fixed 5-line box; scroll if the summary runs longer instead of spilling. */
+		overflow-y: auto;
 	}
 	/* Tijelo grows to fill the rest of the left column height (now that Sažetak is short).
 	   The column stretches to the grid row height; body-field flex-grows into it, so the
@@ -487,6 +489,10 @@
 	.body-textarea {
 		min-height: 12rem; /* floor for very short viewports */
 		height: 100%;
+		/* Long bodies scroll INSIDE the box (it's already bounded by the panel via height:100%)
+		   instead of spilling past it into the grey / under the action bar. */
+		overflow-y: auto;
+		resize: none;
 	}
 	.field-hint {
 		font-weight: 400;

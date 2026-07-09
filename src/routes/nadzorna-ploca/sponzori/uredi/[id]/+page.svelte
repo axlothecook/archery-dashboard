@@ -237,6 +237,9 @@
 		resize: vertical;
 		line-height: 1.4;
 		min-height: 20rem;
+		/* Cap the drag-resize + scroll long text inside so it can't spill past the box. */
+		max-height: 30rem;
+		overflow-y: auto;
 		margin-top: 0;
 	}
 	.group {
