@@ -53,8 +53,15 @@
 		overflow-y: auto;
 		padding-right: 0.5rem;
 	}
+	/* Phone: the panel is in the stacked layout (no stretched parent to give it a height), so the
+	   desktop flex-fill would collapse the list to 0. Reset the panel to a normal block and let
+	   the list size to its content, CAPPED at ~3 rows (max-height) and scrolling the rest. */
 	@media (max-width: 900px) {
+		.mail {
+			display: block;
+		}
 		.mail-list {
+			flex: none;
 			max-height: 15.5rem;
 		}
 	}
