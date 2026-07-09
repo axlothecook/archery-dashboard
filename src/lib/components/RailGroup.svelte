@@ -24,6 +24,7 @@
 		compact = false,
 		open = false,
 		hasNew = false,
+		subHasNew,
 		onToggle
 	}: {
 		label: string;
@@ -33,6 +34,9 @@
 		open?: boolean;
 		/** Show a slow-blinking gold dot (new, unseen content in this section). */
 		hasNew?: boolean;
+		/** Per-child predicate: true for the sub-option that carries the new content, so the
+		 *  gold dot moves onto that exact sub-view when the group is expanded. */
+		subHasNew?: (href: string) => boolean;
 		onToggle?: () => void;
 	} = $props();
 
@@ -83,6 +87,11 @@
 						href={child.href}
 					>
 						{child.label}
+						{#if subHasNew?.(child.href)}
+							<!-- Same slow-blinking gold dot as the parent, now on the exact sub-option
+							     that has the new content. -->
+							<span class="rail-sub-dot" aria-label="Novo" title="Novo"></span>
+						{/if}
 					</a>
 				</li>
 			{/each}
@@ -212,6 +221,23 @@
 		background: #fff;
 		color: #187ff5;
 		font-weight: 600;
+	}
+	/* Gold "new content" dot on a specific sub-option (same look + pulse as the parent's
+	   .rail-new-dot). Sits just after the label. */
+	.rail-sub-dot {
+		flex: 0 0 auto;
+		margin-left: 0.5rem;
+		width: 0.55rem;
+		height: 0.55rem;
+		border-radius: 50%;
+		background: #f2c94c; /* gold */
+		animation: rail-new-pulse 1.3s ease-in-out infinite;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.rail-sub-dot {
+			animation: none;
+			opacity: 1;
+		}
 	}
 
 	/* Compact (icons-only) rail: hide label + chevron; submenu never renders. */

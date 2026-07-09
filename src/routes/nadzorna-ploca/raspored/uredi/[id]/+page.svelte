@@ -12,7 +12,6 @@
 	} from '$lib/events';
 	import DashSelect from '$lib/components/DashSelect.svelte';
 	import ArcherPicker from '$lib/components/ArcherPicker.svelte';
-	import ImageUpload from '$lib/components/ImageUpload.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import ErrorPopup from '$lib/components/ErrorPopup.svelte';
 	import CalendarIcon from '$lib/components/icons/CalendarIcon.svelte';
@@ -41,8 +40,6 @@
 	let levelId = $state<string>(e.levelId ?? '');
 	let attendingArcherIds = $state<string[]>([...e.attendingArcherIds]);
 	let hasUnlistedClubAttendee = $state(e.hasUnlistedClubAttendee);
-	let imageUrl = $state(e.imageUrl ?? '');
-	let imageAlt = $state(e.imageAlt ?? '');
 	let sourceUrl = $state(e.sourceUrl ?? '');
 	let isCancelled = $state(e.isCancelled);
 	let hidden = $state(e.hidden);
@@ -65,8 +62,8 @@
 		name: e.name, discipline: e.discipline, dateFrom: toDateInput(e.dateFrom),
 		dateTo: toDateInput(e.dateTo), location: e.location ?? '', organizer: e.organizer ?? '',
 		format: e.format ?? '', levelId: e.levelId ?? '', attendingArcherIds: e.attendingArcherIds,
-		hasUnlistedClubAttendee: e.hasUnlistedClubAttendee, imageUrl: e.imageUrl ?? '',
-		imageAlt: e.imageAlt ?? '', sourceUrl: e.sourceUrl ?? '', isCancelled: e.isCancelled,
+		hasUnlistedClubAttendee: e.hasUnlistedClubAttendee,
+		sourceUrl: e.sourceUrl ?? '', isCancelled: e.isCancelled,
 		hidden: e.hidden
 	});
 	let saved = $state(false);
@@ -74,7 +71,7 @@
 		!saved &&
 			JSON.stringify({
 				name, discipline, dateFrom, dateTo, location, organizer, format, levelId,
-				attendingArcherIds, hasUnlistedClubAttendee, imageUrl, imageAlt, sourceUrl,
+				attendingArcherIds, hasUnlistedClubAttendee, sourceUrl,
 				isCancelled, hidden
 			}) !== initialSnapshot
 	);
@@ -115,8 +112,9 @@
 			format: t(format) || null,
 			dateFrom: toIso(dateFrom)!, // validated present below
 			dateTo: toIso(dateTo),
-			imageUrl: t(imageUrl) || null,
-			imageAlt: t(imageAlt) || null,
+			// Events carry no poster image (the data model stores none), so these stay null.
+			imageUrl: null,
+			imageAlt: null,
 			sourceUrl: t(sourceUrl) || null,
 			isCancelled,
 			status,
@@ -145,8 +143,6 @@
 		if (attendingArcherIds.length === 0 && !hasUnlistedClubAttendee) {
 			errs.push('Sudionici su obavezni (odaberite streličare ili označite druge članove kluba).');
 		}
-		if (!imageUrl.trim()) errs.push('Slika je obavezna.');
-		if (!imageAlt.trim()) errs.push('Opis slike (alt) je obavezan.');
 		return errs;
 	}
 
@@ -251,14 +247,6 @@
 					<input class="field-input w-full br-xs" type="text" bind:value={format} />
 				</label>
 
-				<fieldset class="group">
-					<legend class="group-legend">Poster fotografija <span class="req">*</span></legend>
-					<ImageUpload label="Slika" bind:url={imageUrl} />
-					<label class="field column-nowrap gap-title mt-0-6">
-						<span class="field-title">Opis slike (alt)</span>
-						<input class="field-input w-full br-xs" type="text" bind:value={imageAlt} />
-					</label>
-				</fieldset>
 			</div>
 
 			<!-- RIGHT: level, attendees, flags. -->
@@ -388,11 +376,8 @@
 		grid-template-columns: 1fr 1fr;
 		gap: 0.9rem;
 	}
-	.mt-0-6 {
-		margin-top: 0.6rem;
-	}
 	/* Section-field titles: match the Novi događaj form (.field-title) — bigger, bold,
-	   deep-sapphire (same as the Poster fotografija legend). */
+	   deep-sapphire. */
 	.field-title {
 		font-size: 0.9rem;
 		font-weight: 700;
@@ -431,18 +416,6 @@
 		background: #fdeef1;
 		color: #a4133c;
 		font-size: 0.9rem;
-	}
-	.group {
-		margin: 0;
-		padding: 1rem 1.1rem;
-		border: 1px solid #eef1f3;
-		border-radius: 10px;
-	}
-	.group-legend {
-		padding: 0 0.4rem;
-		font-size: 0.9rem;
-		font-weight: 700;
-		color: #102e66;
 	}
 	.check-row {
 		font-size: 0.9rem;

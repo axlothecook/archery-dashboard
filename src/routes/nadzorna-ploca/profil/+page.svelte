@@ -519,16 +519,16 @@
 		font-size: 0.85rem;
 		color: #5b6577;
 	}
-	/* Both support buttons stay on ONE row; each takes an equal share and its label stays
-	   on a single line. */
+	/* Both support buttons sit on ONE row, each sized to ITS OWN label (not stretched to fill
+	   the card — they used to span the full width, which read as oversized). Left-aligned. */
 	.support-actions {
 		flex-wrap: nowrap;
+		justify-content: flex-start;
 		margin-bottom: 1.1rem;
 	}
 	.support-actions .btn {
-		flex: 1 1 0;
-		min-width: 0;
-		padding: 0.8rem 1rem;
+		flex: 0 0 auto;
+		padding: 0.7rem 1.2rem;
 		font-size: 0.95rem;
 		border-radius: 10px;
 		white-space: nowrap;
@@ -575,6 +575,11 @@
 			margin-left: -1rem;
 			margin-right: -1rem;
 			border-radius: 0;
+		}
+		/* Let the two natural-width support buttons wrap to a second row if the phone is too
+		   narrow to fit them side by side (they no longer stretch to share the row). */
+		.support-actions {
+			flex-wrap: wrap;
 		}
 	}
 </style>

@@ -489,10 +489,13 @@
 	.body-textarea {
 		min-height: 12rem; /* floor for very short viewports */
 		height: 100%;
-		/* Long bodies scroll INSIDE the box (it's already bounded by the panel via height:100%)
-		   instead of spilling past it into the grey / under the action bar. */
+		/* The box already fills the panel height (height:100%) and scrolls long bodies inside,
+		   so it must NOT be drag-resizable — a manual drag would pull it past the panel into the
+		   grey / under the sticky action bar. `!important` because the base `.field-textarea`
+		   rule (later in this file, equal specificity) sets `resize: vertical` and would
+		   otherwise win, re-enabling the unbounded drag. */
 		overflow-y: auto;
-		resize: none;
+		resize: none !important;
 	}
 	.field-hint {
 		font-weight: 400;

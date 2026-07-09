@@ -16,6 +16,7 @@
 	import {
 		initSeen,
 		hasNew as sectionHasNew,
+		subHasNew,
 		markSeen,
 		sectionOf,
 		type SectionKey
@@ -333,6 +334,7 @@
 						compact={railCollapsed}
 						open={openGroups.has(item.label)}
 						hasNew={navSection(item) ? sectionHasNew(navSection(item)!) : false}
+						{subHasNew}
 						onToggle={() => toggleGroup(item.label)}
 					/>
 				{:else}
@@ -507,6 +509,7 @@
 						items={item.children}
 						open={openGroups.has(item.label)}
 						hasNew={navSection(item) ? sectionHasNew(navSection(item)!) : false}
+						{subHasNew}
 						onToggle={() => toggleGroup(item.label)}
 					/>
 				{:else}
@@ -765,14 +768,18 @@
 	.topbar-bell:hover {
 		background: rgba(16, 46, 102, 0.08);
 	}
-	/* Red dot (#19): shown when there are new notifications. */
+	/* Red dot (#19): shown when there are new notifications. Sized with fixed px + a pill
+	   radius so it renders as a clean CIRCLE — at the old 0.6rem the 2px white border ate most
+	   of the box and it read as a rounded square. box-sizing:content-box keeps the red disc a
+	   true 9px circle with the border sitting outside it. */
 	.notif-dot {
 		position: absolute;
-		top: 0.25rem;
-		right: 0.25rem;
-		width: 0.6rem;
-		height: 0.6rem;
-		border-radius: 50%;
+		top: 0.15rem;
+		right: 0.15rem;
+		box-sizing: content-box;
+		width: 9px;
+		height: 9px;
+		border-radius: 999px;
 		background: #e60023; /* state-red */
 		border: 2px solid #fff;
 	}
@@ -1037,12 +1044,13 @@
 		.topbar-right {
 			gap: 0.6rem;
 		}
-		/* Bigger, clearer "new notifications" dot on the bell (was too small on phones). */
+		/* Bigger, clearer "new notifications" dot on the bell (was too small on phones). Keeps
+		   the circular pill radius + content-box from the base rule. */
 		.notif-dot {
 			top: 0.15rem;
 			right: 0.15rem;
-			width: 0.85rem;
-			height: 0.85rem;
+			width: 11px;
+			height: 11px;
 		}
 		/* Notifications panel: on phones the narrow bell-anchored dropdown (30rem, hugging the
 		   right edge) is awkward. Make it a near-full-width sheet fixed just below the top bar,
