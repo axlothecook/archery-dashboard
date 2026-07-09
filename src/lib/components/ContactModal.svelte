@@ -174,6 +174,9 @@
 	.cm-textarea {
 		resize: vertical;
 		min-height: 9rem;
+		/* Cap the drag-resize + scroll long text inside so it stays within the modal. */
+		max-height: 18rem;
+		overflow-y: auto;
 		line-height: 1.4;
 		/* Zero the library's default textarea top margin so the Poruka title→textarea gap
 		   matches the Naslov title→input gap. */

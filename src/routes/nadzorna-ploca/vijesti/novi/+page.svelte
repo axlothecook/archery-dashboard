@@ -358,9 +358,11 @@
 		border-radius: 14px;
 		padding: 1.5rem;
 		box-shadow: 0 4px 18px rgba(16, 46, 102, 0.06);
-		/* Hug the content height (Tijelo is now a fixed height) so there's no big empty white
-		   below the shorter middle/right columns. Flex column for the grid + sticky actions. */
-		flex: 0 1 auto;
+		/* FILL the content frame (not hug content) so the panel reaches the bottom and the
+		   sticky action bar pins to the panel's bottom edge — otherwise the panel ended short
+		   and left a big grey gap with the actions floating mid-page. Flex column: the grid
+		   grows, the action bar is the last child pinned at the bottom. */
+		flex: 1 1 auto;
 		min-height: 0;
 		display: flex;
 		flex-direction: column;
@@ -385,10 +387,14 @@
 		flex: 0 0 auto;
 	}
 	/* Fixed, moderate height so the panel doesn't stretch tall (which left big empty white
-	   beside the shorter middle/right columns). Scrolls inside for long article bodies. */
+	   beside the shorter middle/right columns). Long bodies SCROLL inside the box (overflow-y),
+	   and a max-height caps manual drag-resize so the text can never spill past the box into
+	   the grey / under the action bar. */
 	.body-textarea {
 		height: 16rem;
+		max-height: 22rem;
 		resize: vertical;
+		overflow-y: auto;
 	}
 	/* Galerija: URL+opis rows scroll inside .gallery-scroll while "Dodaj sliku" stays
 	   pinned at the bottom of the fieldset (matches the edit page). */
@@ -439,6 +445,8 @@
 		height: calc(5lh + 1.2rem);
 		min-height: calc(5lh + 1.2rem);
 		resize: none;
+		/* Fixed 5-line box; scroll if the summary runs longer instead of spilling. */
+		overflow-y: auto;
 	}
 	.field-hint {
 		font-weight: 400;
