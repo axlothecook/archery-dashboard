@@ -513,7 +513,15 @@
 		.form-grid {
 			grid-template-columns: 1fr;
 		}
-		/* Vidljivo/Skriveno toggle (inside the panel) spans FULL width on phone. */
+		/* On phone the header stacks: the title/subtitle block on top, the Vidljivo/Skriveno
+		   toggle full-width BELOW it — still inside the grey header (.mgmt-head), NOT pushed
+		   into the white form panel. Column layout so the 100%-wide toggle doesn't overflow the
+		   space-between row (which clipped it off the right edge). */
+		.mgmt-head {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0.9rem;
+		}
 		.vis-toggle {
 			width: 100%;
 			justify-content: center;
@@ -534,18 +542,23 @@
 			gap: 0.4rem;
 			align-items: stretch;
 		}
-		/* Buttons share the row evenly, one line, FIXED height so they're all identical. */
+		/* Buttons sit on one line at a fixed height; each sizes to ITS label then shares the
+		   leftover so the long "Spremi promjene" isn't cramped while short cancel/publish stay
+		   compact (was flex:1 1 0 = equal width, which squeezed the long label). */
 		.form-actions .btn {
-			flex: 1 1 0;
+			flex: 1 1 auto;
 			min-width: 0;
 			height: 2.75rem;
-			padding: 0 0.4rem;
+			padding: 0 0.6rem;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			font-size: 0.8rem;
 			white-space: nowrap;
 			line-height: 1;
+		}
+		.form-actions .btn--ghost {
+			flex-grow: 1.5;
 		}
 		/* White panel edge-to-edge (cancel the content area's 1rem side padding) + tighter
 		   inner padding; bottom padding clears the fixed bar. */

@@ -474,16 +474,25 @@
 			align-items: stretch;
 		}
 		.form-actions .btn {
-			flex: 1 1 0;
+			/* Size each button to ITS label (flex-basis:auto) then share leftover space, so the
+			   long "Spremi kao nacrt" gets the width it needs while short "Odustani"/"Objavi"
+			   don't hog empty side-padding. Small horizontal padding since the basis already
+			   fits the text. */
+			flex: 1 1 auto;
 			min-width: 0;
 			height: 2.75rem;
-			padding: 0 0.4rem;
+			padding: 0 0.6rem;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			font-size: 0.8rem;
 			white-space: nowrap;
 			line-height: 1;
+		}
+		/* The middle "Spremi kao nacrt" (longest label) gets extra grow so its text has breathing
+		   room from the button edges; the short cancel/publish buttons stay compact. */
+		.form-actions .btn--ghost {
+			flex-grow: 1.5;
 		}
 		/* White panel edge-to-edge + tighter inner padding; clears the fixed bar. */
 		.panel {

@@ -576,10 +576,17 @@
 			margin-right: -1rem;
 			border-radius: 0;
 		}
-		/* Let the two natural-width support buttons wrap to a second row if the phone is too
-		   narrow to fit them side by side (they no longer stretch to share the row). */
+		/* Keep the two support buttons SIDE BY SIDE on phone (don't stack): each shrinks to an
+		   equal share of the row so both fit without clipping. Tighter padding + slightly
+		   smaller text so the labels stay on one line on a narrow screen. */
 		.support-actions {
-			flex-wrap: wrap;
+			flex-wrap: nowrap;
+		}
+		.support-actions .btn {
+			flex: 1 1 0;
+			min-width: 0;
+			padding: 0.7rem 0.5rem;
+			font-size: 0.9rem;
 		}
 	}
 </style>

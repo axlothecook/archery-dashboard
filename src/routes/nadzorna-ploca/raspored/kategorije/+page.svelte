@@ -118,13 +118,14 @@
 		</button>
 	</div>
 
-	<!-- Mobile-only: full-width "Nova kategorija" below the title. -->
-	<button class="btn-add btn-add--block cursor-pointer display-f align-items-center justify-content-center gap-0-4" type="button" onclick={openAdd}>
-		<AddIcon size={18} />
-		Nova kategorija
-	</button>
-
 	<div class="panel bg-white column-nowrap">
+		<!-- Mobile-only: full-width "Nova kategorija" INSIDE the white panel (at the top), so it
+		     sits on the white card with the list rather than floating in the grey gap. -->
+		<button class="btn-add btn-add--block cursor-pointer display-f align-items-center justify-content-center gap-0-4" type="button" onclick={openAdd}>
+			<AddIcon size={18} />
+			Nova kategorija
+		</button>
+
 		{#if data.loadError}
 			<p class="lvl-load-error" role="alert">Učitavanje kategorija nije uspjelo. Osvježite stranicu.</p>
 		{/if}
