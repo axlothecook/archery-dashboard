@@ -280,6 +280,10 @@
 		flex-wrap: wrap;
 	}
 	.in-tab {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
 		padding: 0.5rem 0.9rem;
 		border: 1px solid #d7dee8;
 		border-radius: 999px;
@@ -607,6 +611,13 @@
 			display: inline-flex;
 			/* A bit more breathing room between the back button and the title next to it. */
 			margin-right: 0.5rem;
+		}
+		/* Scrollbar sits at the WHITE PANEL's right edge (not floating inset): let the detail
+		   scroll area run to the panel edge by cancelling the panel's right padding on the scroll
+		   container, then re-pad the CONTENT so text keeps a gap from the scrollbar. */
+		.in-detail {
+			margin-right: -1.6rem; /* = panel's right padding */
+			padding-right: 0.9rem; /* gap between content and the edge scrollbar */
 		}
 	}
 </style>

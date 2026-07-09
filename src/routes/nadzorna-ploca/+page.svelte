@@ -265,6 +265,17 @@
 	   sit at the frame bottom, matching their bottom gap. */
 	.dash {
 		grid-template-columns: 3fr 1fr;
+		/* The content frame (.admin-content) clips overflow (page never scrolls); on shorter
+		   viewports the two panel rows are taller than the frame, so THIS grid is the page's
+		   designated scroll area — fill the frame height and scroll inside instead of clipping
+		   the Dolazna pošta / Administracija panels off the bottom. align-content:start keeps the
+		   rows packed at the top (not stretched) so scrolling reveals the full lower row; a little
+		   bottom padding gives the last panels breathing room from the scroll edge. */
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow-y: auto;
+		align-content: start;
+		padding-bottom: 0.5rem;
 	}
 	/* Grid/flex items default to min-width:auto and expand to fit their widest child — the
 	   wide Zadaci table (min-width) would blow the column past the viewport and scroll the
@@ -475,6 +486,15 @@
 			margin-left: -1rem;
 			margin-right: -1rem;
 			border-radius: 0;
+		}
+		/* Hitno + Administracija read as standalone CARDS (not full-width lists), so on phone
+		   they keep a gap to the grey page on both sides + rounded corners, instead of going
+		   edge-to-edge like the Pošta/list panels. Cancel the .panel edge-to-edge above. */
+		.urgent-panel,
+		.team-list {
+			margin-left: 0;
+			margin-right: 0;
+			border-radius: 14px;
 		}
 		/* Mobile pages the week by SWIPE — hide the desktop arrow buttons. */
 		.week-nav {
