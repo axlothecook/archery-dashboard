@@ -206,12 +206,12 @@
 		font-size: 0.95rem;
 	}
 	/* GRID layout (not table-layout) so column widths are directly controllable:
-	   - Naziv = minmax(8rem, 1fr) → takes ALL the leftover width, so on wide screens the
+	   - Naziv = minmax(10rem, 1fr) → takes ALL the leftover width, so on wide screens the
 	     names get the room and the meta columns sit right, near the actions.
-	   - pills / actions = max-content → exactly as wide as their content, never clipped.
-	   - Datum / Razina = minmax(…, max-content) → full content when there's room ("14.11. –
-	     16.11.2027.", "Europsko prvenstvo"), shrink gracefully (fade/clip) when the panel is
-	     narrow.
+	   - Meta columns = FIXED widths (NOT max-content): sized once to fit the widest real
+	     content ("14.11. – 16.11.2027.", "Europsko prvenstvo", the pills), so the columns
+	     keep the SAME positions no matter which rows the active filter shows — content-
+	     sized tracks made the whole layout shift whenever filtering changed the rows.
 	   The <table> markup stays (semantics/a11y); thead/tbody/tr become display:contents so
 	   the th/td cells are the grid items. Visible column gaps come from the cells' symmetric
 	   side padding (NOT column-gap, which would punch holes in the row separator lines). */
@@ -219,12 +219,12 @@
 		display: grid;
 		grid-template-columns:
 			minmax(10rem, 1fr) /* Naziv — real floor; below it the wrapper h-scrolls */
-			max-content /* Disciplina */
-			max-content /* Datum — dates always shown in full, never clipped mid-number */
-			minmax(6rem, max-content) /* Razina */
-			max-content /* Sudionici */
-			max-content /* Stanje */
-			max-content /* actions */
+			7.75rem /* Disciplina (pill) */
+			9rem /* Datum — fits the widest range */
+			10.5rem /* Razina — fits "Europsko prvenstvo" */
+			6.75rem /* Sudionici (header-driven) */
+			7.75rem /* Stanje (pill) */
+			7rem /* actions (edit + eye + trash) */
 			0.25rem; /* spacer before the scrollbar */
 		font-size: 1rem;
 		/* Below this the .ev-scroll wrapper scrolls horizontally rather than collapsing the
@@ -313,7 +313,7 @@
 		background: #e4e932;
 	}
 	.ev-badge--3d {
-		background: #a42dff;
+		background: #eacfff;
 	}
 	.ev-date {
 		white-space: nowrap;
@@ -358,7 +358,7 @@
 		white-space: nowrap;
 	}
 	.ev-state--published {
-		background: #88f641; /* green — live/published */
+		background: #aeff93; /* green — live/published */
 		color: #000;
 	}
 	.ev-state--hidden {
@@ -400,14 +400,15 @@
 	@media (max-width: 900px) {
 		.ev-table {
 			min-width: 46rem;
+			/* FIXED tracks here too so filtering never shifts the columns (see desktop note). */
 			grid-template-columns:
 				minmax(11rem, 1fr) /* Naziv */
-				max-content /* Disciplina */
-				minmax(6rem, max-content) /* Datum */
-				minmax(5.5rem, max-content) /* Razina */
-				max-content /* Sudionici */
-				max-content /* Stanje */
-				max-content /* actions */
+				6.5rem /* Disciplina */
+				8rem /* Datum */
+				7.5rem /* Razina */
+				5.5rem /* Sudionici */
+				6.5rem /* Stanje */
+				6rem /* actions */
 				0.25rem; /* spacer */
 		}
 		.ev-table th {

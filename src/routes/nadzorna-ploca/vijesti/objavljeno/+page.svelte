@@ -335,6 +335,9 @@
 		flex: 1 1 auto;
 		min-height: 8rem;
 		overflow-y: auto;
+		/* Reserve the vertical-scrollbar gutter even when few (filtered) rows don't scroll,
+		   so the table width — and with it the column positions — never shifts with row count. */
+		scrollbar-gutter: stable;
 		/* Columns are kept to the RIGHT (wide title + wide inter-column gaps), which can
 		   exceed the panel width — allow horizontal scroll so the actions stay reachable
 		   rather than clipping them. */

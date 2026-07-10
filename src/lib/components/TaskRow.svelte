@@ -155,7 +155,7 @@
 		color: #000;
 	}
 	.tasks-status--done {
-		background: #88f641; /* green — same as Objavljeno */
+		background: #aeff93; /* green — same as Objavljeno */
 		color: #000;
 	}
 

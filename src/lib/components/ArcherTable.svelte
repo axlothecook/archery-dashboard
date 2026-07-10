@@ -274,7 +274,7 @@
 		white-space: nowrap;
 	}
 	.ar-state--published {
-		background: #88f641; /* green — live/published */
+		background: #aeff93; /* green — live/published */
 		color: #000;
 	}
 	.ar-state--hidden {

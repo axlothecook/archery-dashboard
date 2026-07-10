@@ -35,12 +35,13 @@
 	/* Solid role circle with a black letter: admin = medium blue, developer = bright
 	   green. Keyed by ROLE (not the old rotating blue/purple/green palette) so the
 	   circle colour tells you the person's role at a glance. */
+	/* Letter colour = the deep-sapphire used for the member NAMES next to the circles. */
 	.avatar--role-admin {
 		background: #97dfff;
-		color: #000;
+		color: #102e66;
 	}
 	.avatar--role-developer {
-		background: #1bc61b;
-		color: #000;
+		background: #aeff93; /* same green as Objavljeno/Završeno */
+		color: #102e66;
 	}
 </style>

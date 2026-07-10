@@ -364,7 +364,7 @@
 		background: #ffd453; /* yellow — unread (same as the Skriveno pill) */
 	}
 	.in-row.read {
-		background: #88f641; /* green — read */
+		background: #aeff93; /* green — read */
 	}
 	.in-row:hover {
 		filter: brightness(0.98);
@@ -375,7 +375,7 @@
 		background: #ffe58a; /* lighter yellow */
 	}
 	.in-row.active.read {
-		background: #b8fa8a; /* lighter green */
+		background: #d6ffc8; /* lighter green */
 	}
 	.in-row-name {
 		font-size: 0.95rem;

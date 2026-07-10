@@ -418,7 +418,7 @@
 		line-height: normal;
 	}
 	.state--published {
-		background: #88f641; /* green — same as the tables' Objavljeno */
+		background: #aeff93; /* green — same as the tables' Objavljeno */
 		color: #000;
 	}
 	.state--hidden {

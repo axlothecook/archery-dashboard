@@ -49,15 +49,10 @@
 		font-size: 1.1rem;
 		color: #102e66;
 	}
-	/* Today = subtle ring; selected = filled highlight. The SELECTED day drops the ring
-	   (no border on the picked date, per request) — the fill alone marks it; the ring
-	   still cues "today" when a different day is selected. */
-	.sched-day.today {
-		box-shadow: inset 0 0 0 1px #187ff5;
-	}
+	/* Selected = filled highlight. NO borders/rings on any day tile (per request) —
+	   the old "today" inset ring is gone too; the fill alone marks the selected day. */
 	.sched-day.selected {
 		background: #dbe6f6;
-		box-shadow: none;
 	}
 	.sched-day.selected .sched-day-name {
 		color: #1657b8;

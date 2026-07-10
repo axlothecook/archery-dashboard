@@ -170,7 +170,19 @@
 	.ac-table {
 		border-collapse: collapse;
 		font-size: 1rem;
+		/* FIXED layout: the <colgroup> widths below are authoritative, so filtering
+		   (fewer/other rows) can never resize the columns like auto layout did. */
+		table-layout: fixed;
 	}
+	/* Frozen column widths (measured at the default "Sve" state). The TITLE col has no
+	   width — it absorbs all leftover, keeping the right-side columns pushed right. */
+	col.col-img { width: 4.1rem; }
+	col.col-year { width: 6.7rem; }
+	col.col-vrsta { width: 8.9rem; }
+	col.col-razina { width: 7.9rem; }
+	col.col-archers { width: 16rem; }
+	col.col-actions { width: 6.8rem; }
+	col.col-spacer { width: 1.6rem; }
 	.ac-table th {
 		text-align: left;
 		padding: 0.65rem 0.75rem;

@@ -277,6 +277,9 @@
 		flex: 1 1 auto;
 		min-height: 8rem;
 		overflow: auto;
+		/* Reserve the vertical-scrollbar gutter even when few (filtered) rows don't scroll,
+		   so the table width — and with it the column positions — never shifts with row count. */
+		scrollbar-gutter: stable;
 		/* Scrollbar flush to the panel's right edge with a content gap (matches Svi događaji). */
 		margin-right: -1.5rem;
 		padding-right: 1rem;

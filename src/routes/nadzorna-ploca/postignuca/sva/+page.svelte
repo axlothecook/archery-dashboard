@@ -278,6 +278,9 @@
 		min-height: 8rem;
 		overflow-y: auto;
 		overflow-x: auto;
+		/* Reserve the vertical-scrollbar gutter even when few (filtered) rows don't scroll,
+		   so the table width — and with it the column positions — never shifts with row count. */
+		scrollbar-gutter: stable;
 		/* Push the scroll area out to the panel's right edge (cancel the panel's 1.5rem right
 		   padding) so the SCROLLBAR sits flush at the white div's right edge; the padding-right
 		   then keeps a gap between the table content and the scrollbar. */
