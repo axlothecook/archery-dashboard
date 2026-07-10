@@ -215,7 +215,7 @@
 		<h2 class="dash-heading dash-heading--urgent display-f align-items-center gap-0-5">
 			Hitno
 			<!-- Icon is the urgent orange when there are items, green ("all clear") when none. -->
-			<span class="urgent-ico"><UrgentIcon size={24} color={urgent.length ? '#ff7800' : '#16a34a'} /></span>
+			<span class="urgent-ico"><UrgentIcon size={22} color={urgent.length ? '#ff7800' : '#16a34a'} /></span>
 		</h2>
 		<div class="panel bg-white urgent-panel" class:is-empty={urgent.length === 0}>
 			<div class="urgent-scroll custom-scrollbar" class:is-empty={urgent.length === 0}>
