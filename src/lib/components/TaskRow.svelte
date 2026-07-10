@@ -151,7 +151,7 @@
 		color: #000;
 	}
 	.tasks-status--pending {
-		background: #ffad0a; /* amber — Na čekanju */
+		background: #ffd453; /* yellow — Na čekanju (same as the Skriveno pill) */
 		color: #000;
 	}
 	.tasks-status--done {

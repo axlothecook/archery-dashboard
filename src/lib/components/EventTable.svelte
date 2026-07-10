@@ -285,26 +285,35 @@
 		mask-image: linear-gradient(to right, #000 82%, transparent 100%);
 	}
 	.ev-badge {
-		display: inline-block;
+		/* inline-FLEX + centre so the label is EXACTLY centred in the pill both ways
+		   (inline-block sat it a couple px high — the tight line-box isn't symmetric
+		   around the font metrics). */
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: normal;
 		/* Match the Stanje (.ev-state) pill exactly: same min-width + centred text +
 		   padding, so Disciplina and Stanje pills read as one uniform pill size. */
 		min-width: 6.5rem;
 		text-align: center;
 		padding: 0.55rem 0.4rem;
 		border-radius: 999px;
-		background: #bbd0ff; /* light blue, solid fill (default: Vanjsko + other disciplines) */
+		background: #bbd0ff; /* light blue, solid fill (default: Vanjsko) */
 		color: #000;
 		font-size: 0.82rem;
 		font-weight: 600;
 		white-space: nowrap;
 	}
-	/* Per-discipline fills so they read apart at a glance: Dvoransko amber, Field coral;
-	   Vanjsko + 3D keep the default light blue. */
+	/* Per-discipline fills so they read apart at a glance: Dvoransko amber, Field
+	   yellow-green, 3D purple; Vanjsko keeps the default light blue. */
 	.ev-badge--indoor {
 		background: #ffad0a;
 	}
 	.ev-badge--field {
-		background: #fb4c68;
+		background: #e4e932;
+	}
+	.ev-badge--3d {
+		background: #a42dff;
 	}
 	.ev-date {
 		white-space: nowrap;
@@ -333,9 +342,13 @@
 		white-space: nowrap;
 	}
 	/* State word pill — always shown (never a bare dash). Mirrors ArticleTable's
-	   .art-state: fixed min-width + centred so every state is the same length. */
+	   .art-state: fixed min-width + centred so every state is the same length.
+	   inline-FLEX + centre = label exactly centred both ways. */
 	.ev-state {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: normal;
 		min-width: 6.5rem;
 		text-align: center;
 		padding: 0.55rem 0.4rem;
@@ -357,8 +370,8 @@
 		color: #8a4b1e;
 	}
 	.ev-state--cancelled {
-		background: #fde7ec;
-		color: #a4133c;
+		background: #ff6e63; /* salmon — cancelled */
+		color: #000;
 	}
 	.ev-actions {
 		gap: 0.4rem;

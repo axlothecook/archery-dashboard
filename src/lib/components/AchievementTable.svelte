@@ -249,9 +249,13 @@
 		border-bottom: 0;
 	}
 	/* Vrsta pill: same size as the Svi događaji pills, coloured by type so Naslov / Rekord
-	   / Plasman read apart at a glance. */
+	   / Plasman read apart at a glance. inline-FLEX + centre = label exactly centred in the
+	   pill both ways (inline-block sat it a couple px high). */
 	.ac-badge {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: normal;
 		min-width: 6.5rem;
 		text-align: center;
 		padding: 0.55rem 0.4rem;

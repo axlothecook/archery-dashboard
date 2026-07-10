@@ -287,7 +287,13 @@
 		mask-image: linear-gradient(to right, #000 82%, transparent 100%);
 	}
 	.art-badge {
-		display: inline-block;
+		/* inline-FLEX + centre so the label is EXACTLY centred in the pill both ways
+		   (inline-block sat it a couple px high — the tight line-box isn't symmetric
+		   around the font metrics). Matches .art-state / the task pills. */
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: normal;
 		/* Match the Stanje (.art-state) pill exactly: same min-width + centred text +
 		   padding, so Vrsta and Stanje pills read as one uniform pill size. */
 		min-width: 6.5rem;
@@ -303,15 +309,15 @@
 	}
 	/* Per media-type badge colours. Događaj keeps the default above. */
 	.art-badge--gallery {
-		background: #efe6fb; /* purple */
-		color: #5b2ea6;
+		background: #a42dff; /* purple, solid fill — Galerija */
+		color: #000;
 	}
 	.art-badge--external-link {
 		background: #ffad0a; /* amber, solid fill — Vanjski link */
 		color: #000;
 	}
 	.art-badge--video-only {
-		background: #fb4c68; /* pink-red, solid fill — Video */
+		background: #e4e932; /* yellow-green, solid fill — Video */
 		color: #000;
 	}
 	.art-date {
@@ -321,9 +327,13 @@
 		white-space: nowrap;
 	}
 	/* State word pill — always shown (never a bare dash). Fixed min-width + centred so
-	   Objavljeno / Skriveno / Nacrt are all the SAME length. Taller vertical padding. */
+	   Objavljeno / Skriveno / Nacrt are all the SAME length. Taller vertical padding.
+	   inline-FLEX + centre = label exactly centred both ways. */
 	.art-state {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: normal;
 		min-width: 6.5rem;
 		text-align: center;
 		/* Less horizontal, more vertical padding (taller pill). */

@@ -258,9 +258,13 @@
 		padding: 0;
 		border-bottom: 0;
 	}
-	/* Status pill — same size/shape as the events (.ev-state) pills. */
+	/* Status pill — same size/shape as the events (.ev-state) pills. inline-FLEX +
+	   centre = label exactly centred in the pill both ways. */
 	.ar-state {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: normal;
 		min-width: 6.5rem;
 		text-align: center;
 		padding: 0.55rem 0.4rem;
