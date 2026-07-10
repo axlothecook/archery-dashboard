@@ -52,7 +52,7 @@
 	/* Selected = filled highlight. NO borders/rings on any day tile (per request) —
 	   the old "today" inset ring is gone too; the fill alone marks the selected day. */
 	.sched-day.selected {
-		background: #dbe6f6;
+		background: #d8f3ff;
 	}
 	.sched-day.selected .sched-day-name {
 		color: #1657b8;
