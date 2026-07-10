@@ -1,7 +1,7 @@
 <script lang="ts">
 	// One item in the selected day's schedule list (an event or a post). Repeats, so
 	// it's its own component. Straight, wide coloured left border (per design).
-	import CalendarIcon from '$lib/components/icons/CalendarIcon.svelte';
+	import TrophyIcon from '$lib/components/icons/TrophyIcon.svelte';
 	import NewsIcon from '$lib/components/icons/NewsIcon.svelte';
 	import type { ScheduleItem } from '$lib/schedule';
 
@@ -13,7 +13,7 @@
 		{#if item.kind === 'post'}
 			<NewsIcon size={22} />
 		{:else}
-			<CalendarIcon size={22} />
+			<TrophyIcon size={22} />
 		{/if}
 	</span>
 	<span class="sched-item-body column-nowrap">

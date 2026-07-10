@@ -29,7 +29,7 @@
 		height: 8.625rem; /* 138px — one consistent row height */
 		flex: 0 0 auto;
 		padding: 0.9rem 1rem;
-		background: #fff5ec; /* faint warm tint matching the urgent orange */
+		background: #ffd7b5; /* urgent peach card tint */
 	}
 	.urgent-title {
 		margin: 0 0 0.35rem;
@@ -58,7 +58,10 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		line-height: 1;
+		/* Normal line-height (not 1) so the glyph box is symmetric top/bottom inside the
+		   flex-centred button — line-height:1 clipped the font box tight and pushed the
+		   label a hair above centre. */
+		line-height: normal;
 		padding: 0.45rem 0.85rem;
 		border-radius: 8px;
 		font-size: 0.82rem;
