@@ -141,7 +141,7 @@
 		white-space: nowrap;
 	}
 	.tasks-status--in_progress {
-		background: #336075; /* casal blue-teal — U tijeku */
+		background: #5076e6; /* royal blue — U tijeku */
 		color: #000;
 	}
 	.tasks-status--pending {

@@ -259,7 +259,7 @@
 		font-size: 0.82rem;
 		font-weight: 600;
 		white-space: nowrap;
-		background: #336075; /* fallback (Plasman): casal blue-teal */
+		background: #5076e6; /* fallback (Plasman): royal blue */
 		color: #000;
 	}
 	.ac-badge--title {
@@ -271,7 +271,7 @@
 		color: #5b2ea6;
 	}
 	.ac-badge--other {
-		background: #336075; /* casal blue-teal — a placement (Plasman) */
+		background: #5076e6; /* royal blue — a placement (Plasman) */
 		color: #000;
 	}
 	/* Razina: a colour dot (prestige tier) + the level name, like the Svi događaji level. */

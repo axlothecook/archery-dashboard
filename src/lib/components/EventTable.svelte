@@ -288,7 +288,7 @@
 		text-align: center;
 		padding: 0.55rem 0.4rem;
 		border-radius: 999px;
-		background: #336075; /* casal blue-teal, solid fill (Vanjsko + other disciplines) */
+		background: #5076e6; /* royal blue, solid fill (Vanjsko + other disciplines) */
 		color: #000;
 		font-size: 0.82rem;
 		font-weight: 600;
@@ -328,7 +328,7 @@
 		white-space: nowrap;
 	}
 	.ev-state--published {
-		background: #1bc61b; /* bright green — live/published */
+		background: #88f641; /* green — live/published */
 		color: #000;
 	}
 	.ev-state--hidden {

@@ -364,22 +364,18 @@
 		background: #fdf6d8; /* yellow — unread */
 	}
 	.in-row.read {
-		background: #79d05e; /* green — read */
+		background: #88f641; /* green — read */
 	}
 	.in-row:hover {
 		filter: brightness(0.98);
 	}
-	/* Selected row: no border (removed per request), so mark it with an inset ring +
-	   slight darken instead — a darker shade of the row's own hue, so it reads as the
-	   same state, just emphasised. */
-	.in-row.active {
-		filter: brightness(0.95);
-	}
+	/* Selected row: no border, no ring — just a LIGHTER shade of the row's own read/unread
+	   colour so it reads as the same state, only highlighted. */
 	.in-row.active.unread {
-		box-shadow: inset 0 0 0 2px #c9ad4a;
+		background: #fefbe9; /* lighter yellow */
 	}
 	.in-row.active.read {
-		box-shadow: inset 0 0 0 2px #3f8f2a;
+		background: #b8fa8a; /* lighter green */
 	}
 	.in-row-name {
 		font-size: 0.95rem;
