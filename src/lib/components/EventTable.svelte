@@ -245,25 +245,22 @@
 		text-decoration: line-through;
 		color: #9aa3b2;
 	}
-	/* Naziv is a fixed width sized to hold most event names — NOT auto. Auto made it grab
-	   all the slack and shove the meta columns to the far right (a big gap after Naziv).
-	   With a fixed Naziv, the meta columns pack left right after it, and the trailing spacer
-	   (auto) soaks up any leftover width. Right padding reserves a clear GAP between the name
-	   (which fades on overflow) and the Disciplina pill, so a long name never runs straight
-	   into the pill — without widening the whole table (which overflowed the panel). */
+	/* Naziv: fixed 12.5rem (a touch wider than the old 12rem) so names get a bit more room
+	   without overflowing the panel. Right padding keeps a clear gap before the Disciplina
+	   pill for long (fading) names. */
 	.ev-table :is(th, td):first-child {
-		width: 12rem;
-		padding-right: 2rem;
+		width: 12.5rem;
+		padding-right: 1.5rem;
 	}
-	/* Each of the meta columns carries the SAME left padding (1.75rem) as the gap before it,
-	   so adjacent columns don't crowd: Naziv→Disciplina, Disciplina→Datum, Datum→Razina and
-	   Razina→Sudionici all get consistent breathing room. Widths are sized to hold the content
-	   PLUS that padding (Razina fits "Europsko prvenstvo"); the table min-width scrolls if the
-	   panel is narrower. */
-	.ev-table :is(th, td):nth-child(2) { width: 6rem; padding-left: 0.9rem; } /* Disciplina */
-	.ev-table :is(th, td):nth-child(3) { width: 8.5rem; padding-left: 0.9rem; } /* Datum */
-	.ev-table :is(th, td):nth-child(4) { width: 9rem; padding-left: 0.9rem; overflow: hidden; } /* Razina */
-	.ev-table :is(th, td):nth-child(5) { width: 5.5rem; padding-left: 0.9rem; } /* Sudionici */
+	/* Meta columns (Disciplina / Datum / Razina / Sudionici): sized to hold their content
+	   with a consistent gap (padding-left) before each so NO column crowds its neighbour
+	   (Datum fits the full "14.11. – 16.11.2027." range; Razina fits "Europsko prvenstvo").
+	   The leftover width flows into the 100%-wide Naziv column, which stays the widest.
+	   The table min-width scrolls if the panel is narrower. */
+	.ev-table :is(th, td):nth-child(2) { width: 5.5rem; padding-left: 0.8rem; } /* Disciplina */
+	.ev-table :is(th, td):nth-child(3) { width: 9.5rem; padding-left: 0.8rem; } /* Datum (fits full range) */
+	.ev-table :is(th, td):nth-child(4) { width: 8.5rem; padding-left: 0.8rem; overflow: hidden; } /* Razina */
+	.ev-table :is(th, td):nth-child(5) { width: 5rem; padding-left: 0.8rem; } /* Sudionici */
 	.ev-table :is(th, td):nth-child(6) { width: 6.5rem; } /* Stanje */
 	.ev-table :is(th, td):nth-child(7) { width: 6rem; } /* actions */
 	.ev-table :is(th, td).ev-col-spacer {

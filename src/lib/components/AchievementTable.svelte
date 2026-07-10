@@ -267,8 +267,8 @@
 		color: #000;
 	}
 	.ac-badge--record {
-		background: #efe6fb; /* purple — a record */
-		color: #5b2ea6;
+		background: #ffad0a; /* amber — a record (same as Na čekanju) */
+		color: #000;
 	}
 	.ac-badge--other {
 		background: #bbd0ff; /* light blue — a placement (Plasman) */
