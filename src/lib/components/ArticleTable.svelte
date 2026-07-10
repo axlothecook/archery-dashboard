@@ -342,7 +342,7 @@
 		color: #000;
 	}
 	.art-badge--video-only {
-		background: #e4e932; /* yellow-green, solid fill — Video */
+		background: #f9f659; /* yellow-green, solid fill — Video */
 		color: #000;
 	}
 	.art-date {
