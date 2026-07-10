@@ -160,9 +160,12 @@
 	}
 
 	/* Approve controls: coloured SVGs, no background, both lit at once when enabled;
-	   greyed + not-allowed for non-finished tasks. Thin grey divider between them. */
+	   greyed + not-allowed for non-finished tasks. Thin grey divider between them.
+	   Centred in the cell so the tick/X sit under the "Završetak odobren" column title
+	   (they were left-aligned, ~45px left of the header). */
 	.tasks-appr {
 		gap: 0.5rem;
+		justify-content: center;
 	}
 	.tasks-appr-btn {
 		width: 1.9rem;

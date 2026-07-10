@@ -343,7 +343,7 @@
 	}
 	.profile-head {
 		/* layout via utility classes (display-f align-items-center gap-1) */
-		margin-bottom: 1.75rem;
+		margin-bottom: 1.25rem;
 	}
 	.profile-name {
 		margin: 0;
@@ -508,7 +508,7 @@
 
 	/* Support card (full-width below the two account cards). */
 	.support-card {
-		margin-top: 1.5rem;
+		margin-top: 0.5rem;
 	}
 	/* Tighter gap between the "Podrška" title and its subtext. */
 	.support-card .card-title {
