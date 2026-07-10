@@ -343,7 +343,7 @@
 	}
 	.profile-head {
 		/* layout via utility classes (display-f align-items-center gap-1) */
-		margin-bottom: 1.75rem;
+		margin-bottom: 1.25rem;
 	}
 	.profile-name {
 		margin: 0;
@@ -508,7 +508,7 @@
 
 	/* Support card (full-width below the two account cards). */
 	.support-card {
-		margin-top: 1.5rem;
+		margin-top: 0.5rem;
 	}
 	/* Tighter gap between the "Podrška" title and its subtext. */
 	.support-card .card-title {
@@ -534,11 +534,11 @@
 		white-space: nowrap;
 	}
 	.btn--report {
-		background: #d32752;
+		background: #fb4c68;
 		color: #fff;
 	}
 	.btn--report:hover {
-		background: #b91d45;
+		background: #e63d59;
 	}
 	.btn--suggest {
 		background: #fff;
@@ -553,7 +553,7 @@
 		padding: 0.7rem 0.9rem;
 		border: 1px solid #f2c4cf;
 		border-radius: 8px;
-		background: #fdeef2;
+		background: #ffdce5;
 	}
 	.emergency-ico {
 		flex: 0 0 auto;

@@ -9,7 +9,10 @@
 	const typeLabel = $derived(mail.type.charAt(0).toUpperCase() + mail.type.slice(1));
 </script>
 
-<div class="mail-item display-f align-items-center gap-0-8" class:unread={mail.unread}>
+<!-- A real LINK to the Upiti inbox (not a dead div with a pointer cursor) — the row
+     previews an inquiry that lives there. Deep-linking to the exact inquiry/tab is a
+     separate deferred item; for now the row takes the admin to the inbox page. -->
+<a class="mail-item display-f align-items-center gap-0-8" class:unread={mail.unread} href="/nadzorna-ploca/upiti">
 	<span class="mail-ico display-f align-items-center justify-content-center">
 		<MailAltIcon size={26} />
 	</span>
@@ -23,13 +26,20 @@
 		<span class="mail-type">{typeLabel}</span>
 		<span class="mail-time">{mail.time}</span>
 	</span>
-</div>
+</a>
 
 <style>
 	.mail-item {
 		padding: 0.6rem 0.85rem;
 		border-radius: 10px;
 		background: #f6f8fa;
+		/* It's a link now: pointer + no underline (the spans carry their own colours). */
+		cursor: pointer;
+		text-decoration: none;
+		transition: filter 0.15s ease;
+	}
+	.mail-item:hover {
+		filter: brightness(0.97);
 	}
 	.mail-item.unread {
 		background: #eef4ff;

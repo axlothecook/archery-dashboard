@@ -258,9 +258,13 @@
 		padding: 0;
 		border-bottom: 0;
 	}
-	/* Status pill — same size/shape as the events (.ev-state) pills. */
+	/* Status pill — same size/shape as the events (.ev-state) pills. inline-FLEX +
+	   centre = label exactly centred in the pill both ways. */
 	.ar-state {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: normal;
 		min-width: 6.5rem;
 		text-align: center;
 		padding: 0.55rem 0.4rem;
@@ -270,12 +274,12 @@
 		white-space: nowrap;
 	}
 	.ar-state--published {
-		background: #d4f3df;
-		color: #10683a;
+		background: #aeff93; /* green — live/published */
+		color: #000;
 	}
 	.ar-state--hidden {
-		background: #fdefc4;
-		color: #7a5b00;
+		background: #ffd453; /* yellow — hidden */
+		color: #000;
 	}
 	.ar-state--draft {
 		background: #fde7d8;

@@ -7,16 +7,17 @@
 	// TODO(adoption): swap the letter for a real uploaded image when available.
 	import { roleLetter, type Member } from '$lib/team';
 
+	// `color` is still accepted (callers pass member.color) but the circle is now tinted
+	// by ROLE, not this rotating palette key — so it's optional and unused here.
 	let {
-		color,
 		role,
 		size = 2.6,
 		fontSize = 1.35
-	}: { color: Member['color']; role: Member['role']; size?: number; fontSize?: number } = $props();
+	}: { color?: Member['color']; role: Member['role']; size?: number; fontSize?: number } = $props();
 </script>
 
 <span
-	class="avatar avatar--{color} br-full"
+	class="avatar avatar--role-{role} br-full"
 	style="width:{size}rem; height:{size}rem; font-size:{fontSize}rem;"
 >
 	{roleLetter(role)}
@@ -31,17 +32,16 @@
 		font-weight: 800;
 		flex: 0 0 auto;
 	}
-	/* Light tinted circle with the role letter in a DARKER shade of the same hue. */
-	.avatar--blue {
-		background: #cfe0fb;
-		color: #1657b8;
+	/* Solid role circle with a black letter: admin = medium blue, developer = bright
+	   green. Keyed by ROLE (not the old rotating blue/purple/green palette) so the
+	   circle colour tells you the person's role at a glance. */
+	/* Letter colour = the deep-sapphire used for the member NAMES next to the circles. */
+	.avatar--role-admin {
+		background: #97dfff;
+		color: #102e66;
 	}
-	.avatar--purple {
-		background: #e7defb;
-		color: #6b3fc0;
-	}
-	.avatar--green {
-		background: #d4f3df;
-		color: #1c8a4b;
+	.avatar--role-developer {
+		background: #aeff93; /* same green as Objavljeno/Završeno */
+		color: #102e66;
 	}
 </style>

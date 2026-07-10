@@ -129,7 +129,7 @@
 			{#each events as e (e.id)}
 				<tr class:cancelled={e.isCancelled}>
 					<td class="ev-name fw-600" use:fadeIfOverflow={e.name}>{e.name}</td>
-					<td><span class="ev-badge">{DISCIPLINE_LABEL[e.discipline]}</span></td>
+					<td><span class="ev-badge ev-badge--{e.discipline}">{DISCIPLINE_LABEL[e.discipline]}</span></td>
 					<td class="ev-date text-jet-grey">{fmtRange(e.dateFrom, e.dateTo)}</td>
 					<td>
 						{#if e.level}
@@ -205,24 +205,40 @@
 		color: #9aa3b2;
 		font-size: 0.95rem;
 	}
+	/* GRID layout (not table-layout) so column widths are directly controllable:
+	   - Naziv = minmax(10rem, 1fr) → takes ALL the leftover width, so on wide screens the
+	     names get the room and the meta columns sit right, near the actions.
+	   - Meta columns = FIXED widths (NOT max-content): sized once to fit the widest real
+	     content ("14.11. – 16.11.2027.", "Europsko prvenstvo", the pills), so the columns
+	     keep the SAME positions no matter which rows the active filter shows — content-
+	     sized tracks made the whole layout shift whenever filtering changed the rows.
+	   The <table> markup stays (semantics/a11y); thead/tbody/tr become display:contents so
+	   the th/td cells are the grid items. Visible column gaps come from the cells' symmetric
+	   side padding (NOT column-gap, which would punch holes in the row separator lines). */
 	.ev-table {
-		border-collapse: collapse;
+		display: grid;
+		grid-template-columns:
+			minmax(10rem, 1fr) /* Naziv — real floor; below it the wrapper h-scrolls */
+			7.75rem /* Disciplina (pill) */
+			9rem /* Datum — fits the widest range */
+			10.5rem /* Razina — fits "Europsko prvenstvo" */
+			6.75rem /* Sudionici (header-driven) */
+			7.75rem /* Stanje (pill) */
+			7rem /* actions (edit + eye + trash) */
+			0.25rem; /* spacer before the scrollbar */
 		font-size: 1rem;
-		/* Fixed layout: column widths come from the rules below (not content), so the
-		   name column truncates cleanly. A min-width keeps all 7 columns at a readable size —
-		   below it the .ev-scroll wrapper scrolls horizontally rather than collapsing the
-		   Naziv column to a few characters (which happened in the narrow sidebar layout). */
-		/* Fixed layout so the column widths below are AUTHORITATIVE — otherwise long content
-		   ("Europsko prvenstvo", date ranges) balloons the columns past the narrow panel (the
-		   Filteri sidebar leaves only ~55rem) and forces a horizontal scroll. Widths sum to fit
-		   ~55rem: Naziv gets a medium width (long names fade), Razina/Datum are tight (long
-		   values fade). A small min-width guards very narrow desktop; phone widens it to scroll. */
-		table-layout: fixed;
+		/* Below this the .ev-scroll wrapper scrolls horizontally rather than collapsing the
+		   Naziv column to a few characters. */
 		min-width: 44rem;
+	}
+	.ev-table thead,
+	.ev-table tbody,
+	.ev-table tr {
+		display: contents;
 	}
 	.ev-table th {
 		text-align: left;
-		padding: 0.65rem 0.75rem;
+		padding: 0.65rem 0.55rem;
 		font-size: 1.05rem;
 		font-weight: 700;
 		color: #1b1b1b;
@@ -236,35 +252,23 @@
 		background: #fff;
 	}
 	.ev-table td {
-		padding: 0.7rem 0.75rem;
+		padding: 0.7rem 0.55rem;
 		color: #102e66;
 		border-bottom: 1px solid #f3f5f8;
-		vertical-align: middle;
+	}
+	/* Cells are the grid items: flex so content centres vertically (the old
+	   vertical-align:middle doesn't exist in grid); min-width:0 lets the fr/minmax tracks
+	   shrink below their content (names/dates fade instead of blowing the track wide). */
+	.ev-table :is(th, td) {
+		display: flex;
+		align-items: center;
+		min-width: 0;
 	}
 	tr.cancelled .ev-name {
 		text-decoration: line-through;
 		color: #9aa3b2;
 	}
-	/* Naziv is a fixed width sized to hold most event names — NOT auto. Auto made it grab
-	   all the slack and shove the meta columns to the far right (a big gap after Naziv).
-	   With a fixed Naziv, the meta columns pack left right after it, and the trailing spacer
-	   (auto) soaks up any leftover width. */
-	.ev-table :is(th, td):first-child {
-		width: 12rem;
-	}
-	/* Each of the meta columns carries the SAME left padding (1.75rem) as the gap before it,
-	   so adjacent columns don't crowd: Naziv→Disciplina, Disciplina→Datum, Datum→Razina and
-	   Razina→Sudionici all get consistent breathing room. Widths are sized to hold the content
-	   PLUS that padding (Razina fits "Europsko prvenstvo"); the table min-width scrolls if the
-	   panel is narrower. */
-	.ev-table :is(th, td):nth-child(2) { width: 6rem; padding-left: 0.9rem; } /* Disciplina */
-	.ev-table :is(th, td):nth-child(3) { width: 8.5rem; padding-left: 0.9rem; } /* Datum */
-	.ev-table :is(th, td):nth-child(4) { width: 9rem; padding-left: 0.9rem; overflow: hidden; } /* Razina */
-	.ev-table :is(th, td):nth-child(5) { width: 5.5rem; padding-left: 0.9rem; } /* Sudionici */
-	.ev-table :is(th, td):nth-child(6) { width: 6.5rem; } /* Stanje */
-	.ev-table :is(th, td):nth-child(7) { width: 6rem; } /* actions */
 	.ev-table :is(th, td).ev-col-spacer {
-		width: 1.25rem;
 		padding: 0;
 		border-bottom: 0;
 	}
@@ -281,18 +285,35 @@
 		mask-image: linear-gradient(to right, #000 82%, transparent 100%);
 	}
 	.ev-badge {
-		display: inline-block;
+		/* inline-FLEX + centre so the label is EXACTLY centred in the pill both ways
+		   (inline-block sat it a couple px high — the tight line-box isn't symmetric
+		   around the font metrics). */
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: normal;
 		/* Match the Stanje (.ev-state) pill exactly: same min-width + centred text +
 		   padding, so Disciplina and Stanje pills read as one uniform pill size. */
 		min-width: 6.5rem;
 		text-align: center;
 		padding: 0.55rem 0.4rem;
 		border-radius: 999px;
-		background: #eef2fb;
-		color: #1b3a7a;
+		background: #bbd0ff; /* light blue, solid fill (default: Vanjsko) */
+		color: #000;
 		font-size: 0.82rem;
 		font-weight: 600;
 		white-space: nowrap;
+	}
+	/* Per-discipline fills so they read apart at a glance: Dvoransko amber, Field
+	   yellow-green, 3D purple; Vanjsko keeps the default light blue. */
+	.ev-badge--indoor {
+		background: #ffad0a;
+	}
+	.ev-badge--field {
+		background: #f9f659;
+	}
+	.ev-badge--3d {
+		background: #eacfff;
 	}
 	.ev-date {
 		white-space: nowrap;
@@ -310,15 +331,24 @@
 		display: inline-block;
 	}
 	.ev-att {
-		text-align: center;
+		justify-content: center; /* number centred under the "Sudionici" title (cells are flex) */
+	}
+	/* Shrinkable text columns (Datum / Razina tracks are minmax) clip cleanly when tight. */
+	.ev-table td:nth-child(3),
+	.ev-table td:nth-child(4) {
+		overflow: hidden;
 	}
 	.ev-flags {
 		white-space: nowrap;
 	}
 	/* State word pill — always shown (never a bare dash). Mirrors ArticleTable's
-	   .art-state: fixed min-width + centred so every state is the same length. */
+	   .art-state: fixed min-width + centred so every state is the same length.
+	   inline-FLEX + centre = label exactly centred both ways. */
 	.ev-state {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: normal;
 		min-width: 6.5rem;
 		text-align: center;
 		padding: 0.55rem 0.4rem;
@@ -328,23 +358,20 @@
 		white-space: nowrap;
 	}
 	.ev-state--published {
-		background: #d4f3df;
-		color: #10683a;
+		background: #aeff93; /* green — live/published */
+		color: #000;
 	}
 	.ev-state--hidden {
-		background: #fdefc4;
-		color: #7a5b00;
+		background: #ffd453; /* yellow — hidden */
+		color: #000;
 	}
 	.ev-state--draft {
 		background: #fde7d8;
 		color: #8a4b1e;
 	}
 	.ev-state--cancelled {
-		background: #fde7ec;
-		color: #a4133c;
-	}
-	.ev-actions-cell {
-		width: 1%;
+		background: #ff6e63; /* salmon — cancelled */
+		color: #000;
 	}
 	.ev-actions {
 		gap: 0.4rem;
@@ -367,36 +394,32 @@
 	   (eye vs eye-off) alone conveys the hidden state, so it isn't recoloured. */
 
 	/* Phone: give the table a min-width so it SCROLLS horizontally (in the .ev-scroll wrapper)
-	   instead of squishing the auto Naziv column to nothing — that squish made the "Naziv"
-	   header overflow onto "Disciplina" ("NaDisciplina"). Compact font/padding + narrower
-	   fixed columns so more fits before the scroll. Weight 800 matches the Zadaci headers. */
+	   instead of squishing the Naziv column to nothing. Compact font/padding; the grid template
+	   keeps Naziv flexible with a real minimum and the meta columns content-sized. Weight 800
+	   matches the Zadaci headers. */
 	@media (max-width: 900px) {
 		.ev-table {
 			min-width: 46rem;
+			/* FIXED tracks here too so filtering never shifts the columns (see desktop note). */
+			grid-template-columns:
+				minmax(11rem, 1fr) /* Naziv */
+				6.5rem /* Disciplina */
+				8rem /* Datum */
+				7.5rem /* Razina */
+				5.5rem /* Sudionici */
+				6.5rem /* Stanje */
+				6rem /* actions */
+				0.25rem; /* spacer */
 		}
 		.ev-table th {
-			padding: 0.5rem 0.5rem;
+			padding: 0.5rem 0.45rem;
 			font-size: 0.9rem;
 			font-weight: 800;
 		}
 		.ev-table td {
-			padding: 0.5rem 0.5rem;
+			padding: 0.5rem 0.45rem;
 			font-size: 0.85rem;
 		}
-		/* Naziv gets a real minimum so it never collapses; the rest tighten. A smaller, uniform
-		   left padding (0.9rem) on the meta columns keeps consistent gaps without the wide
-		   desktop 1.75rem crowding a narrow phone. */
-		.ev-table :is(th, td):first-child {
-			width: 11rem;
-		}
-		.ev-table :is(th, td):nth-child(2) { width: 6rem; padding-left: 0.9rem; }
-		.ev-table :is(th, td):nth-child(3) { width: 9rem; padding-left: 0.9rem; }
-		.ev-table :is(th, td):nth-child(4) { width: 8rem; padding-left: 0.9rem; }
-		.ev-table :is(th, td):nth-child(5) { width: 5.5rem; padding-left: 0.9rem; }
-		.ev-table :is(th, td):nth-child(6) { width: 6rem; padding-left: 0.9rem; }
-		/* Extra left padding pushes the action icons away from the Stanje pill (the actions
-		   column is `auto`, so this padding becomes the gap). Matches Svi streličari. */
-		.ev-table :is(th, td):nth-child(7) { width: auto; padding-left: 2.5rem; }
 		.ev-badge,
 		.ev-state {
 			min-width: 5rem;

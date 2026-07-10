@@ -170,7 +170,19 @@
 	.ac-table {
 		border-collapse: collapse;
 		font-size: 1rem;
+		/* FIXED layout: the <colgroup> widths below are authoritative, so filtering
+		   (fewer/other rows) can never resize the columns like auto layout did. */
+		table-layout: fixed;
 	}
+	/* Frozen column widths (measured at the default "Sve" state). The TITLE col has no
+	   width — it absorbs all leftover, keeping the right-side columns pushed right. */
+	col.col-img { width: 4.1rem; }
+	col.col-year { width: 6.7rem; }
+	col.col-vrsta { width: 8.9rem; }
+	col.col-razina { width: 7.9rem; }
+	col.col-archers { width: 16rem; }
+	col.col-actions { width: 6.8rem; }
+	col.col-spacer { width: 1.6rem; }
 	.ac-table th {
 		text-align: left;
 		padding: 0.65rem 0.75rem;
@@ -249,9 +261,13 @@
 		border-bottom: 0;
 	}
 	/* Vrsta pill: same size as the Svi događaji pills, coloured by type so Naslov / Rekord
-	   / Plasman read apart at a glance. */
+	   / Plasman read apart at a glance. inline-FLEX + centre = label exactly centred in the
+	   pill both ways (inline-block sat it a couple px high). */
 	.ac-badge {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: normal;
 		min-width: 6.5rem;
 		text-align: center;
 		padding: 0.55rem 0.4rem;
@@ -259,20 +275,20 @@
 		font-size: 0.82rem;
 		font-weight: 600;
 		white-space: nowrap;
-		background: #eef2fb; /* fallback (Plasman): bluish */
-		color: #1b3a7a;
+		background: #bbd0ff; /* fallback (Plasman): light blue */
+		color: #000;
 	}
 	.ac-badge--title {
-		background: #fbf0c9; /* gold — a championship title */
-		color: #8a6d00;
+		background: #ffd453; /* yellow — a championship title (Naslov) */
+		color: #000;
 	}
 	.ac-badge--record {
-		background: #efe6fb; /* purple — a record */
-		color: #5b2ea6;
+		background: #ffad0a; /* amber — a record (same as Na čekanju) */
+		color: #000;
 	}
 	.ac-badge--other {
-		background: #eef2fb; /* blue — a placement (Plasman) */
-		color: #1b3a7a;
+		background: #bbd0ff; /* light blue — a placement (Plasman) */
+		color: #000;
 	}
 	/* Razina: a colour dot (prestige tier) + the level name, like the Svi događaji level. */
 	.ac-level {

@@ -402,23 +402,28 @@
 	.mini-tbl tbody tr:last-child td {
 		border-bottom: 0;
 	}
-	/* Match the Početno status pills (Zadaci): same padding + font size. */
+	/* Match the Početno status pills (Zadaci): same padding + font size. inline-FLEX +
+	   centre so the label is exactly centred in the pill both ways (inline-block sat the
+	   text a couple px high — the tight line-box isn't symmetric around the font metrics). */
 	.state {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 		min-width: 6.5rem;
 		text-align: center;
 		padding: 0.55rem 0.4rem;
 		border-radius: 999px;
 		font-size: 0.82rem;
 		font-weight: 600;
+		line-height: normal;
 	}
 	.state--published {
-		background: #d4f3df;
-		color: #10683a;
+		background: #aeff93; /* green — same as the tables' Objavljeno */
+		color: #000;
 	}
 	.state--hidden {
-		background: #fdefc4;
-		color: #7a5b00;
+		background: #ffd453; /* yellow — same as the tables' Skriveno */
+		color: #000;
 	}
 	.state--draft {
 		background: #fde7d8;

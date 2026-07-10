@@ -131,29 +131,41 @@
 	   Stanje pill (.art-state) sizing: same min-width + centred text + padding, so the
 	   status pills are uniform width and consistent with the Vijesti page. */
 	.tasks-status {
-		display: inline-block;
+		/* inline-FLEX + centre so the label is EXACTLY centred top-to-bottom. inline-block
+		   with symmetric padding still sat the glyph a couple px high because the tight
+		   line-box isn't vertically symmetric around the font's ascender/descender. */
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 		min-width: 6.5rem;
 		text-align: center;
 		padding: 0.55rem 0.4rem;
 		border-radius: 999px;
 		font-size: 0.92rem;
+		line-height: normal;
 		color: #1b1b1b;
 		white-space: nowrap;
 	}
 	.tasks-status--in_progress {
-		background: #cfe0fb;
+		background: #bbd0ff; /* light blue — U tijeku */
+		color: #000;
 	}
 	.tasks-status--pending {
-		background: #fde7d8;
+		background: #ffd453; /* yellow — Na čekanju (same as the Skriveno pill) */
+		color: #000;
 	}
 	.tasks-status--done {
-		background: #d4f3df;
+		background: #aeff93; /* green — same as Objavljeno */
+		color: #000;
 	}
 
 	/* Approve controls: coloured SVGs, no background, both lit at once when enabled;
-	   greyed + not-allowed for non-finished tasks. Thin grey divider between them. */
+	   greyed + not-allowed for non-finished tasks. Thin grey divider between them.
+	   Centred in the cell so the tick/X sit under the "Završetak odobren" column title
+	   (they were left-aligned, ~45px left of the header). */
 	.tasks-appr {
 		gap: 0.5rem;
+		justify-content: center;
 	}
 	.tasks-appr-btn {
 		width: 1.9rem;

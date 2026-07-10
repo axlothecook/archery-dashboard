@@ -92,6 +92,20 @@
 	<p class="art-empty">{emptyText}</p>
 {:else}
 	<table class="art-table w-full">
+		<!-- Explicit column widths: with table-layout:fixed these are AUTHORITATIVE, so the
+		     columns keep the SAME positions no matter which rows the active filter shows
+		     (auto layout resized them to the visible rows' content). The colgroup is needed
+		     because the colspan=2 header would otherwise confuse fixed-layout sizing. The
+		     spacer col has no width → it absorbs all leftover, keeping slack on the far right. -->
+		<colgroup>
+			<col class="col-poster" />
+			<col class="col-title" />
+			<col class="col-vrsta" />
+			<col class="col-datum" />
+			<col class="col-stanje" />
+			<col class="col-actions" />
+			<col class="col-spacer" />
+		</colgroup>
 		<thead>
 			<tr>
 				<!-- Naslov header spans the poster + title columns so "Tt Naslov" starts at
@@ -187,7 +201,18 @@
 	.art-table {
 		border-collapse: collapse;
 		font-size: 1rem;
+		/* FIXED layout: the <colgroup> widths are authoritative, so filtering (fewer/other
+		   rows) can never resize the columns like auto layout did. */
+		table-layout: fixed;
 	}
+	/* Frozen column widths (measured at the default "Sve" state). The spacer col has no
+	   width — it absorbs the leftover so slack lands on the far right. */
+	col.col-poster { width: 4.9rem; }
+	col.col-title { width: 33rem; }
+	col.col-vrsta { width: 10rem; }
+	col.col-datum { width: 8.9rem; }
+	col.col-stanje { width: 10rem; }
+	col.col-actions { width: 10.4rem; }
 	.art-table th {
 		text-align: left;
 		padding: 0.65rem 0.75rem;
@@ -287,7 +312,13 @@
 		mask-image: linear-gradient(to right, #000 82%, transparent 100%);
 	}
 	.art-badge {
-		display: inline-block;
+		/* inline-FLEX + centre so the label is EXACTLY centred in the pill both ways
+		   (inline-block sat it a couple px high — the tight line-box isn't symmetric
+		   around the font metrics). Matches .art-state / the task pills. */
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: normal;
 		/* Match the Stanje (.art-state) pill exactly: same min-width + centred text +
 		   padding, so Vrsta and Stanje pills read as one uniform pill size. */
 		min-width: 6.5rem;
@@ -297,22 +328,22 @@
 		font-size: 0.82rem;
 		font-weight: 600;
 		white-space: nowrap;
-		/* default (Događaj/event): current bluish */
-		background: #eef2fb;
-		color: #1b3a7a;
+		/* default (Događaj/event): light blue, solid fill */
+		background: #bbd0ff;
+		color: #000;
 	}
 	/* Per media-type badge colours. Događaj keeps the default above. */
 	.art-badge--gallery {
-		background: #efe6fb; /* purple */
-		color: #5b2ea6;
+		background: #eacfff; /* purple, solid fill — Galerija */
+		color: #000;
 	}
 	.art-badge--external-link {
-		background: #fde6d6; /* orange */
-		color: #9a4a12;
+		background: #ffad0a; /* amber, solid fill — Vanjski link */
+		color: #000;
 	}
 	.art-badge--video-only {
-		background: #fbdce2; /* crimson red */
-		color: #9e1230;
+		background: #f9f659; /* yellow-green, solid fill — Video */
+		color: #000;
 	}
 	.art-date {
 		white-space: nowrap;
@@ -321,9 +352,13 @@
 		white-space: nowrap;
 	}
 	/* State word pill — always shown (never a bare dash). Fixed min-width + centred so
-	   Objavljeno / Skriveno / Nacrt are all the SAME length. Taller vertical padding. */
+	   Objavljeno / Skriveno / Nacrt are all the SAME length. Taller vertical padding.
+	   inline-FLEX + centre = label exactly centred both ways. */
 	.art-state {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: normal;
 		min-width: 6.5rem;
 		text-align: center;
 		/* Less horizontal, more vertical padding (taller pill). */
@@ -334,12 +369,12 @@
 		white-space: nowrap;
 	}
 	.art-state--published {
-		background: #d4f3df;
-		color: #10683a;
+		background: #aeff93; /* green — live/published */
+		color: #000;
 	}
 	.art-state--hidden {
-		background: #fdefc4;
-		color: #7a5b00;
+		background: #ffd453; /* yellow — hidden */
+		color: #000;
 	}
 	.art-state--draft {
 		background: #fde7d8;
@@ -377,7 +412,14 @@
 			padding: 0.5rem 0.5rem;
 			font-size: 0.85rem;
 		}
-		/* Cut the Naslov column right down. */
+		/* Cut the Naslov column right down. In fixed layout the <col> widths are the
+		   authoritative ones, so the phone sizes are set on the cols here. */
+		col.col-poster { width: 3.8rem; }
+		col.col-title { width: 11rem; }
+		col.col-vrsta { width: 7.5rem; }
+		col.col-datum { width: 6.5rem; }
+		col.col-stanje { width: 7.5rem; }
+		col.col-actions { width: 8rem; }
 		.art-table :is(th, td).art-col-title,
 		.art-title {
 			width: 11rem;

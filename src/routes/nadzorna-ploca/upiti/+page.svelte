@@ -352,33 +352,30 @@
 		font-size: 0.95rem;
 	}
 	/* The WHOLE row is tinted by read state (no pill): yellow = unread, green = read.
-	   The border mirrors that background (a darker shade of the same hue), and there is
-	   no curved left border. */
+	   No border on the rows (removed per request) — the background tint alone marks state. */
 	.in-row {
 		text-align: left;
-		border: 1px solid transparent;
+		border: none;
 		border-radius: 10px;
 		padding: 0.7rem 0.8rem;
 		font-family: inherit;
 	}
 	.in-row.unread {
-		background: #fdf6d8; /* yellow — unread */
-		border-color: #ecdb92;
+		background: #ffe69b; /* pale yellow — unread */
 	}
 	.in-row.read {
-		background: #e3f6ea; /* green — read */
-		border-color: #b7e3c6;
+		background: #aeff93; /* green — read */
 	}
 	.in-row:hover {
 		filter: brightness(0.98);
 	}
-	/* Selected row: keep its read/unread tint and mirror it in the border — a darker
-	   shade of the SAME hue (yellow for unread, green for read) rather than a blue ring. */
+	/* Selected row: no border, no ring — just a LIGHTER shade of the row's own read/unread
+	   colour so it reads as the same state, only highlighted. */
 	.in-row.active.unread {
-		border-color: #c9ad4a;
+		background: #fff3cd; /* lighter yellow */
 	}
 	.in-row.active.read {
-		border-color: #7cc79a;
+		background: #d6ffc8; /* lighter green */
 	}
 	.in-row-name {
 		font-size: 0.95rem;
@@ -394,10 +391,10 @@
 		white-space: nowrap;
 	}
 	.in-row.unread .in-row-flag {
-		color: #8a6d00;
+		color: #000;
 	}
 	.in-row.read .in-row-flag {
-		color: #10683a;
+		color: #000;
 	}
 	.in-row-msg {
 		font-size: 0.82rem;
