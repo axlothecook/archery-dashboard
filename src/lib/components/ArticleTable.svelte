@@ -307,8 +307,8 @@
 		color: #5b2ea6;
 	}
 	.art-badge--external-link {
-		background: #fde6d6; /* orange */
-		color: #9a4a12;
+		background: #ffad0a; /* amber, solid fill — Vanjski link */
+		color: #000;
 	}
 	.art-badge--video-only {
 		background: #fbdce2; /* crimson red */

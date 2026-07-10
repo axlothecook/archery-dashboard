@@ -361,7 +361,7 @@
 		font-family: inherit;
 	}
 	.in-row.unread {
-		background: #fdf6d8; /* yellow — unread */
+		background: #ffad0a; /* amber — unread */
 	}
 	.in-row.read {
 		background: #88f641; /* green — read */
@@ -372,7 +372,7 @@
 	/* Selected row: no border, no ring — just a LIGHTER shade of the row's own read/unread
 	   colour so it reads as the same state, only highlighted. */
 	.in-row.active.unread {
-		background: #fefbe9; /* lighter yellow */
+		background: #ffcf6b; /* lighter amber */
 	}
 	.in-row.active.read {
 		background: #b8fa8a; /* lighter green */
@@ -391,7 +391,7 @@
 		white-space: nowrap;
 	}
 	.in-row.unread .in-row-flag {
-		color: #8a6d00;
+		color: #000;
 	}
 	.in-row.read .in-row-flag {
 		color: #000;

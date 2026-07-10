@@ -129,7 +129,7 @@
 			{#each events as e (e.id)}
 				<tr class:cancelled={e.isCancelled}>
 					<td class="ev-name fw-600" use:fadeIfOverflow={e.name}>{e.name}</td>
-					<td><span class="ev-badge">{DISCIPLINE_LABEL[e.discipline]}</span></td>
+					<td><span class="ev-badge ev-badge--{e.discipline}">{DISCIPLINE_LABEL[e.discipline]}</span></td>
 					<td class="ev-date text-jet-grey">{fmtRange(e.dateFrom, e.dateTo)}</td>
 					<td>
 						{#if e.level}
@@ -291,11 +291,15 @@
 		text-align: center;
 		padding: 0.55rem 0.4rem;
 		border-radius: 999px;
-		background: #bbd0ff; /* light blue, solid fill (Vanjsko + other disciplines) */
+		background: #bbd0ff; /* light blue, solid fill (default: Vanjsko + other disciplines) */
 		color: #000;
 		font-size: 0.82rem;
 		font-weight: 600;
 		white-space: nowrap;
+	}
+	/* Dvoransko (indoor) gets its own amber fill to read apart from the blue disciplines. */
+	.ev-badge--indoor {
+		background: #ffad0a;
 	}
 	.ev-date {
 		white-space: nowrap;
