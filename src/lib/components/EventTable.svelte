@@ -249,22 +249,22 @@
 	   without overflowing the panel. Right padding keeps a clear gap before the Disciplina
 	   pill for long (fading) names. */
 	.ev-table :is(th, td):first-child {
-		width: 12.5rem;
-		padding-right: 1.5rem;
+		width: 11rem;
+		padding-right: 0.9rem;
 	}
 	/* Meta columns (Disciplina / Datum / Razina / Sudionici): sized to hold their content
 	   with a consistent gap (padding-left) before each so NO column crowds its neighbour
 	   (Datum fits the full "14.11. – 16.11.2027." range; Razina fits "Europsko prvenstvo").
 	   The leftover width flows into the 100%-wide Naziv column, which stays the widest.
 	   The table min-width scrolls if the panel is narrower. */
-	.ev-table :is(th, td):nth-child(2) { width: 5.5rem; padding-left: 0.8rem; } /* Disciplina */
-	.ev-table :is(th, td):nth-child(3) { width: 9.5rem; padding-left: 0.8rem; } /* Datum (fits full range) */
-	.ev-table :is(th, td):nth-child(4) { width: 8.5rem; padding-left: 0.8rem; overflow: hidden; } /* Razina */
-	.ev-table :is(th, td):nth-child(5) { width: 5rem; padding-left: 0.8rem; } /* Sudionici */
-	.ev-table :is(th, td):nth-child(6) { width: 6.5rem; } /* Stanje */
-	.ev-table :is(th, td):nth-child(7) { width: 6rem; } /* actions */
+	.ev-table :is(th, td):nth-child(2) { width: 6rem; padding-left: 1.4rem; } /* Disciplina (bigger left pad → meta group shifts right, more room after Naziv) */
+	.ev-table :is(th, td):nth-child(3) { width: 8rem; padding-left: 1.1rem; } /* Datum (fits full range; clear gap after the pill) */
+	.ev-table :is(th, td):nth-child(4) { width: 7.5rem; padding-left: 0.9rem; overflow: hidden; } /* Razina */
+	.ev-table :is(th, td):nth-child(5) { width: 4.5rem; padding-left: 0.9rem; } /* Sudionici */
+	.ev-table :is(th, td):nth-child(6) { width: 5.5rem; } /* Stanje */
+	.ev-table :is(th, td):nth-child(7) { width: 5.5rem; } /* actions (edit + eye + trash) */
 	.ev-table :is(th, td).ev-col-spacer {
-		width: 1.25rem;
+		width: 0.6rem;
 		padding: 0;
 		border-bottom: 0;
 	}
