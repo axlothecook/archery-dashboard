@@ -288,8 +288,8 @@
 		text-align: center;
 		padding: 0.55rem 0.4rem;
 		border-radius: 999px;
-		background: #eef2fb;
-		color: #1b3a7a;
+		background: #336075; /* casal blue-teal, solid fill (Vanjsko + other disciplines) */
+		color: #000;
 		font-size: 0.82rem;
 		font-weight: 600;
 		white-space: nowrap;
@@ -328,12 +328,12 @@
 		white-space: nowrap;
 	}
 	.ev-state--published {
-		background: #d4f3df;
-		color: #10683a;
+		background: #1bc61b; /* bright green — live/published */
+		color: #000;
 	}
 	.ev-state--hidden {
-		background: #fdefc4;
-		color: #7a5b00;
+		background: #afa44f; /* husk olive — hidden */
+		color: #000;
 	}
 	.ev-state--draft {
 		background: #fde7d8;

@@ -259,20 +259,20 @@
 		font-size: 0.82rem;
 		font-weight: 600;
 		white-space: nowrap;
-		background: #eef2fb; /* fallback (Plasman): bluish */
-		color: #1b3a7a;
+		background: #336075; /* fallback (Plasman): casal blue-teal */
+		color: #000;
 	}
 	.ac-badge--title {
-		background: #fbf0c9; /* gold — a championship title */
-		color: #8a6d00;
+		background: #afa44f; /* husk olive — a championship title (Naslov) */
+		color: #000;
 	}
 	.ac-badge--record {
 		background: #efe6fb; /* purple — a record */
 		color: #5b2ea6;
 	}
 	.ac-badge--other {
-		background: #eef2fb; /* blue — a placement (Plasman) */
-		color: #1b3a7a;
+		background: #336075; /* casal blue-teal — a placement (Plasman) */
+		color: #000;
 	}
 	/* Razina: a colour dot (prestige tier) + the level name, like the Svi događaji level. */
 	.ac-level {

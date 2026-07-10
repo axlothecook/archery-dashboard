@@ -270,12 +270,12 @@
 		white-space: nowrap;
 	}
 	.ar-state--published {
-		background: #d4f3df;
-		color: #10683a;
+		background: #1bc61b; /* bright green — live/published */
+		color: #000;
 	}
 	.ar-state--hidden {
-		background: #fdefc4;
-		color: #7a5b00;
+		background: #afa44f; /* husk olive — hidden */
+		color: #000;
 	}
 	.ar-state--draft {
 		background: #fde7d8;

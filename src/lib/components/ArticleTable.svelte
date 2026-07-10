@@ -297,9 +297,9 @@
 		font-size: 0.82rem;
 		font-weight: 600;
 		white-space: nowrap;
-		/* default (Događaj/event): current bluish */
-		background: #eef2fb;
-		color: #1b3a7a;
+		/* default (Događaj/event): casal blue-teal, solid fill */
+		background: #336075;
+		color: #000;
 	}
 	/* Per media-type badge colours. Događaj keeps the default above. */
 	.art-badge--gallery {
@@ -334,12 +334,12 @@
 		white-space: nowrap;
 	}
 	.art-state--published {
-		background: #d4f3df;
-		color: #10683a;
+		background: #1bc61b; /* bright green — live/published */
+		color: #000;
 	}
 	.art-state--hidden {
-		background: #fdefc4;
-		color: #7a5b00;
+		background: #afa44f; /* husk olive — hidden */
+		color: #000;
 	}
 	.art-state--draft {
 		background: #fde7d8;
