@@ -361,7 +361,7 @@
 		font-family: inherit;
 	}
 	.in-row.unread {
-		background: #ffd453; /* yellow — unread (same as the Skriveno pill) */
+		background: #ffe69b; /* pale yellow — unread */
 	}
 	.in-row.read {
 		background: #aeff93; /* green — read */
@@ -372,7 +372,7 @@
 	/* Selected row: no border, no ring — just a LIGHTER shade of the row's own read/unread
 	   colour so it reads as the same state, only highlighted. */
 	.in-row.active.unread {
-		background: #ffe58a; /* lighter yellow */
+		background: #fff3cd; /* lighter yellow */
 	}
 	.in-row.active.read {
 		background: #d6ffc8; /* lighter green */
