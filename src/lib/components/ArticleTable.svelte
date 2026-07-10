@@ -297,8 +297,8 @@
 		font-size: 0.82rem;
 		font-weight: 600;
 		white-space: nowrap;
-		/* default (Događaj/event): royal blue, solid fill */
-		background: #5076e6;
+		/* default (Događaj/event): light blue, solid fill */
+		background: #bbd0ff;
 		color: #000;
 	}
 	/* Per media-type badge colours. Događaj keeps the default above. */

@@ -248,9 +248,12 @@
 	/* Naziv is a fixed width sized to hold most event names — NOT auto. Auto made it grab
 	   all the slack and shove the meta columns to the far right (a big gap after Naziv).
 	   With a fixed Naziv, the meta columns pack left right after it, and the trailing spacer
-	   (auto) soaks up any leftover width. */
+	   (auto) soaks up any leftover width. Right padding reserves a clear GAP between the name
+	   (which fades on overflow) and the Disciplina pill, so a long name never runs straight
+	   into the pill — without widening the whole table (which overflowed the panel). */
 	.ev-table :is(th, td):first-child {
 		width: 12rem;
+		padding-right: 2rem;
 	}
 	/* Each of the meta columns carries the SAME left padding (1.75rem) as the gap before it,
 	   so adjacent columns don't crowd: Naziv→Disciplina, Disciplina→Datum, Datum→Razina and
@@ -288,7 +291,7 @@
 		text-align: center;
 		padding: 0.55rem 0.4rem;
 		border-radius: 999px;
-		background: #5076e6; /* royal blue, solid fill (Vanjsko + other disciplines) */
+		background: #bbd0ff; /* light blue, solid fill (Vanjsko + other disciplines) */
 		color: #000;
 		font-size: 0.82rem;
 		font-weight: 600;

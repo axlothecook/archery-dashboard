@@ -32,11 +32,11 @@
 		font-weight: 800;
 		flex: 0 0 auto;
 	}
-	/* Solid role circle with a black letter: admin = royal blue, developer =
+	/* Solid role circle with a black letter: admin = light blue, developer =
 	   bright green. Keyed by ROLE (not the old rotating blue/purple/green palette) so
 	   the circle colour tells you the person's role at a glance. */
 	.avatar--role-admin {
-		background: #5076e6;
+		background: #bbd0ff;
 		color: #000;
 	}
 	.avatar--role-developer {
