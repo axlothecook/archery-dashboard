@@ -399,10 +399,10 @@
 	/* Hide/unhide toggle: green when visible, grey when hidden — matches the state. */
 	.vis-toggle {
 		padding: 0.5rem 0.9rem;
-		border: 1px solid #cfe8d8;
+		border: 1px solid transparent;
 		border-radius: 8px;
-		background: #eafaf0;
-		color: #10683a;
+		background: #aeff93; /* same green as the dev circle / Objavljeno */
+		color: #000;
 		font-size: 0.88rem;
 		font-weight: 600;
 		font-family: inherit;

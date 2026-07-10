@@ -205,7 +205,7 @@
 	.arp-chip {
 		padding: 0.25rem 0.35rem 0.25rem 0.6rem;
 		border-radius: 999px;
-		background: #eef2fb;
+		background: #d8f3ff; /* same light blue as the selected schedule day (Početno) */
 		color: #1b3a7a;
 		font-size: 0.85rem;
 		font-weight: 600;
