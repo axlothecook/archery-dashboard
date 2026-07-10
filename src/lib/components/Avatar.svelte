@@ -36,7 +36,7 @@
 	   green. Keyed by ROLE (not the old rotating blue/purple/green palette) so the
 	   circle colour tells you the person's role at a glance. */
 	.avatar--role-admin {
-		background: #8ea7f1;
+		background: #90a1ef;
 		color: #000;
 	}
 	.avatar--role-developer {
