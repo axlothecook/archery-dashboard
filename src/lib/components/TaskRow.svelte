@@ -148,7 +148,8 @@
 		background: #fde7d8;
 	}
 	.tasks-status--done {
-		background: #d4f3df;
+		background: #88f641; /* green — same as Objavljeno */
+		color: #000;
 	}
 
 	/* Approve controls: coloured SVGs, no background, both lit at once when enabled;
