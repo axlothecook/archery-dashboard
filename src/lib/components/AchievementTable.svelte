@@ -263,7 +263,7 @@
 		color: #000;
 	}
 	.ac-badge--title {
-		background: #afa44f; /* husk olive — a championship title (Naslov) */
+		background: #ffd453; /* yellow — a championship title (Naslov) */
 		color: #000;
 	}
 	.ac-badge--record {

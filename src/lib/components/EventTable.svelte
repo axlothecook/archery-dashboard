@@ -298,9 +298,13 @@
 		font-weight: 600;
 		white-space: nowrap;
 	}
-	/* Dvoransko (indoor) gets its own amber fill to read apart from the blue disciplines. */
+	/* Per-discipline fills so they read apart at a glance: Dvoransko amber, Field coral;
+	   Vanjsko + 3D keep the default light blue. */
 	.ev-badge--indoor {
 		background: #ffad0a;
+	}
+	.ev-badge--field {
+		background: #fe5256;
 	}
 	.ev-date {
 		white-space: nowrap;
@@ -345,7 +349,7 @@
 		color: #000;
 	}
 	.ev-state--hidden {
-		background: #afa44f; /* husk olive — hidden */
+		background: #ffd453; /* yellow — hidden */
 		color: #000;
 	}
 	.ev-state--draft {

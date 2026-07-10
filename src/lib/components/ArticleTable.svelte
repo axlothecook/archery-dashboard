@@ -311,8 +311,8 @@
 		color: #000;
 	}
 	.art-badge--video-only {
-		background: #fbdce2; /* crimson red */
-		color: #9e1230;
+		background: #fe5256; /* coral red, solid fill — Video */
+		color: #000;
 	}
 	.art-date {
 		white-space: nowrap;
@@ -338,7 +338,7 @@
 		color: #000;
 	}
 	.art-state--hidden {
-		background: #afa44f; /* husk olive — hidden */
+		background: #ffd453; /* yellow — hidden */
 		color: #000;
 	}
 	.art-state--draft {

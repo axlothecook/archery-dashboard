@@ -274,7 +274,7 @@
 		color: #000;
 	}
 	.ar-state--hidden {
-		background: #afa44f; /* husk olive — hidden */
+		background: #ffd453; /* yellow — hidden */
 		color: #000;
 	}
 	.ar-state--draft {
