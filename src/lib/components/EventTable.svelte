@@ -304,7 +304,7 @@
 		background: #ffad0a;
 	}
 	.ev-badge--field {
-		background: #fe5256;
+		background: #fb4c68;
 	}
 	.ev-date {
 		white-space: nowrap;

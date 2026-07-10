@@ -311,7 +311,7 @@
 		color: #000;
 	}
 	.art-badge--video-only {
-		background: #fe5256; /* coral red, solid fill — Video */
+		background: #fb4c68; /* pink-red, solid fill — Video */
 		color: #000;
 	}
 	.art-date {
