@@ -117,7 +117,7 @@
 <section
 	class="panel bg-white schedule"
 	role="group"
-	aria-label="Tjedni raspored — povucite lijevo ili desno za promjenu tjedna"
+	aria-label="Tjedni raspored: povucite lijevo ili desno za promjenu tjedna"
 	onpointerdown={onPointerDown}
 	onpointermove={onPointerMove}
 	onpointerup={endSwipe}

@@ -172,7 +172,7 @@
 									type="button"
 									aria-pressed={e.hidden}
 									aria-label={e.hidden ? 'Prikaži na javnoj stranici' : 'Sakrij s javne stranice'}
-									title={e.hidden ? 'Skriveno — klik za prikaz' : 'Vidljivo — klik za skrivanje'}
+									title={e.hidden ? 'Skriveno: klik za prikaz' : 'Vidljivo: klik za skrivanje'}
 									onclick={() => toggleHidden(e)}
 								>
 									{#if e.hidden}<EyeOffIcon size={22} />{:else}<EyeIcon size={22} />{/if}

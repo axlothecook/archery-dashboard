@@ -228,7 +228,7 @@
 				class:is-hidden={hidden}
 				type="button"
 				aria-pressed={hidden}
-				title={hidden ? 'Trenutačno skriveno — klik za prikaz' : 'Trenutačno vidljivo — klik za skrivanje'}
+				title={hidden ? 'Trenutačno skriveno: klik za prikaz' : 'Trenutačno vidljivo: klik za skrivanje'}
 				onclick={() => (hidden = !hidden)}
 			>
 				{#if hidden}

@@ -133,7 +133,7 @@
 				<!-- Login help = reach a human about ACCOUNT ACCESS (best practice: not the public
 				     inquiry form). mailto to the developer/administrator, subject prefilled.
 				     TODO(adoption): replace the placeholder address with the real support mailbox. -->
-				<a href="mailto:podrska@axlothecook.com?subject={encodeURIComponent('Pomoć pri prijavi — nadzorna ploča VSK')}">{t(locale, 'auth.helpLink')}</a>
+				<a href="mailto:podrska@axlothecook.com?subject={encodeURIComponent('Pomoć pri prijavi: nadzorna ploča VSK')}">{t(locale, 'auth.helpLink')}</a>
 			</p>
 		</div>
 	</div>
