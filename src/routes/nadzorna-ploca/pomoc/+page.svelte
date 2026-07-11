@@ -13,7 +13,7 @@
 	const FAQ: { q: string; a: string }[] = [
 		{
 			q: 'Kako mogu promijeniti svoju lozinku ili email?',
-			a: 'Otvorite svoj profil (klik na svoje ime gore desno -> Profil). Ondje možete urediti email i promijeniti lozinku. Ako ste zaboravili lozinku, na stranici za prijavu kliknite „Zaboravili ste lozinku?” i poveznica za postavljanje nove lozinke (vrijedi 30 minuta) će Vam biti poslana.'
+			a: 'Otvorite svoj profil (klik na svoje ime gore desno, pa kliknite Profil). Ondje možete urediti email i promijeniti lozinku. Ako ste zaboravili lozinku, na stranici za prijavu kliknite „Zaboravili ste lozinku?” i poveznica za postavljanje nove lozinke (vrijedi 30 minuta) će Vam biti poslana.'
 		},
 		{
 			q: 'Kako mogu napraviti novog člana administracije?',
@@ -25,15 +25,15 @@
 		},
 		{
 			q: 'Gdje mogu dobiti pomoć ako je nešto hitno?',
-			a: 'Otvorite svoj profil (ime gore desno -> Profil). Ondje se nalazi hitni kontakt razvojnog programera (WhatsApp / poziv) za slučaj da nešto hitno ne radi. Ako stranica prikazuje grešku, prvo je osvježite; ako se problem nastavi, javite se putem tog kontakta.'
+			a: 'Otvorite svoj profil (ime gore desno, pa kliknite Profil). Ondje se nalazi hitni kontakt razvojnog programera (WhatsApp / poziv) za slučaj da nešto hitno ne radi. Ako stranica prikazuje grešku, prvo je osvježite; ako se problem nastavi, javite se putem tog kontakta.'
 		},
 		{
 			q: 'Kako mogu prijaviti problem sa stranicom?',
-			a: 'Na svom profilu (ime gore desno -> Profil) kliknite „Prijavi problem” i ispunite kratki obrazac s opisom (što ste radili i što se dogodilo). Poruka se šalje razvojnom programeru na pregled.'
+			a: 'Na svom profilu (ime gore desno, pa kliknite Profil) kliknite „Prijavi problem” i ispunite kratki obrazac s opisom (što ste radili i što se dogodilo). Poruka se šalje razvojnom programeru na pregled.'
 		},
 		{
 			q: 'Imam ideju za nešto što bih htio/htjela da se uvede ili uredi u nadzornu ploču / glavnu stranicu. Gdje da se javim?',
-			a: 'Na svom profilu (ime gore desno -> Profil) kliknite „Predloži promjenu” i opišite svoju ideju. Svaka povratna informacija je dobrodošla: recite što biste htjeli i zašto bi to pomoglo.'
+			a: 'Na svom profilu (ime gore desno, pa kliknite Profil) kliknite „Predloži promjenu” i opišite svoju ideju. Svaka povratna informacija je dobrodošla: recite što biste htjeli i zašto bi to pomoglo.'
 		},
 		{
 			q: 'Ne mogu naći neke podatke. Gdje da ih potražim?',
