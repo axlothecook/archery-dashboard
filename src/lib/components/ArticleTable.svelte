@@ -165,7 +165,7 @@
 									type="button"
 									aria-pressed={a.hidden}
 									aria-label={a.hidden ? 'Prikaži na javnoj stranici' : 'Sakrij s javne stranice'}
-									title={a.hidden ? 'Skriveno — klik za prikaz' : 'Vidljivo — klik za skrivanje'}
+									title={a.hidden ? 'Skriveno: klik za prikaz' : 'Vidljivo: klik za skrivanje'}
 									onclick={() => toggleHidden(a)}
 								>
 									{#if a.hidden}<EyeOffIcon size={22} />{:else}<EyeIcon size={22} />{/if}
@@ -377,8 +377,8 @@
 		color: #000;
 	}
 	.art-state--draft {
-		background: #fde7d8;
-		color: #8a4b1e;
+		background: #ffd453; /* yellow — same as Skriveno */
+		color: #000;
 	}
 	.art-actions {
 		gap: 0.75rem;

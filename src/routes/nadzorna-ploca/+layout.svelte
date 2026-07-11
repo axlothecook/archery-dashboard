@@ -768,20 +768,18 @@
 	.topbar-bell:hover {
 		background: rgba(16, 46, 102, 0.08);
 	}
-	/* Red dot (#19): shown when there are new notifications. Sized with fixed px + a pill
-	   radius so it renders as a clean CIRCLE — at the old 0.6rem the 2px white border ate most
-	   of the box and it read as a rounded square. box-sizing:content-box keeps the red disc a
-	   true 9px circle with the border sitting outside it. */
+	/* Red dot (#19): shown when there are new notifications. A pure 10px disc with
+	   border-radius 50% — the white ring is a box-shadow (sits OUTSIDE the shape), not a
+	   border: a border on a tiny element antialiases into a rounded-square look. */
 	.notif-dot {
 		position: absolute;
 		top: 0.15rem;
 		right: 0.15rem;
-		box-sizing: content-box;
-		width: 9px;
-		height: 9px;
-		border-radius: 999px;
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
 		background: #e60023; /* state-red */
-		border: 2px solid #fff;
+		box-shadow: 0 0 0 2px #fff;
 	}
 	/* Dropdown panel anchored under the bell. No backdrop overlay. Enters/leaves
 	   with a fade + subtle scale from the trigger corner (the industry-standard

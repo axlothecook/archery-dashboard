@@ -182,7 +182,7 @@
 			<label class="field column-nowrap gap-0-3">
 				<span class="field-label fw-600">Boja</span>
 				<span class="color-row display-f align-items-center gap-0-5">
-					<input class="color-swatch w-2-5 h-2-5 br-sm border-width-1 border-heather flex-grow-0 cursor-pointer" type="color" bind:value={fColor} aria-label="Boja" />
+					<input class="color-swatch border-width-1 border-heather flex-grow-0 cursor-pointer" type="color" bind:value={fColor} aria-label="Boja" />
 					<input class="field-input color-hex br-xs w-full" type="text" bind:value={fColor} />
 				</span>
 			</label>
@@ -348,7 +348,7 @@
 	}
 	.field-label {
 		font-size: 0.85rem;
-		color: #5b6577;
+		color: #102e66; /* same navy as the Spremi/Dodaj button (was grey) */
 	}
 	.req {
 		color: #d32752;
@@ -372,6 +372,12 @@
 	   own padding + rounded/elliptic border, which no utility class can reach (same
 	   category as ::-webkit-scrollbar). Stripping it leaves a clean colour box. */
 	.color-swatch {
+		/* Width matches the rendered width of the word "Boja" above it (per request);
+		   1.95rem lands at ~28.6px once the border/flex shrink is accounted for. Height
+		   STRETCHES to the flex row, so it always exactly equals the hex input beside it. */
+		width: 1.95rem;
+		align-self: stretch;
+		height: auto;
 		padding: 0;
 		background: none;
 		-webkit-appearance: none;
