@@ -182,7 +182,7 @@
 			<label class="field column-nowrap gap-0-3">
 				<span class="field-label fw-600">Boja</span>
 				<span class="color-row display-f align-items-center gap-0-5">
-					<input class="color-swatch h-2-5 br-sm border-width-1 border-heather flex-grow-0 cursor-pointer" type="color" bind:value={fColor} aria-label="Boja" />
+					<input class="color-swatch border-width-1 border-heather flex-grow-0 cursor-pointer" type="color" bind:value={fColor} aria-label="Boja" />
 					<input class="field-input color-hex br-xs w-full" type="text" bind:value={fColor} />
 				</span>
 			</label>
@@ -374,8 +374,10 @@
 	.color-swatch {
 		/* Width matches the rendered width of the word "Boja" above it (per request);
 		   1.95rem lands at ~28.6px once the border/flex shrink is accounted for. Height
-		   stays the 2.5rem utility. */
+		   STRETCHES to the flex row, so it always exactly equals the hex input beside it. */
 		width: 1.95rem;
+		align-self: stretch;
+		height: auto;
 		padding: 0;
 		background: none;
 		-webkit-appearance: none;
