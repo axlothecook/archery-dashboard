@@ -282,8 +282,8 @@
 		color: #000;
 	}
 	.ar-state--draft {
-		background: #fde7d8;
-		color: #8a4b1e;
+		background: #ffd453; /* yellow — same as Skriveno */
+		color: #000;
 	}
 	/* Right-align the icon pair in its cell so it sits away from the Stanje pill
 	   (the widened actions column + this alignment create the gap). */

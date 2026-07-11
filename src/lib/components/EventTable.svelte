@@ -366,8 +366,8 @@
 		color: #000;
 	}
 	.ev-state--draft {
-		background: #fde7d8;
-		color: #8a4b1e;
+		background: #ffd453; /* yellow — same as Skriveno */
+		color: #000;
 	}
 	.ev-state--cancelled {
 		background: #ff6e63; /* salmon — cancelled */

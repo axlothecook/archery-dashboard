@@ -377,8 +377,8 @@
 		color: #000;
 	}
 	.art-state--draft {
-		background: #fde7d8;
-		color: #8a4b1e;
+		background: #ffd453; /* yellow — same as Skriveno */
+		color: #000;
 	}
 	.art-actions {
 		gap: 0.75rem;

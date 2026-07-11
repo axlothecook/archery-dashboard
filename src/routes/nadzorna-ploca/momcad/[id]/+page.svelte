@@ -426,8 +426,8 @@
 		color: #000;
 	}
 	.state--draft {
-		background: #fde7d8;
-		color: #8a4b1e;
+		background: #ffd453; /* yellow — same as Skriveno */
+		color: #000;
 	}
 	@media (max-width: 820px) {
 		.top-row {
