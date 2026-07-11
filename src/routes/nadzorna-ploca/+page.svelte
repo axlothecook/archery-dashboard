@@ -199,7 +199,7 @@
 			</div>
 			<div>
 				<div class="dash-heading-row display-f align-items-center">
-					<h2 class="dash-heading display-f align-items-center gap-0-5">
+					<h2 class="dash-heading dash-heading--mail display-f align-items-center gap-0-5">
 						<span class="head-ico"><MailAltIcon size={22} /></span>
 						Dolazna pošta
 						{#if showMailCount}<span class="mail-count">({mailCount})</span>{/if}
@@ -299,10 +299,16 @@
 		margin-top: 1.75rem;
 	}
 	/* "(N)" mail count next to the Dolazna pošta title — same red cue as the
-	   notifications "Novo (N)". */
+	   notifications "Novo (N)". The row is flex-CENTRED (icon + title + count); the
+	   count's line-height is 1 so its box hugs the digits and the flex centring puts
+	   the glyphs themselves on the row's centre line, independent of font metrics. */
+	.dash-heading--mail {
+		align-items: center;
+	}
 	.mail-count {
 		font-size: 1rem;
 		font-weight: 600;
+		line-height: 1;
 		color: #e60023;
 	}
 	/* Heading row: title on the left, an action (Dodaj zadatak / week arrows) on the
