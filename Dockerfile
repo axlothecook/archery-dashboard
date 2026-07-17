@@ -2,8 +2,8 @@
 # Built by CI for linux/arm64 (the Pi) and pushed to GHCR; the Pi only pulls.
 #
 # adapter-node produces a self-contained Node server in /app/build, run with
-# `node build`. Unlike the public site, this app reads PUBLIC_API_BASE_URL via
-# $env/dynamic/public at RUNTIME (see src/lib/auth.ts) — so it is NOT baked at
+# `node build`. Like the public site, this app reads PUBLIC_API_BASE_URL via
+# $env/dynamic/public at RUNTIME (see src/lib/auth.ts) — nothing is baked at
 # build time; the compose service sets it as an env var (same-origin /api). The
 # reverse proxy routes the dashboard's top-level paths (/prijava, /nadzorna-ploca,
 # /accept-invite, /reset-password, /zaboravljena-lozinka) here.
