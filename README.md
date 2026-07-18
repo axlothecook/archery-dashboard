@@ -21,6 +21,7 @@ The diagram below shows what happens when someone opens the dashboard. A guard r
 
 ![image](https://github.com/user-attachments/assets/bc331de1-d76a-4155-85ba-51c258ffb834)
 <br />
+<br />
 
 ## Features
 <ul>
