@@ -8,9 +8,11 @@ The admin dashboard of the archery club website. A separate SvelteKit app where 
 
 ### Dashboard homepage
 ![image](https://github.com/user-attachments/assets/755b5e1f-e2f4-44b5-8344-d348a9175e0f)
+<br />
 
 ## Why a separate repo, but the same origin
 Login works with a session cookie (`__Host-session`: HttpOnly, Secure, SameSite=Lax). For that cookie to survive strict browsers, like Safari, Firefox, Brave on both phone and laptop, the dashboard and the API have to be same-site. A separate dashboard domain would make the cookie cross-site, and browsers drop those. So the dashboard is a separate repo but not a separate origin, as in production, nginx serves it under the same hostname as the public site, on its own paths (/prijava, /nadzorna-ploca and a few more).
+<br />
 <br />
 
 ## How access is checked
