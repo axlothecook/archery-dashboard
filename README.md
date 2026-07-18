@@ -1,5 +1,5 @@
 # Archery club dashboard
-The admin dashboard of the archery club website. A separate SvelteKit app where club admins manage the public site content. It talks to the same Express API backend as the public site and runs on my Raspberry Pi as a Docker container, also served under the same origin as the public site.
+The admin dashboard of the archery club website. A separate SvelteKit app where club admins manage the public site content. It talks to the same [Express API backend](https://github.com/axlothecook/Archery-club-backend) as the public site and runs on my Raspberry Pi as a Docker container, also served under the same origin as the public site.
 <br />
 <br />
 
