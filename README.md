@@ -1,84 +1,50 @@
-# archery-dashboard
+# Archery club dashboard
+The admin dashboard of the archery club website. A separate SvelteKit app where club admins manage the public site content. It talks to the same Express API backend as the public site and runs on my Raspberry Pi as a Docker container, also served under the same origin as the public site.
+<br />
 
-Admin dashboard for the VSK archery club — a **separate** SvelteKit app from the
-public site ([Archery-club-front-end](https://github.com/axlothecook/Archery-club-front-end)),
-but deployed **behind the same origin** as the public site so the session cookie
-stays first-party.
+### Log in page
+![image](https://github.com/user-attachments/assets/ed0d0e1d-20d9-4660-9dea-8fa18e91c0a2)
 
-It contains the staff-only area: `/prijava` (login) and `/nadzorna-ploca/*` (the dashboard
-+ per-entity editors). It talks to the same Express/Prisma backend
-([Archery-club-backend](https://github.com/axlothecook/Archery-club-backend)) as
-the public site, under `/api`.
+### Dashboard homepage
+![image](https://github.com/user-attachments/assets/755b5e1f-e2f4-44b5-8344-d348a9175e0f)
 
-## ⚠️ Why "separate repo, SAME origin" (the critical constraint)
+## Why a separate repo, but the same origin
+Login works with a session cookie (`__Host-session`: HttpOnly, Secure, SameSite=Lax). For that cookie to survive strict browsers, like Safari, Firefox, Brave on both phone and laptop, the dashboard and the API have to be same-site. A separate dashboard domain would make the cookie cross-site, and browsers drop those. So the dashboard is a separate repo but not a separate origin, as in production, nginx serves it under the same hostname as the public site, on its own paths (/prijava, /nadzorna-ploca and a few more).
+<br />
 
-Auth is a **session cookie** (`__Host-session`, `HttpOnly; Secure; SameSite=Lax`,
-host-only). For login to work on **both phone and laptop**, the dashboard and the
-API must be **same-site** to the browser. A split *origin* (e.g.
-`dashboard.example.com` → `api.example.com`) is cross-site, forces
-`SameSite=None`, and is then dropped/partitioned by Safari ITP / Firefox Total
-Cookie Protection / Brave — the classic "works on PC, fails on phone" bug.
+## How access is checked
+The diagram below shows what happens when someone opens the dashboard. A guard runs on the server and asks the backend who the visitor is; logged-out visitors get redirected to the login page. The guard is only the first check though: the backend re-checks the session on every single write, so the browser is never trusted.
 
-So this is a separate **repo**, not a separate **origin**: in production a single
-reverse proxy (nginx/Cloudflare) serves everything under one hostname —
+![image](https://github.com/user-attachments/assets/bc331de1-d76a-4155-85ba-51c258ffb834)
+<br />
 
-```
-archery.axlothecook.com/           → public site  (Archery-club-front-end, :3000)
-archery.axlothecook.com/prijava    → THIS app      (archery-dashboard, :3001)
-archery.axlothecook.com/nadzorna-ploca/*    → THIS app      (archery-dashboard, :3001)
-archery.axlothecook.com/api/*      → backend        (Archery-club-backend, :3100, /api stripped)
-```
+## Features
+<ul>
+  <li>receives inquiries sent through contact forms</li>
+  <li>manages replies to inquiries from the inbox built into the dashboard, hosts admin invites (72h link) and password-reset (30-min link) pages</li>
+  <li>CRUD functionality of most public site data like posts, events, team roster, sponsor descriptions, archer bios, achievement titles, event names, any article text</li>
+  <li>CRUD functionality of the image files in those sections (and video, for posts only)</li>
+  <li>publish workflow for posts, events and archers - draft, published and hidden - which controls their visibility on the public site</li>
+  <li>CRUD functionality of events' categories</li>
+  <li>used to change passwords</li>
+  <li>has an FAQ page</li>
+  <li>fully responsive, with a dedicated mobile pass across every page</li>
+  <li>some features like each admin's profile data edits, problem & site ideas reporting, admin account management (CRUD of each member) and more only have UI in place; they are planned to be implemented if the website gets adopted by the official club as their new official website due to the amount of effort they require</li>
+</ul>
+<br />
 
-The session cookie is first-party on the one origin → never dropped, on any
-browser or device. (Verified research; see the project memory note
-`archery-dashboard-auth-topology-research-2026-06-30`.)
+## Testing
+The login flow, the check that redirects logged-out visitors, profile form validation, the email helpers and the password rules are covered by 82 unit tests. They run in CI together with the type check before every deploy; if any fail, nothing gets deployed. The deployment pipeline itself is explained in [homelab-ci-cd](https://github.com/axlothecook/homelab-ci-cd).
+<br />
 
-### Example prod nginx (sketch — final config lives in the deploy repo)
+## Tech stack
+[SvelteKit 2](https://svelte.dev/docs/kit) / [Svelte 5 (runes)](https://svelte.dev): whole app <br />
+[adapter-node](https://svelte.dev/docs/kit/adapter-node): builds the app into a self-contained Node server; it's what runs inside the Docker container on the Pi <br />
+[Vite 8](https://vite.dev): used for building and development server <br />
+[Sass](https://sass-lang.com) + [axlothecook-sass-library](https://github.com/axlothecook/axlothecook-sass-library): styling <br />
+[@fontsource/inter](https://fontsource.org/fonts/inter): fonts <br />
+auth: no auth library; the backend owns the sessions, the dashboard forwards the `__Host-session` cookie and redirects when the backend says no
+<br />
 
-```nginx
-location /api/   { proxy_pass http://backend:3100/; }          # trailing slash strips /api
-location /prijava { proxy_pass http://dashboard:3001; }
-location /nadzorna-ploca/ { proxy_pass http://dashboard:3001; }
-location /        { proxy_pass http://frontend:3000; }          # public site
-```
-
-The dashboard's `PUBLIC_API_BASE_URL` in prod must be the **absolute same-origin**
-API: `https://archery.axlothecook.com/api` (it's read at runtime by `src/lib/auth.ts`).
-
-## Local development
-
-The dashboard runs on its own Vite port (5174 if the public site holds 5173), so
-in dev it would be cross-origin to the backend — which breaks the cookie. The
-`vite.config.ts` `server.proxy` fixes this by serving `/api` on the dashboard's
-own origin and forwarding to the backend on `:3100`. So `PUBLIC_API_BASE_URL`
-points at the **same-origin** `/api` path, mirroring prod.
-
-```bash
-# 1. start the backend (separate repo) on :3100
-#    (Archery-club-backend) npm run dev
-# 2. start the dashboard
-npm install
-npm run dev            # http://localhost:5174  (use --host for phone testing)
-```
-
-`.env.local` (gitignored) sets `PUBLIC_API_BASE_URL=http://localhost:5174/api`.
-For **phone** testing on the LAN, change it to
-`http://192.168.50.112:5174/api` (the proxy binds to all hosts via
-`server.host: true`).
-
-Local admin login lives as a row in the backend's Postgres `Admin` table (created
-via the backend's `scripts/create-admin.ts`), **not** in any `.env`.
-
-## Stack
-
-SvelteKit 2 + Svelte 5 (runes) + adapter-node + TypeScript + scoped Sass, reusing
-[`axlothecook-sass-library`](https://github.com/axlothecook/axlothecook-sass-library)
-(library-first styling). Icons are reusable components in
-`src/lib/components/icons/` (currentColor + size).
-
-## Scripts
-
-- `npm run dev` — dev server
-- `npm run build` — production build (adapter-node → `build/`)
-- `npm run check` — svelte-check (types + templates)
-- `npm run format` — prettier
+## Types
+The dashboard keeps its own local TypeScript types instead of the shared [archery-contracts](https://github.com/axlothecook/Archery-contracts) package. That is a known tradeoff (types can drift from what the backend sends) and it is documented in the contracts repo.
