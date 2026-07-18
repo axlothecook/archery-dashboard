@@ -1,6 +1,7 @@
 # Archery club dashboard
 The admin dashboard of the archery club website. A separate SvelteKit app where club admins manage the public site content. It talks to the same Express API backend as the public site and runs on my Raspberry Pi as a Docker container, also served under the same origin as the public site.
 <br />
+<br />
 
 ### Log in page
 ![image](https://github.com/user-attachments/assets/ed0d0e1d-20d9-4660-9dea-8fa18e91c0a2)
@@ -36,6 +37,7 @@ The diagram below shows what happens when someone opens the dashboard. A guard r
 ## Testing
 The login flow, the check that redirects logged-out visitors, profile form validation, the email helpers and the password rules are covered by 82 unit tests. They run in CI together with the type check before every deploy; if any fail, nothing gets deployed. The deployment pipeline itself is explained in [homelab-ci-cd](https://github.com/axlothecook/homelab-ci-cd).
 <br />
+<br />
 
 ## Tech stack
 [SvelteKit 2](https://svelte.dev/docs/kit) / [Svelte 5 (runes)](https://svelte.dev): whole app <br />
@@ -44,6 +46,7 @@ The login flow, the check that redirects logged-out visitors, profile form valid
 [Sass](https://sass-lang.com) + [axlothecook-sass-library](https://github.com/axlothecook/axlothecook-sass-library): styling <br />
 [@fontsource/inter](https://fontsource.org/fonts/inter): fonts <br />
 auth: no auth library; the backend owns the sessions, the dashboard forwards the `__Host-session` cookie and redirects when the backend says no
+<br />
 <br />
 
 ## Types
