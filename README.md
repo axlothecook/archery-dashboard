@@ -19,7 +19,7 @@ Login works with a session cookie (`__Host-session`: HttpOnly, Secure, SameSite=
 ## How access is checked
 The diagram below shows what happens when someone opens the dashboard. A guard runs on the server and asks the backend who the visitor is; logged-out visitors get redirected to the login page. The guard is only the first check though: the backend re-checks the session on every single write, so the browser is never trusted.
 
-![image](https://github.com/user-attachments/assets/bc331de1-d76a-4155-85ba-51c258ffb834)
+![image](https://github.com/user-attachments/assets/198d6000-ba7e-4da0-a756-058040c99b0e)
 <br />
 <br />
 
