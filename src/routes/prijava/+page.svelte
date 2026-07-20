@@ -33,15 +33,23 @@
 		if (img.complete) done();
 	});
 
+	// Public demo account (the site is a portfolio piece — anyone may LOOK at the
+	// dashboard without credentials). These are DELIBERATELY in the client bundle:
+	// the backend's guestReadOnly middleware makes the role read-only, so knowing
+	// them grants nothing beyond what the button already offers.
+	const GUEST_EMAIL = 'gost@vsk-demo.hr';
+	const GUEST_PASSWORD = 'razgledaj-vsk-2026';
+
 	let email = $state('');
 	let password = $state('');
 	let showPassword = $state(false);
 	let submitting = $state(false);
+	let guestSubmitting = $state(false);
 	let errorMsg = $state('');
 
 	async function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
-		if (submitting) return;
+		if (submitting || guestSubmitting) return;
 		errorMsg = '';
 		submitting = true;
 		try {
@@ -53,6 +61,21 @@
 					? t(locale, 'auth.error')
 					: t(locale, 'auth.errorGeneric');
 			submitting = false;
+		}
+	}
+
+	// Guest entry: the same login flow, fixed credentials. Any failure (e.g. the
+	// guest account not seeded) falls back to the generic error message.
+	async function handleGuest() {
+		if (submitting || guestSubmitting) return;
+		errorMsg = '';
+		guestSubmitting = true;
+		try {
+			await login(GUEST_EMAIL, GUEST_PASSWORD);
+			await goto('/nadzorna-ploca');
+		} catch {
+			errorMsg = t(locale, 'auth.errorGeneric');
+			guestSubmitting = false;
 		}
 	}
 </script>
@@ -123,8 +146,19 @@
 					<p class="login-error" role="alert">{errorMsg}</p>
 				{/if}
 
-				<button type="submit" class="login-btn" disabled={submitting}>
+				<button type="submit" class="login-btn" disabled={submitting || guestSubmitting}>
 					{submitting ? t(locale, 'auth.submitting') : t(locale, 'auth.submit')}
+				</button>
+
+				<!-- Guest entry: outlined secondary button — visually subordinate to the
+				     primary login, but discoverable for anyone wanting a look around. -->
+				<button
+					type="button"
+					class="login-btn login-btn--guest"
+					onclick={handleGuest}
+					disabled={submitting || guestSubmitting}
+				>
+					{guestSubmitting ? t(locale, 'auth.guestSubmitting') : t(locale, 'auth.guestBtn')}
 				</button>
 			</form>
 
@@ -341,6 +375,20 @@
 		&:disabled {
 			opacity: 0.7;
 			cursor: default;
+		}
+	}
+
+	// Guest variant: outlined on the white card. Hover = state layer of the content
+	// colour (light bg → darken), same pattern as the rest of the site's buttons.
+	.login-btn--guest {
+		margin-top: 0;
+		background: transparent;
+		border: 2px solid $navy;
+		color: $navy;
+		padding: calc(#{$sp * 0.95} - 2px); // border eats into the box — keep equal height
+
+		&:hover:not(:disabled) {
+			background-color: rgba(16, 46, 102, 0.08);
 		}
 	}
 
