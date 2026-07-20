@@ -17,8 +17,10 @@ const hr: Dict = {
 	'auth.helpLink': 'Kontaktirajte nas',
 	'auth.error': 'Pogrešan email ili lozinka.',
 	'auth.errorGeneric': 'Prijava nije uspjela. Pokušajte ponovno.',
-	'auth.guestBtn': 'Razgledaj kao gost',
-	'auth.guestSubmitting': 'Otvaranje…',
+	// English on purpose (also in the hr dict): the guest button targets
+	// recruiters/visitors browsing the demo, not Croatian club staff.
+	'auth.guestBtn': 'Browse as a guest',
+	'auth.guestSubmitting': 'Opening…',
 	'auth.imageAlt': 'Streličarstvo',
 	'auth.forgotLink': 'Zaboravili ste lozinku?',
 	'auth.backToLogin': 'Natrag na prijavu',
@@ -69,7 +71,7 @@ const en: Dict = {
 	'auth.helpLink': 'Contact Us',
 	'auth.error': 'Incorrect email or password.',
 	'auth.errorGeneric': 'Login failed. Please try again.',
-	'auth.guestBtn': 'Browse as guest',
+	'auth.guestBtn': 'Browse as a guest',
 	'auth.guestSubmitting': 'Opening…',
 	'auth.imageAlt': 'Archery',
 	'auth.forgotLink': 'Forgot your password?',
